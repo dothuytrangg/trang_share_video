@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <h1>Ha Thanh Hải-check-7</h1>
+        <h1>Ha Thanh Hải-check-8</h1>
       </div>
     </main>
   );
