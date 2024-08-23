@@ -9,7 +9,10 @@ services:
       - "2050:2050"
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.local
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
     
     networks:
       - trang-prod-network
@@ -22,8 +25,10 @@ services:
       - "2070:2070"
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
-    
+      dockerfile: Dockerfile.local
+    volumes:
+      - ./backend:/backend
+      - /backend/node_modules
     networks:
       - trang-prod-network
 

@@ -6,7 +6,6 @@ WORKDIR /frontend
 COPY . .
 
 RUN npm install 
-RUN npm cache clean --force
-RUN npm run build
+
 EXPOSE 2050
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
