@@ -1,0 +1,8 @@
+FROM node:18-alpine
+WORKDIR /frontend
+COPY . .
+
+RUN npm install 
+RUN npm run build
+EXPOSE 2050
+CMD [ "npm", "run", "start" ]

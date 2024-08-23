@@ -1,0 +1,1 @@
+docker compose -f docker-compose.prod.yml -p hai_prod_save_money up --build -d --force-recreate 
