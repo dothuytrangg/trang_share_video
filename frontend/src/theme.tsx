@@ -17,12 +17,14 @@ export default function Theme({ children }: { children: React.ReactNode }) {
     palette: {
       mode: masterStore.theme as PaletteMode,
       primary: {
-        main: '#00d483',
+        main: '#fff',
       },
       secondary: {
-        main: '#c20424',
+        main: 'rgba(40,40,40,0.98)',
       },
-     
+      background:{
+        
+      }
     },
     typography: {
       fontFamily: roboto.style.fontFamily,

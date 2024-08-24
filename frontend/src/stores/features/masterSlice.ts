@@ -2,12 +2,13 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-export interface CounterState {
-  theme: string;
-}
-
-const initialState: CounterState = {
+type MasterStore = {
+  theme: String;
+  drawer: Boolean;
+};
+const initialState: MasterStore = {
   theme: "light",
+  drawer: false,
 };
 
 export const masterSlice = createSlice({
@@ -15,15 +16,18 @@ export const masterSlice = createSlice({
   initialState,
   reducers: {
     changeTheme: (state) => {
-        if(state.theme == 'light'){
-            state.theme = 'dark'
-        }else{
-              state.theme = 'light'
-        }
+      if (state.theme == "light") {
+        state.theme = "dark";
+      } else {
+        state.theme = "light";
+      }
+    },
+    toggleDrawer: (state) => {
+      state.drawer = !state.drawer;
     },
   },
 });
 
-export const { changeTheme } = masterSlice.actions;
+export const { changeTheme, toggleDrawer } = masterSlice.actions;
 
 export default masterSlice.reducer;
