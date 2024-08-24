@@ -31,6 +31,8 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Paper from "@mui/material/Paper";
 
 const drawerWidth = 200;
 
@@ -92,6 +94,26 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
+function Item(props: BoxProps) {
+  const { sx, ...other } = props;
+  return (
+    <Box
+      sx={{
+        p: 1,
+        m: 1,
+        bgcolor: (theme) => (theme.palette.mode === "dark" ? "#101010" : "grey.100"),
+        color: (theme) => (theme.palette.mode === "dark" ? "grey.300" : "grey.800"),
+        border: "1px solid",
+        borderColor: (theme) => (theme.palette.mode === "dark" ? "grey.800" : "grey.300"),
+        borderRadius: 2,
+        fontSize: "0.875rem",
+        fontWeight: "700",
+        ...sx,
+      }}
+      {...other}
+    />
+  );
+}
 
 export default function MiniDrawer() {
   const theme = useTheme();
@@ -104,6 +126,18 @@ export default function MiniDrawer() {
 
   const handleToggleTheme = () => {
     dispatch(changeTheme());
+  };
+
+  const renderCategory = () => {
+    const result = [];
+    for (let i = 0; i < 30; i++) {
+      result.push(
+        <Button key={i} sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }} color="inherit" variant="contained" size="small">
+          Gaming - {i + 1}
+        </Button>
+      );
+    }
+    return result;
   };
 
   const renderItemExample = () => {
@@ -159,8 +193,42 @@ export default function MiniDrawer() {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignContent: "flex-start",
+            p: 1,
+            m: 1,
+            bgcolor: "background.paper",
+            borderRadius: 1,
+          }}
+        >
+          <Button
+            sx={{ ml: 1, pr: 1, textTransform: "none", maxWidth: 200, mt: 2 }}
+            color={masterStore.dark ? "secondary" : "primary"}
+            variant="contained"
+            size="small"
+          >
+            All
+          </Button>
+          {renderCategory()}
+        </Box>
+        {/* <div className="flex justify-start ...">{renderCategory()}</div> */}
+        {/* <div className="grid grid-cols-12 gap-2">
+          <Button
+            sx={{ ml: 1, pr: 1, textTransform: "none", maxWidth: 200 }}
+            color={masterStore.dark ? "secondary" : "primary"}
+            variant="contained"
+            size="small"
+          >
+            All
+          </Button>
+          {renderCategory()}
+        </div> */}
+
+        <br />
         <div className="grid grid-cols-5 gap-3">{renderItemExample()}</div>
       </Box>
     </Box>

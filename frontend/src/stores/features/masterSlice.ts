@@ -2,13 +2,11 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-type MasterStore = {
-  theme: String;
-  drawer: Boolean;
-};
-const initialState: MasterStore = {
+
+const initialState = {
   theme: "light",
   drawer: false,
+  dark:false
 };
 
 export const masterSlice = createSlice({
@@ -18,8 +16,10 @@ export const masterSlice = createSlice({
     changeTheme: (state) => {
       if (state.theme == "light") {
         state.theme = "dark";
+        state.dark = false
       } else {
         state.theme = "light";
+        state.dark = true
       }
     },
     toggleDrawer: (state) => {

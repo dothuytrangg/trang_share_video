@@ -20,16 +20,16 @@ export default function Theme({ children }: { children: React.ReactNode }) {
         main: '#fff',
       },
       secondary: {
-        main: 'rgba(40,40,40,0.98)',
+        main: '#161717',
+        contrastText:'#fff'
       },
-      background:{
-        
-      }
+    
     },
+    
     typography: {
       fontFamily: roboto.style.fontFamily,
     },
   });
-
+ 
   return <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>;
 }
