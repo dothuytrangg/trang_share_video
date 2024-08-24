@@ -3,10 +3,12 @@ import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import "./globals.css";
 import CssBaseline from "@mui/material/CssBaseline";
-
+import Box from "@mui/material/Box";
 const inter = Inter({ subsets: ["latin"] });
 import StoreProvider from "../stores/providers";
 import Theme from "../theme";
+import Navbar from "@/components/layouts/Navbar";
+import Sidebar from "@/components/layouts/Sidebar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,9 +27,14 @@ export default function RootLayout({
         <StoreProvider>
           <Theme>
             <AppRouterCacheProvider>
-              {" "}
               <CssBaseline />
-              {children}
+              <Box sx={{ display: "flex" }}>
+                <Navbar></Navbar>
+                <Sidebar></Sidebar>
+                <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 5 }}>
+                 {children}
+                </Box>
+              </Box>
             </AppRouterCacheProvider>
           </Theme>
         </StoreProvider>
