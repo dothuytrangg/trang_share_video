@@ -39,7 +39,7 @@ export default function Home() {
         </Button>
       </div>
       <div className="w-[90%] ">
-        <div className="grid grid-cols-4 gap-4 ml-5 mt-5">
+        <div className="grid lg:grid-cols-4 gap-4 ml-5 mt-5  md:grid-cols-2 md:grid-cols-1 ">
           <Card>
             <CardContent>
               <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -145,6 +145,8 @@ export default function Home() {
               <Button size="small">Learn More</Button>
             </CardActions>
           </Card>
+
+          
         </div>
       </div>
     </main>
