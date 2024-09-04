@@ -1,3 +1,4 @@
+'use client'
 import {
   Button,
   Card,
@@ -6,9 +7,21 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
+
+
 import React from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Videos() {
+  const router = useRouter();
+  const handleOnClick=()=>{
+      router.replace('/detail');
+
+     
+  }
+
+ 
+ 
   const renderItemExample = () => {
     const result = [];
     for (let i = 0; i < 30; i++) {
@@ -28,9 +41,18 @@ export default function Videos() {
               6,000 species, ranging across all continents except Antarctica
             </Typography>
           </CardContent>
+           
+
           <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
+            <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+          color="inherit"
+          variant="contained" size="small">Share</Button>
+            <Button  sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+          color="inherit"
+          variant="contained" size="small" onClick={() => handleOnClick()}>Learn More</Button>
+            
+            
+            
           </CardActions>
         </Card>
       );
