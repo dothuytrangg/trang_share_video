@@ -35,4 +35,10 @@ export class AuthController {
 
        
     }
+
+    @Post('refresh-token')
+    refreshToken(@Body() {refresh_token}):Promise<any>{
+        console.log('refresh token api')
+        return this.authService.refreshToken(refresh_token);
+    }
 }
