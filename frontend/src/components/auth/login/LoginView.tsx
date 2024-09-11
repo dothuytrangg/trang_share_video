@@ -24,7 +24,8 @@ import ForgotPassword from '@/components/auth/forgotPassword';
 
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
 import Image from 'next/image';
-import { Metadata } from 'next';
+import { useRouter } from 'next/navigation';
+
 
 // import NavBar from './NavBar';
 
@@ -64,6 +65,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 
 const LoginView = () => {
   const logo = '/image/logo.png';
+  const router = useRouter();
 
     const [showCustomTheme, setShowCustomTheme] = React.useState(true);
     // const defaultTheme = createTheme({ palette: { mode } });
@@ -73,6 +75,22 @@ const LoginView = () => {
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [open, setOpen] = React.useState(false);
+    const [email,setEmail] = React.useState('ddthtrang025@gmail.com');
+    const [password,setPassword] = React.useState('123456');
+
+
+    const handleLogin = () => {
+       if(!(validateInputs())){
+           console.log("invalid")
+       }else{
+        console.log(email,password);
+        router.replace('/');
+      
+       }
+       
+    }
+
+
   
     // This code only runs on the client side, to determine the system color preference
  
@@ -105,7 +123,7 @@ const LoginView = () => {
   
       let isValid = true;
   
-      if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+      if (!(email.value == 'ddthtrang025@gmail.com')) {
         setEmailError(true);
         setEmailErrorMessage('Please enter a valid email address.');
         isValid = false;
@@ -114,7 +132,7 @@ const LoginView = () => {
         setEmailErrorMessage('');
       }
   
-      if (!password.value || password.value.length < 6) {
+      if (!(password.value == '123456')) {
         setPasswordError(true);
         setPasswordErrorMessage('Password must be at least 6 characters long.');
         isValid = false;
@@ -126,6 +144,7 @@ const LoginView = () => {
       return isValid;
     };
   
+ 
   return (
    
     <SignInContainer direction="column" justifyContent="space-between">
@@ -159,6 +178,8 @@ const LoginView = () => {
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
+                value={email}
+                onChange={(val)=>{setEmail(val.target.value)}}
                 error={emailError}
                 helperText={emailErrorMessage}
                 id="email"
@@ -187,6 +208,8 @@ const LoginView = () => {
                 </Link>
               </Box>
               <TextField
+                value={password}
+                onChange={(val)=>{setPassword(val.target.value)}}
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
@@ -210,7 +233,8 @@ const LoginView = () => {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              onClick={()=> handleLogin()}
+
             >
               Sign in
             </Button>
@@ -228,7 +252,7 @@ const LoginView = () => {
             </Typography>
           </Box>
           <Divider>or</Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap:2  }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               type="submit"
               fullWidth
@@ -239,7 +263,6 @@ const LoginView = () => {
               Sign in with Google
             </Button>
             <Button
-            
               type="submit"
               fullWidth
               variant="outlined"

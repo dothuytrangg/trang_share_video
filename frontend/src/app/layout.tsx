@@ -9,6 +9,7 @@ import StoreProvider from "../stores/providers";
 import Theme from "../theme";
 import Navbar from "@/components/layouts/Navbar";
 import Sidebar from "@/components/layouts/Sidebar";
+import LoginView from "@/components/auth/login";
 
 export const metadata: Metadata = {
   title: "TUN STUDIO",
@@ -26,7 +27,9 @@ export default function RootLayout({
   // console.log("theme: ", theme);
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={inter.className}>
+       <body suppressHydrationWarning={true} className={inter.className}>
+  
+       
         <StoreProvider>
           <Theme>
             <AppRouterCacheProvider>
@@ -41,7 +44,12 @@ export default function RootLayout({
             </AppRouterCacheProvider>
           </Theme>
         </StoreProvider>
-      </body>
+    
+    
+
+      
+        </body>
+      
     </html>
   );
 }
