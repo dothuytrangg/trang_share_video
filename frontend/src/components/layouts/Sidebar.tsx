@@ -7,6 +7,9 @@ import MuiDrawer from "@mui/material/Drawer";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores/hookStore";
 import { changeTheme, toggleDrawer } from "@/stores/features/masterSlice";
+import { PlaylistPlay, ThumbDownAltOutlined } from "@mui/icons-material";
+import HistoryIcon from '@mui/icons-material/History';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 
 
 const drawerWidth = 200;
@@ -73,6 +76,21 @@ export default function Sidebar() {
               <ListItemText className={open ? "mx-3" : ""} primary={"Chủ Đề"} sx={{ opacity: open ? 1 : 0 }} />
               
             </ListItemButton>
+            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+              <PlaylistPlay></PlaylistPlay>
+              <ListItemText className={open ? "mx-3" : ""} primary={"Danh sách phát"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+
+            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+              <HistoryIcon></HistoryIcon>
+              <ListItemText className={open ? "mx-3" : ""} primary={"Lịch sử phát"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+
+            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+              <ThumbUpOffAltIcon></ThumbUpOffAltIcon>
+              <ListItemText className={open ? "mx-3" : ""} primary={"Danh sách đã thích "} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            
           </ListItem>
         </List>
       </Drawer>

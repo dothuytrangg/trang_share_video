@@ -1,3 +1,4 @@
+import { dark } from './node_modules/@mui/material/styles/createPalette.d';
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -17,6 +18,11 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+   // require("@tailwindcss/typography"),
+    //require("@tailwindcss/aspect-ratio"),
+
+  ],
+ // darkMode: 'class',
 };
 export default config;
