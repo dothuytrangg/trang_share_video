@@ -1,4 +1,3 @@
-
 'use client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -108,42 +107,67 @@ const LoginView = () => {
       setOpen(false);
     };
   
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-      });
+      
+      if (validateInputs()) {
+        try {
+          // Assuming you have an API endpoint for authentication
+          //khuc nay dang test thoi
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (response.ok) {
+            // Login successful
+            const userData = await response.json();
+            // Store user data in state or context if needed
+            console.log('Login successful:', userData);
+            router.replace('/dashboard');
+          } else {
+            // Login failed
+            const errorData = await response.json();
+            setEmailError(true);
+            setEmailErrorMessage(errorData.message || 'Login failed. Please try again.');
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          setEmailError(true);
+          setEmailErrorMessage('An error occurred. Please try again later.');
+        }
+      }
     };
   
-    const validateInputs = () => {
-      const email = document.getElementById('email') as HTMLInputElement;
-      const password = document.getElementById('password') as HTMLInputElement;
-  
-      let isValid = true;
-  
-      if (!(email.value == 'ddthtrang025@gmail.com')) {
-        setEmailError(true);
-        setEmailErrorMessage('Please enter a valid email address.');
-        isValid = false;
-      } else {
-        setEmailError(false);
-        setEmailErrorMessage('');
-      }
-  
-      if (!(password.value == '123456')) {
-        setPasswordError(true);
-        setPasswordErrorMessage('Password must be at least 6 characters long.');
-        isValid = false;
-      } else {
-        setPasswordError(false);
-        setPasswordErrorMessage('');
-      }
-  
-      return isValid;
-    };
-  
+  const validateInputs = () => {
+    const email = document.getElementById('email') as HTMLInputElement;
+    const password = document.getElementById('password') as HTMLInputElement;
+
+    let isValid = true;
+
+    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+      setEmailError(true);
+      setEmailErrorMessage('Please enter a valid email address.');
+      isValid = false;
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage('');
+    }
+
+    if (!password.value || password.value.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      isValid = false;
+    } else {
+      setPasswordError(false);
+      setPasswordErrorMessage('');
+    }
+
+    return isValid;
+  };
  
   return (
    

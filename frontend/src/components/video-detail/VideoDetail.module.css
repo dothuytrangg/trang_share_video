@@ -48,13 +48,17 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.relatedVideosTitle {
-    font-weight: 500;
-    margin-bottom: 16px;
+
+
+.relatedVideoItem{
+    background-color: blue;
+    margin-right: 40%;
 }
-.test{
-    background-color: red;
+.rightVideo{
+    background-color: green;
+   
 }
+
 
 @media (max-width: 960px) {
     .container {

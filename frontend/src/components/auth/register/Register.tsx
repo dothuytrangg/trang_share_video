@@ -24,7 +24,7 @@ import {
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
 import { PaletteMode } from '@mui/material';
 import Image from 'next/image';
-
+import { useRouter } from 'next/navigation';
 
 
 
@@ -59,7 +59,8 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   }),
 }));
 
-export default function Register() {
+const Register = ()=> {
+  const router = useRouter();
   const logo = '/image/logo.png'
   const [mode, setMode] = React.useState<PaletteMode>('light');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
@@ -72,6 +73,19 @@ export default function Register() {
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
   // This code only runs on the client side, to determine the system color preference
+
+
+  const handleRegister = () => {
+    if (!(validateInputs())) {
+      console.log("invalid")
+    } else {
+     router.replace('/sendotp');
+
+    }
+
+  }
+
+
   React.useEffect(() => {
     // Check if there is a preferred mode in localStorage
     const savedMode = localStorage.getItem('themeMode') as PaletteMode | null;
@@ -133,15 +147,37 @@ export default function Register() {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    if (validateInputs()) {
+      try {
+        //khuc nay dang test thoi
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      //    body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          // Login successful
+          const userData = await response.json();
+          // Store user data in state or context if needed
+          console.log('Login successful:', userData);
+          router.replace('/dashboard');
+        } else {
+          // Login failed
+          const errorData = await response.json();
+          setEmailError(true);
+          setEmailErrorMessage(errorData.message || 'Login failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setEmailError(true);
+        setEmailErrorMessage('An error occurred. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -225,7 +261,7 @@ export default function Register() {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  onClick={validateInputs}
+                  onClick={() => handleRegister()}
                 >
                   Sign up
                 </Button>
@@ -270,5 +306,6 @@ export default function Register() {
         </SignUpContainer>
     //   </ThemeProvider>
   
-  );
+  )
 }
+export default Register;

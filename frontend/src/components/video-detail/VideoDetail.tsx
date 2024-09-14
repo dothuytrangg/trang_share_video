@@ -7,11 +7,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import styles from './VideoDetail.module.css';
 import SortIcon from '@mui/icons-material/Sort';
+import ListItem from '@mui/material/ListItem';
 const VideoDetail = () => {
   return (
     <Box className={styles.container}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={7}>
+      <Grid container spacing={3}>
+        <Grid item xs={7}>
           <div className={styles.videoWrapper}>
             <iframe
               className={styles.videoIframe}
@@ -59,23 +60,26 @@ const VideoDetail = () => {
 
         </Grid>
 
-
-        <Grid item xs={12} md={3}>
+        <Grid item xs={5}>
+          
           {[...Array(10)].map((_, index) => (
-            <Box key={index} className={styles.relatedVideoItem}>
-              <iframe
-                className={styles.relatedVideoInfo}
-                title={`Related Video ${index + 1}`}
-                src="https://www.youtube.com/embed/0KEpWHtG10M?list=PL4cUxeGkcC9gjxLvV4VEkZ6H6H4yWuS58"
-                allowFullScreen
-              ></iframe>
-              <div>
-                <h1 className={styles.relatedVideoTitle}>Material UI Tutorial #{index + 1} - Intro & Setup</h1>
-              </div>
-            </Box>
+            <Grid rowSpacing={1} columnSpacing={2}>
+              <Grid item xs={4} className={styles.test}>
+                <iframe
+                  title="Material UI Tutorial #1 - Intro &amp; Setup"
+                  src="https://www.youtube.com/embed/0KEpWHtG10M?list=PL4cUxeGkcC9gjxLvV4VEkZ6H6H4yWuS58"
+                  allowFullScreen
+                ></iframe>
+              </Grid>
+              <Grid item xs={4}>
+                  <h1 >Material UI Tutorial #{index + 1} - Intro & Setup</h1>
+                  </Grid>
+            </Grid>
+             
           ))}
         </Grid>
       </Grid>
+      
     </Box>
   );
 };
