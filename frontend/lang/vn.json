@@ -6,6 +6,12 @@
         "dark":"Tối",
         "language":"Ngôn ngữ",
         "en":"Tiếng Anh",
-        "vn":"Việt Nam"
+        "vn":"Việt Nam",
+        "playlist":"Danh sách phát",
+        "playlist_history":"Lịch sử phát",
+        "playlist_liked":"Danh sách đã thích",
+        "profile":"Thông tin",
+        "setting":"Thiết lập",
+        "account":"Tài khoản"
     } 
 }

@@ -20,7 +20,8 @@ export default function Theme({ children }: { children: React.ReactNode }) {
         ? {
           // Light mode colors
           primary: {
-            main: '#1976d2',
+            // main: '#1976d2',
+            main: '#fff',
           },
           secondary: {
             main: '#9c27b0',

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default  function RootLayout({
   children,
   params: { locale },
 }: {
@@ -36,7 +36,7 @@ export default function RootLayout({
  
   // console.log("theme: ", theme);
   return (
-    <html lang={locale}>
+    <html lang={locale}  suppressHydrationWarning={true}>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <body suppressHydrationWarning={true} className={inter.className}>
           <StoreProvider>

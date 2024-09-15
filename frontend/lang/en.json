@@ -6,7 +6,13 @@
         "dark":"Dark",
         "language":"Language",
         "en":"English",
-        "vn":"Vietnames"
+        "vn":"Vietnames",
+        "playlist":"PlayList",
+        "playlist_history":"Playlist History",
+        "playlist_liked":"Playlist Liked",
+        "profile":"Profile",
+        "setting":"Setting",
+        "account":"Account"
 
     } 
 }
