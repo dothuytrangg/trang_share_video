@@ -1,0 +1,12 @@
+{
+    "HomePage":{
+        "home":"Home",
+        "theme":"Theme",
+        "light":"Light",
+        "dark":"Dark",
+        "language":"Language",
+        "en":"English",
+        "vn":"Vietnames"
+
+    } 
+}

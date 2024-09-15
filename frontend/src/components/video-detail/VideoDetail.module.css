@@ -1,0 +1,63 @@
+.container {
+    padding: 24px;
+}
+
+.videoWrapper {
+    position: relative;
+    padding-top: 56.25%;
+    /* 16:9 Aspect Ratio */
+    width: 100%;
+}
+
+.videoIframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.videoTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.channelInfo {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.channelText {
+    margin-left: 12px;
+    flex-grow: 1;
+}
+
+.subscribeButton {
+  padding-left: 50%;
+  margin-left:  50%;
+}
+
+.videoButton {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    padding: 8px 0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.relatedVideosTitle {
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+.test{
+    background-color: red;
+}
+
+@media (max-width: 960px) {
+    .container {
+        padding: 16px;
+    }
+}
