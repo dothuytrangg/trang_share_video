@@ -1,0 +1,11 @@
+{
+    "HomePage":{
+        "home":"Trang Chủ",
+        "theme":"Chủ Đề",
+        "light":"Sáng",
+        "dark":"Tối",
+        "language":"Ngôn ngữ",
+        "en":"Tiếng Anh",
+        "vn":"Việt Nam"
+    } 
+}

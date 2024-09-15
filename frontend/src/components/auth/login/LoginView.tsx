@@ -25,6 +25,8 @@ import ForgotPassword from '@/components/auth/forgotPassword';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import requestApi from '../../../../helpers/api';
+
 
 
 // import NavBar from './NavBar';
@@ -75,20 +77,20 @@ const LoginView = () => {
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [open, setOpen] = React.useState(false);
-    const [email,setEmail] = React.useState('ddthtrang025@gmail.com');
+    const [email,setEmail] = React.useState('trang022@gmail.com');
     const [password,setPassword] = React.useState('123456');
 
 
-    const handleLogin = () => {
-       if(!(validateInputs())){
-           console.log("invalid")
-       }else{
-        console.log(email,password);
-        router.replace('/');
+    // const handleLogin = () => {
+    //    if(!(validateInputs())){
+    //        console.log("invalid")
+    //    }else{
+    //     console.log(email,password);
+    //     router.replace('/');
       
-       }
+    //    }
        
-    }
+    // }
 
 
   
@@ -123,7 +125,7 @@ const LoginView = () => {
   
       let isValid = true;
   
-      if (!(email.value == 'ddthtrang025@gmail.com')) {
+      if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
         setEmailError(true);
         setEmailErrorMessage('Please enter a valid email address.');
         isValid = false;
@@ -132,7 +134,7 @@ const LoginView = () => {
         setEmailErrorMessage('');
       }
   
-      if (!(password.value == '123456')) {
+      if (!password.value || password.value.length < 6) {
         setPasswordError(true);
         setPasswordErrorMessage('Password must be at least 6 characters long.');
         isValid = false;
@@ -143,7 +145,28 @@ const LoginView = () => {
   
       return isValid;
     };
-  
+
+    const handleLogin = (): void => {
+      const valid: boolean = validateInputs();
+      
+      if (valid) {
+        const loginData = { email, password }; // Login data to be sent to the API
+     
+        
+        requestApi('auth/login', 'POST', loginData)
+          .then((res: any) => {
+            console.log('Login successful:', res);
+            
+
+            // Handle successful login, e.g., store token or redirect
+            router.replace('/'); // Example: Redirect to home
+          })
+          .catch((err: any) => {
+            console.error('Login failed:', err.response?.data || err.message);
+            // Handle login failure (e.g., show error message)
+          });
+      }
+    };
  
   return (
    
@@ -196,7 +219,7 @@ const LoginView = () => {
               />
             </FormControl>
             <FormControl>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <Link
                   component="button"
@@ -206,7 +229,7 @@ const LoginView = () => {
                 >
                   Forgot your password?
                 </Link>
-              </Box>
+              </Box> */}
               <TextField
                 value={password}
                 onChange={(val)=>{setPassword(val.target.value)}}
@@ -252,7 +275,7 @@ const LoginView = () => {
             </Typography>
           </Box>
           <Divider>or</Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               type="submit"
               fullWidth
@@ -271,7 +294,7 @@ const LoginView = () => {
             >
               Sign in with Facebook
             </Button>
-          </Box>
+          </Box> */}
         </Card>
       </Stack>
     </SignInContainer>

@@ -32,7 +32,7 @@ export class AuthService {
             throw new HttpException("Email is not exist",HttpStatus.UNAUTHORIZED);
 
         }
-        const checkPass = bcrypt.compareSync(loginUserDto.password,user.password)
+        const checkPass = await bcrypt.compareSync(loginUserDto.password,user.password)
         if(!checkPass){
             throw new HttpException("password is not correct",HttpStatus.UNAUTHORIZED);
         }
@@ -80,7 +80,7 @@ export class AuthService {
     private async hashPassword(password:string):Promise<string>{
         const saltRound = 10;
         const salt = await bcrypt.genSalt(saltRound);
-        const hash = await bcrypt.hash(password,salt);
+        const hash = await bcrypt.hash(password,saltRound);
         return hash;
     }
 

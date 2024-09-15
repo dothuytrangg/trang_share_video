@@ -14,6 +14,10 @@ import { InputBase, Menu, MenuItem } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import React from "react";
 import { AccountCircle } from "@mui/icons-material";
+import { useLocale, useMessages, useTranslations } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { useRouter, usePathname, useParams,useSearchParams  } from 'next/navigation';
+import { format } from "path";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -28,12 +32,21 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
 }));
+
+
 export default function Navbar() {
+    const t = useTranslations('HomePage');
+    const router = useRouter();
+    const query = useParams()
+    const pathName = usePathname()
+    const localeRouter = useSearchParams()
+    const localActive = useLocale();
     const logo = '/image/logo_text.png';
     const theme = useTheme();
     const dispatch = useDispatch();
     const open = useAppSelector((state) => state.master.drawer) as boolean;
     const masterStore = useAppSelector((state) => state.master);
+    
     const handleToggleDrawer = () => {
       dispatch(toggleDrawer());
     };
@@ -53,6 +66,16 @@ export default function Navbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  
+  const currentSearchParams = useSearchParams();
+  const handleChangeLanguage = () =>{
+    const updatedSearchParams = new URLSearchParams(currentSearchParams.toString())
+    console.log('pathName: ', pathName);
+    console.log('currentSearchParams: ', currentSearchParams);
+      router.push('/',{locale:'en'} as any)
+      console.log('query: ', query);
+   
+   }
 
 
     const Search = styled('div')(({ theme }) => ({
@@ -149,7 +172,9 @@ export default function Navbar() {
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleChangeLanguage}>{t('language')}</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
+
               </Menu>
             </div>
           )}
