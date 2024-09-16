@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
@@ -12,7 +13,6 @@ import Sidebar from "@/components/layouts/Sidebar";
 import LoginView from "@/components/auth/login";
 import { useTranslations } from "next-intl";
 import { NextIntlClientProvider, useMessages } from "next-intl";
-// import { useRouter } from "next/router";
 export const metadata: Metadata = {
   title: "TUN STUDIO",
   description: "TRANG UYEN",
@@ -33,7 +33,6 @@ export default  function RootLayout({
   const t = useTranslations("HomePage");
   const messages = useMessages();
 
- 
   // console.log("theme: ", theme);
   return (
     <html lang={locale}  suppressHydrationWarning={true}>

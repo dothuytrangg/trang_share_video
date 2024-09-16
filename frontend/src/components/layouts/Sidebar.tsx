@@ -6,7 +6,7 @@ import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
 import MuiDrawer from "@mui/material/Drawer";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores/hookStore";
-import { changeTheme, toggleDrawer } from "@/stores/features/masterSlice";
+import { changeTheme, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import PlaylistPlay from "@mui/icons-material/PlaylistPlay";
 import History from "@mui/icons-material/History";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -60,6 +60,7 @@ export default function Sidebar() {
 
   const handleToggleTheme = () => {
     dispatch(changeTheme());
+    dispatch(updateLocalStorage());
   };
 
   const textTheme = () => {

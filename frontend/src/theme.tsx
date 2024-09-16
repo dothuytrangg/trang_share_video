@@ -5,6 +5,7 @@ import { ThemeProvider } from "@emotion/react";
 import { useAppSelector } from "./stores/hookStore";
 import { PaletteMode } from "@mui/material";
 import { useState } from "react";
+import { nextLocalStorage } from "./util/localStoreage";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
@@ -12,7 +13,20 @@ const roboto = Roboto({
 });
 
 export default function Theme({ children }: { children: React.ReactNode }) {
-  const masterStore = useAppSelector((state) => state.master);
+  let defaultTheme = '';
+  let masterStore = useAppSelector((state) => state.master);
+  if(nextLocalStorage()?.getItem('master')){
+    let parseStorage = JSON.parse(nextLocalStorage()?.getItem('master') as any);
+    if(parseStorage.theme){
+      defaultTheme = parseStorage.theme;
+    }else{
+      defaultTheme = masterStore.theme;
+    }
+  }else{
+    defaultTheme = masterStore.theme;
+  }
+
+  console.log('defaultTheme: ', defaultTheme);
   const themeConfig = createTheme({
     palette: {
       mode: masterStore.theme as PaletteMode,

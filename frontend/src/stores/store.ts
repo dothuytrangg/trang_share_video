@@ -8,8 +8,9 @@ export const makeStore = () => {
     reducer: {
       master: masterSlice,
     },
-  });
+  },);
 };
+
 
 // Infer the type of makeStore
 export type AppStore = ReturnType<typeof makeStore>;

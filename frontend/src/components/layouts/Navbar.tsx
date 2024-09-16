@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import { useDispatch } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { changeLanguage, toggleDrawer } from "@/stores/features/masterSlice";
+import { changeLanguage, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 
 import Image from "next/image";
 import { InputBase, Menu, MenuItem } from "@mui/material";
@@ -49,6 +49,7 @@ export default function Navbar() {
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
+    dispatch(updateLocalStorage());
   };
 
   const [auth, setAuth] = React.useState(true);
@@ -75,6 +76,7 @@ export default function Navbar() {
       url = pathNameSpilt.join("/");
     }
     dispatch(changeLanguage(lang))
+    dispatch(updateLocalStorage());
     router.push(`/${url}`);
   };
 
