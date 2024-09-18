@@ -12,6 +12,8 @@
         "playlist_liked":"Danh sách đã thích",
         "profile":"Thông tin",
         "setting":"Thiết lập",
-        "account":"Tài khoản"
+        "account":"Tài khoản",
+         "login":"Đăng Nhập",
+        "register":"Đăng Kí"
     } 
 }

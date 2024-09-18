@@ -19,9 +19,16 @@ export const masterSlice = createSlice({
   name: "master",
   initialState,
   reducers: {
+    loginSuccess: (state, action) =>{
+      console.log('action: ', action);
+      state.access_token = action.payload.token
+      state.user = action.payload.user
+      state.is_login = true
+    },
     initialBootState : (state) =>{
       let masterLocalStorage = nextLocalStorage()?.getItem('master');
       if(masterLocalStorage){
+        console.log('masterLocalStorage: ', masterLocalStorage);
         let parseLocalStorage = JSON.parse(masterLocalStorage);
           state.theme = parseLocalStorage.theme
           state.drawer = parseLocalStorage.drawer
@@ -52,13 +59,12 @@ export const masterSlice = createSlice({
       state.lang = action.payload;
     },
     updateLocalStorage: (state:any)=>{
-      console.log('state: ', state);
       nextLocalStorage()?.setItem('master',JSON.stringify(state));
     }
     
   },
 });
 
-export const { changeTheme, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage } = masterSlice.actions;
+export const { changeTheme, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage, loginSuccess } = masterSlice.actions;
 
 export default masterSlice.reducer;

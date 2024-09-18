@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default  function RootLayout({
+export default function RootLayout({
   children,
   params: { locale },
 }: {
@@ -35,7 +34,7 @@ export default  function RootLayout({
 
   // console.log("theme: ", theme);
   return (
-    <html lang={locale}  suppressHydrationWarning={true}>
+    <html lang={locale} suppressHydrationWarning={true}>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <body suppressHydrationWarning={true} className={inter.className}>
           <StoreProvider>
@@ -43,7 +42,7 @@ export default  function RootLayout({
               <AppRouterCacheProvider>
                 <CssBaseline />
                 <Box sx={{ display: "flex" }}>
-                  <Navbar ></Navbar>
+                  <Navbar></Navbar>
                   <Sidebar></Sidebar>
                   <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 5 }}>
                     {children}

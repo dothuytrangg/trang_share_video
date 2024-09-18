@@ -9,7 +9,7 @@ import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
+import Link from 'next/link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -24,7 +24,11 @@ import {
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
 import { PaletteMode } from '@mui/material';
 import Image from 'next/image';
-
+import requestApi from '../../../../helpers/api';
+import { useRouter } from 'next/navigation';
+import exp from 'constants';
+import { useAppSelector } from '@/stores/hookStore';
+import { _GLOBAL } from '@/contstants';
 
 
 
@@ -59,9 +63,11 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   }),
 }));
 
-export default function Register() {
+const Register = () => {
+  const router = useRouter();
   const logo = '/image/logo.png'
   const [mode, setMode] = React.useState<PaletteMode>('light');
+  let [errorRegister, setErrorRegister] = React.useState('');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const defaultTheme = createTheme({ palette: { mode } });
 //   const SignUpTheme = createTheme(getSignUpTheme(mode));
@@ -71,6 +77,9 @@ export default function Register() {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [email,setEmail] = React.useState('');
+  const [password,setPassword] = React.useState('');
+  const [full_name,setName] = React.useState('');
   // This code only runs on the client side, to determine the system color preference
   React.useEffect(() => {
     // Check if there is a preferred mode in localStorage
@@ -95,12 +104,12 @@ export default function Register() {
   const toggleCustomTheme = () => {
     setShowCustomTheme((prev) => !prev);
   };
-
+  const masterStore = useAppSelector((state) => state.master);
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
-    const name = document.getElementById('name') as HTMLInputElement;
-
+    const name = document.getElementById('full_name') as HTMLInputElement;
+   
     let isValid = true;
 
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
@@ -137,12 +146,43 @@ export default function Register() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
+      full_name: data.get('full_name'),
       email: data.get('email'),
       password: data.get('password'),
     });
   };
+
+  const handleRegister = (): void => {
+    const valid: boolean = validateInputs();
+    
+    if (valid) {
+      const registerData = {
+        full_name,
+        email, 
+        password,
+    
+      };
+      
+      requestApi('auth/register', 'POST', registerData)
+        .then((res: any) => {
+          if(res.success){
+            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`); 
+          }else{
+            setErrorRegister(res.message)
+          }
+          
+          
+          // Handle successful registration, e.g., store token or redirect
+          // router.replace('/'); // Example: Redirect to home or login page
+        })
+        .catch((err: any) => {
+          console.error('Registration failed:', err.response?.data || err.message);
+          // Handle registration failure (e.g., show error message)
+        });
+    }
+  };
+
+
 
   return (
    
@@ -173,13 +213,13 @@ export default function Register() {
                 sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
               >
                 <FormControl>
-                  <FormLabel htmlFor="name">Full name</FormLabel>
+                  <FormLabel htmlFor="full_name">Full name</FormLabel>
                   <TextField
-                    autoComplete="name"
-                    name="name"
-                    required
+                    autoComplete="full_name"
+                    onChange={(val)=>{setName(val.target.value)}}
+                    name="full_name"
                     fullWidth
-                    id="name"
+                    id="full_name"
                     placeholder="Jon Snow"
                     error={nameError}
                     helperText={nameErrorMessage}
@@ -189,11 +229,11 @@ export default function Register() {
                 <FormControl>
                   <FormLabel htmlFor="email">Email</FormLabel>
                   <TextField
-                    required
                     fullWidth
                     id="email"
                     placeholder="your@email.com"
                     name="email"
+                    onChange={(val)=>{setEmail(val.target.value)}}
                     autoComplete="email"
                     variant="outlined"
                     error={emailError}
@@ -204,9 +244,9 @@ export default function Register() {
                 <FormControl>
                   <FormLabel htmlFor="password">Password</FormLabel>
                   <TextField
-                    required
                     fullWidth
                     name="password"
+                    onChange={(val)=>{setPassword(val.target.value)}}
                     placeholder="••••••"
                     type="password"
                     id="password"
@@ -217,15 +257,12 @@ export default function Register() {
                     color={passwordError ? 'error' : 'primary'}
                   />
                 </FormControl>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive updates via email."
-                />
+                {errorRegister && (<p className='text-red-600 text-center'  >{errorRegister}</p>)}
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  onClick={validateInputs}
+                  onClick={()=>handleRegister()}
                 >
                   Sign up
                 </Button>
@@ -233,38 +270,15 @@ export default function Register() {
                   Already have an account?{' '}
                   <span>
                     <Link
-                      href="/login"
-                      variant="body2"
-                      sx={{ alignSelf: 'center' }}
+                      href={`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`}
                     >
                       Sign in
                     </Link>
                   </span>
                 </Typography>
               </Box>
-              <Divider>
-                <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-              </Divider>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert('Sign up with Google')}
-                  startIcon={<GoogleIcon />}
-                >
-                  Sign up with Google
-                </Button>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert('Sign up with Facebook')}
-                  startIcon={<FacebookIcon />}
-                >
-                  Sign up with Facebook
-                </Button>
-              </Box>
+           
+            
             </Card>
           </Stack>
         </SignUpContainer>
@@ -272,3 +286,4 @@ export default function Register() {
   
   );
 }
+export default Register

@@ -12,7 +12,9 @@
         "playlist_liked":"Playlist Liked",
         "profile":"Profile",
         "setting":"Setting",
-        "account":"Account"
+        "account":"Account",
+        "login":"Login",
+        "register":"Register"
 
     } 
 }

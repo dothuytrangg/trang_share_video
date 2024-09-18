@@ -12,8 +12,6 @@ import { initialBootState } from "@/stores/features/masterSlice";
 import { useDispatch } from "react-redux";
 export default function HomePage() {
   const t = useTranslations("HomePage");
-  const dispatch = useDispatch();
-  dispatch(initialBootState());
 
   return (
     <div className="grid">
