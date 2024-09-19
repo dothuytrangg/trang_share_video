@@ -4,72 +4,54 @@ import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@emotion/react";
 import { useAppSelector } from "./stores/hookStore";
 import { PaletteMode } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { nextLocalStorage } from "./util/localStoreage";
+import { useDispatch } from "react-redux";
+import { initialBootState } from "./stores/features/masterSlice";
+import StoreProvider from "./stores/providers";
+import { makeStore, AppStore } from "./stores/store";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
 });
+makeStore().dispatch(initialBootState());
 
 export default function Theme({ children }: { children: React.ReactNode }) {
-  let defaultTheme = '';
+  let defaultTheme: any = "";
+
   let masterStore = useAppSelector((state) => state.master);
-  if(nextLocalStorage()?.getItem('master')){
-    let parseStorage = JSON.parse(nextLocalStorage()?.getItem('master') as any);
-    if(parseStorage.theme){
-      defaultTheme = parseStorage.theme;
-    }else{
+  // useEffect(() => {
+  //   defaultTheme = masterStore.theme;
+  // });
+  // if (!defaultTheme) {
+    if (nextLocalStorage()?.getItem("master")) {
+      var parseStorage = JSON.parse(nextLocalStorage()?.getItem("master") as any);
+      if (parseStorage.theme) {
+        defaultTheme = parseStorage.theme;
+      } else {
+        defaultTheme = masterStore.theme;
+      }
+    } else {
       defaultTheme = masterStore.theme;
     }
-  }else{
-    defaultTheme = masterStore.theme;
-  }
+  // }
 
-  const themeConfig = createTheme({
-    palette: {
-      mode: masterStore.theme as PaletteMode,
-      ...(masterStore.theme === 'light'
-        ? {
-          // Light mode colors
-          primary: {
-            main: '#1976d2',
-            // main: '#fff',
-          },
-          secondary: {
-            main: '#9c27b0',
-          },
-          background: {
-            default: '#f5f5f5',
-            paper: '#ffffff',
-          },
-          text: {
-            primary: '#333333',
-            secondary: '#666666',
-          },
-        }
-        : {
-          // Dark mode colors
-          primary: {
-            main: '#90caf9',
-          },
-          secondary: {
-            main: '#ce93d8',
-          },
-          background: {
-            default: '#121212',
-            paper: '#1e1e1e',
-          },
-          text: {
-            primary: '#ffffff',
-            secondary: '#b0b0b0',
-          },
-        }),
-    },
-    typography: {
-      fontFamily: roboto.style.fontFamily,
-    },
-  });
+    var themeConfig = createTheme({
+      palette: {
+        mode:defaultTheme,
+      },
+      typography: {
+        fontFamily: roboto.style.fontFamily,
+      },
+    });
 
-  return <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>;
+
+
+  return (
+  
+  <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>
+
+
+  );
 }

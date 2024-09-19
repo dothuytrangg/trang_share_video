@@ -57,8 +57,9 @@ export default function Sidebar() {
   const open = useAppSelector((state) => state.master.drawer) as boolean;
   const masterStore = useAppSelector((state) => state.master);
   const t = useTranslations("HomePage");
-
+  
   const handleToggleTheme = () => {
+    console.log('theme: ', theme);
     dispatch(changeTheme());
     dispatch(updateLocalStorage());
   };
