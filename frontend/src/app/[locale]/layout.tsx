@@ -12,6 +12,7 @@ import Sidebar from "@/components/layouts/Sidebar";
 import LoginView from "@/components/auth/login";
 import { useTranslations } from "next-intl";
 import { NextIntlClientProvider, useMessages } from "next-intl";
+import { initialBootState } from "@/stores/features/masterSlice";
 export const metadata: Metadata = {
   title: "TUN STUDIO",
   description: "TRANG UYEN",
@@ -19,7 +20,6 @@ export const metadata: Metadata = {
     icon: "/image/logo.png",
   },
 };
-
 export default function RootLayout({
   children,
   params: { locale },
@@ -29,6 +29,7 @@ export default function RootLayout({
     locale: any;
   };
 }) {
+
   const t = useTranslations("HomePage");
   const messages = useMessages();
 

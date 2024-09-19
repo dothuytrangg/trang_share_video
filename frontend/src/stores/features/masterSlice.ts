@@ -28,8 +28,8 @@ export const masterSlice = createSlice({
     initialBootState : (state) =>{
       let masterLocalStorage = nextLocalStorage()?.getItem('master');
       if(masterLocalStorage){
-        console.log('masterLocalStorage: ', masterLocalStorage);
         let parseLocalStorage = JSON.parse(masterLocalStorage);
+        console.log('parseLocalStorage: ', parseLocalStorage);
           state.theme = parseLocalStorage.theme
           state.drawer = parseLocalStorage.drawer
           state.dark = parseLocalStorage.dark
@@ -37,9 +37,10 @@ export const masterSlice = createSlice({
           state.is_login = parseLocalStorage.is_login
           state.access_token = parseLocalStorage.access_token
           state.user = parseLocalStorage.user
-      }else{
-        nextLocalStorage()?.setItem('master',JSON.stringify(initialState));
-      }
+        }else{
+          nextLocalStorage()?.setItem('master',JSON.stringify(initialState));
+        }
+
     },
     changeTheme: (state) => {
       if (state.theme == "light") {
