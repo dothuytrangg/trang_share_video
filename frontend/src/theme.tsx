@@ -15,7 +15,6 @@ const roboto = Roboto({
   subsets: ["latin"],
   display: "swap",
 });
-makeStore().dispatch(initialBootState());
 
 export default function Theme({ children }: { children: React.ReactNode }) {
   let defaultTheme: any = "";

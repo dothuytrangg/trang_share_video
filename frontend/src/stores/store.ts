@@ -1,4 +1,3 @@
-'use client';
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import  masterSlice, { initialBootState }  from "./features/masterSlice";

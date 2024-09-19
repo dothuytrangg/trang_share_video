@@ -9,7 +9,8 @@ const initialState = {
   theme: "light",
   drawer: true,
   dark: false,
-  lang: _GLOBAL.VN,
+  lang: '',
+  teo: '',
   is_login:false,
   access_token:'',
   user:''
@@ -58,6 +59,8 @@ export const masterSlice = createSlice({
     },
     changeLanguage: (state, action) => {
       state.lang = action.payload;
+      state.teo = action.payload;
+      console.log(' state.lang: ',  state.lang);
     },
     updateLocalStorage: (state:any)=>{
       nextLocalStorage()?.setItem('master',JSON.stringify(state));

@@ -5,14 +5,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 
 import Image from "next/image";
 import { Button, InputBase, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
+import React, { useEffect } from "react";
 import { AccountCircle } from "@mui/icons-material";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -44,8 +44,10 @@ export default function Navbar() {
   const logo = "/image/logo_text.png";
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const open = useAppSelector((state) => state.master.drawer) as boolean;
-  const masterStore = useAppSelector((state) => state.master);
+  // const open = useAppSelector((state) => state.master.drawer) as boolean;
+  const masterStore = useAppSelector((state:any) => state.master);
+  
+
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
     dispatch(updateLocalStorage());
@@ -74,13 +76,14 @@ export default function Navbar() {
       pathNameSpilt[0] = lang;
       url = pathNameSpilt.join("/");
     }
+    // router.replace(`/${url}`);
     dispatch(changeLanguage(lang))
-    dispatch(updateLocalStorage());
-    router.push(`/${url}`);
   };
 
  const handleRedirectAuthenPage = () =>{
-    router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`)
+   console.log('masterStore.lang: ', masterStore.lang);
+   console.log('masterStore navbar: ', masterStore);
+    // router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`)
   }
 
   const Search = styled("div")(({ theme }) => ({
