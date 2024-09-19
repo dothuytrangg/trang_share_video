@@ -5,18 +5,18 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { changeLanguage, toggleDrawer } from "@/stores/features/masterSlice";
+import { changeLanguage, initialBootState, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 
 import Image from "next/image";
-import { InputBase, Menu, MenuItem } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
+import React, { useEffect } from "react";
 import { AccountCircle } from "@mui/icons-material";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { useRouter, usePathname, useParams, useSearchParams } from "next/navigation";
+import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
 import { format } from "path";
 import { _GLOBAL } from "@/contstants";
 
@@ -44,11 +44,13 @@ export default function Navbar() {
   const logo = "/image/logo_text.png";
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const open = useAppSelector((state) => state.master.drawer) as boolean;
-  const masterStore = useAppSelector((state) => state.master);
+  // const open = useAppSelector((state) => state.master.drawer) as boolean;
+  const masterStore = useAppSelector((state:any) => state.master);
+  
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
+    dispatch(updateLocalStorage());
   };
 
   const [auth, setAuth] = React.useState(true);
@@ -74,9 +76,15 @@ export default function Navbar() {
       pathNameSpilt[0] = lang;
       url = pathNameSpilt.join("/");
     }
-    dispatch(changeLanguage(lang))
+    dispatch(changeLanguage(locale))
     router.push(`/${url}`);
   };
+
+ const handleRedirectAuthenPage = () =>{
+   console.log('masterStore.lang: ', masterStore.lang);
+   console.log('masterStore navbar: ', masterStore);
+    router.push(`/${locale}/${_GLOBAL.ROUTER_LOGIN}`)
+  }
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -131,8 +139,9 @@ export default function Navbar() {
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
+          <StyledInputBase placeholder={t('search')+ "..."} inputProps={{ "aria-label": "search" }} />
         </Search>
+        <Button color="secondary" onClick={handleRedirectAuthenPage} variant="outlined">{t('login')} & {t('register')}</Button>
         {auth && (
           <div>
             <IconButton

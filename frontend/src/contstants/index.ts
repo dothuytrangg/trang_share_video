@@ -4,7 +4,10 @@ const _GLOBAL = {
     VN:'vn',
     DEFAULT_LANG:'vn',
     DARK:'dark',
-    LIGHT:'light'
+    LIGHT:'light',
+    DEFAULT_THEME:'light',
+    ROUTER_LOGIN:'login',
+    ROUTER_REGISTER:'register',
 }
 
 

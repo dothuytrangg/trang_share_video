@@ -6,12 +6,13 @@ import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
 import MuiDrawer from "@mui/material/Drawer";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores/hookStore";
-import { changeTheme, toggleDrawer } from "@/stores/features/masterSlice";
+import { changeTheme, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import PlaylistPlay from "@mui/icons-material/PlaylistPlay";
 import History from "@mui/icons-material/History";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
+import { redirect, useRouter } from "next/navigation";
 
 const drawerWidth = 200;
 
@@ -57,10 +58,19 @@ export default function Sidebar() {
   const open = useAppSelector((state) => state.master.drawer) as boolean;
   const masterStore = useAppSelector((state) => state.master);
   const t = useTranslations("HomePage");
-
+  const router = useRouter();
+  const locale = useLocale();
+  
   const handleToggleTheme = () => {
+    console.log('theme: ', theme);
     dispatch(changeTheme());
+    dispatch(updateLocalStorage());
   };
+
+  const redirectHome = ()=>{
+    console.log("teo")
+    router.replace(`/${locale}`)
+  }
 
   const textTheme = () => {
     let result = "";
@@ -88,9 +98,9 @@ export default function Sidebar() {
       <div className="mt-2"></div>
       <List>
         <ListItem className="my-1" key={1} disablePadding sx={{ display: "block" }}>
-          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemButton onClick={redirectHome} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <HomeIcon fontSize="medium"></HomeIcon>
-            <ListItemText className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
+            <ListItemText  className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
           <ListItemButton onClick={handleToggleTheme} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             {masterStore.theme === _GLOBAL.DARK ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}

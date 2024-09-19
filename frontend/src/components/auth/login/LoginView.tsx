@@ -9,7 +9,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
+import Link from 'next/link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -26,6 +26,9 @@ import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import requestApi from '../../../../helpers/api';
+import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
+import { _GLOBAL } from '@/contstants';
+import { loginSuccess, updateLocalStorage } from '@/stores/features/masterSlice';
 
 
 
@@ -68,8 +71,10 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 const LoginView = () => {
   const logo = '/image/logo.png';
   const router = useRouter();
-
+  const masterStore = useAppSelector((state) => state.master);
+  let [errorLogin, setErrorLogin] = React.useState('');
     const [showCustomTheme, setShowCustomTheme] = React.useState(true);
+    const dispatch = useAppDispatch();
     // const defaultTheme = createTheme({ palette: { mode } });
     // const SignInTheme = createTheme(getSignInTheme(mode));
     const [emailError, setEmailError] = React.useState(false);
@@ -77,7 +82,7 @@ const LoginView = () => {
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [open, setOpen] = React.useState(false);
-    const [email,setEmail] = React.useState('trang022@gmail.com');
+    const [email,setEmail] = React.useState('trangthuy02@gmail.com');
     const [password,setPassword] = React.useState('123456');
 
 
@@ -155,11 +160,15 @@ const LoginView = () => {
         
         requestApi('auth/login', 'POST', loginData)
           .then((res: any) => {
-            console.log('Login successful:', res);
-            
-
-            // Handle successful login, e.g., store token or redirect
-            router.replace('/'); // Example: Redirect to home
+            if(res.success){
+             
+              setErrorLogin('');
+              dispatch(loginSuccess({...res}))
+              dispatch(updateLocalStorage())
+              router.replace(`/${masterStore.lang}`); 
+            }else{
+              setErrorLogin(res.message)
+            }
           })
           .catch((err: any) => {
             console.error('Login failed:', err.response?.data || err.message);
@@ -219,17 +228,7 @@ const LoginView = () => {
               />
             </FormControl>
             <FormControl>
-              {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <Link
-                  component="button"
-                  onClick={handleClickOpen}
-                  variant="body2"
-                  sx={{ alignSelf: 'baseline' }}
-                >
-                  Forgot your password?
-                </Link>
-              </Box> */}
+             
               <TextField
                 value={password}
                 onChange={(val)=>{setPassword(val.target.value)}}
@@ -247,11 +246,8 @@ const LoginView = () => {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
              <ForgotPassword open={open} handleClose={handleClose} />
+             {errorLogin != '' && (<p className='text-red-600 text-center'  >{errorLogin}</p>)}
             <Button
               type="submit"
               fullWidth
@@ -263,18 +259,16 @@ const LoginView = () => {
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
-              <span>
+              <span >
                 <Link
-                  href="/register"
-                  variant="body2"
-                  sx={{ alignSelf: 'center' }}
+                  className="text-blue-600 underline"
+                  href={`/${masterStore.lang}/${_GLOBAL.ROUTER_REGISTER}`}
                 >
                   Sign up
                 </Link>
               </span>
             </Typography>
           </Box>
-          <Divider>or</Divider>
           {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               type="submit"

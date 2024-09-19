@@ -4,7 +4,9 @@ import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@emotion/react";
 import { useAppSelector } from "./stores/hookStore";
 import { PaletteMode } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { nextLocalStorage } from "./util/localStoreage";
+import { _GLOBAL } from "./contstants";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
@@ -12,51 +14,35 @@ const roboto = Roboto({
 });
 
 export default function Theme({ children }: { children: React.ReactNode }) {
+  
+  let defaultTheme = _GLOBAL.DEFAULT_THEME;
+  let [mode, setMode] = useState(defaultTheme);
   const masterStore = useAppSelector((state) => state.master);
-  const themeConfig = createTheme({
-    palette: {
-      mode: masterStore.theme as PaletteMode,
-      ...(masterStore.theme === 'light'
-        ? {
-          // Light mode colors
-          primary: {
-            // main: '#1976d2',
-            main: '#fff',
-          },
-          secondary: {
-            main: '#9c27b0',
-          },
-          background: {
-            default: '#f5f5f5',
-            paper: '#ffffff',
-          },
-          text: {
-            primary: '#333333',
-            secondary: '#666666',
-          },
-        }
-        : {
-          // Dark mode colors
-          primary: {
-            main: '#90caf9',
-          },
-          secondary: {
-            main: '#ce93d8',
-          },
-          background: {
-            default: '#121212',
-            paper: '#1e1e1e',
-          },
-          text: {
-            primary: '#ffffff',
-            secondary: '#b0b0b0',
-          },
-        }),
-    },
-    typography: {
-      fontFamily: roboto.style.fontFamily,
-    },
-  });
+
+    let masterLocal;
+    if (global?.window !== undefined) {
+      masterLocal = window?.localStorage?.getItem("master");
+    }
+      
+    if (masterLocal) {
+      let parseLocal = JSON.parse(masterLocal);
+      defaultTheme = parseLocal.theme;
+    }
+  
+    useEffect(() => {
+      setMode(masterStore.theme);
+      console.log("mode: ", mode);
+    }, [masterStore]);
+    const themeConfig = createTheme({
+      palette: {
+        mode: mode as PaletteMode,
+      },
+      typography: {
+        fontFamily: roboto.style.fontFamily,
+      },
+    });
+  
+
 
   return <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>;
 }

@@ -12,7 +12,6 @@ import Sidebar from "@/components/layouts/Sidebar";
 import LoginView from "@/components/auth/login";
 import { useTranslations } from "next-intl";
 import { NextIntlClientProvider, useMessages } from "next-intl";
-// import { useRouter } from "next/router";
 export const metadata: Metadata = {
   title: "TUN STUDIO",
   description: "TRANG UYEN",
@@ -20,8 +19,7 @@ export const metadata: Metadata = {
     icon: "/image/logo.png",
   },
 };
-
-export default  function RootLayout({
+export default function RootLayout({
   children,
   params: { locale },
 }: {
@@ -33,10 +31,9 @@ export default  function RootLayout({
   const t = useTranslations("HomePage");
   const messages = useMessages();
 
- 
   // console.log("theme: ", theme);
   return (
-    <html lang={locale}  suppressHydrationWarning={true}>
+    <html lang={locale} suppressHydrationWarning={true}>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <body suppressHydrationWarning={true} className={inter.className}>
           <StoreProvider>
@@ -44,7 +41,7 @@ export default  function RootLayout({
               <AppRouterCacheProvider>
                 <CssBaseline />
                 <Box sx={{ display: "flex" }}>
-                  <Navbar ></Navbar>
+                  <Navbar></Navbar>
                   <Sidebar></Sidebar>
                   <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 5 }}>
                     {children}

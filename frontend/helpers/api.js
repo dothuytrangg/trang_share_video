@@ -8,6 +8,33 @@ export default function requestApi(endpoint ,method,body,responseType = 'json') 
     }
     const instance = axios.create({headers});
 
+    instance.interceptors.request.use(
+        (config) => {
+        //   const authStore = encryptStorage.getItem("auth");
+        //   if (authStore) {
+        //     if (authStore.accessToken) {
+        //       config.headers["Authorization"] = "Bearer " + authStore.accessToken;
+        //     }
+        //   }
+      
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+      
+      instance.interceptors.response.use(
+        (config) => {
+          return config?.data || { success: false, statusCode: 401 };
+        },
+        (error) => {
+          console.log(error);
+          return { success: false };
+        }
+      );
+      
+
     return instance.request({
         method:method,
         url:`http://localhost:2070/${endpoint}`,
