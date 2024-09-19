@@ -259,9 +259,9 @@ const LoginView = () => {
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
-              <span>
+              <span >
                 <Link
-                color="textPrimary"
+                  className="text-blue-600 underline"
                   href={`/${masterStore.lang}/${_GLOBAL.ROUTER_REGISTER}`}
                 >
                   Sign up

@@ -14,7 +14,8 @@
         "setting":"Setting",
         "account":"Account",
         "login":"Login",
-        "register":"Register"
+        "register":"Register",
+        "search":"Search" 
 
     } 
 }

@@ -136,7 +136,7 @@ export default function Navbar() {
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
+          <StyledInputBase placeholder={t('search')+ "..."} inputProps={{ "aria-label": "search" }} />
         </Search>
         <Button color="secondary" onClick={handleRedirectAuthenPage} variant="outlined">{t('login')} & {t('register')}</Button>
         {auth && (

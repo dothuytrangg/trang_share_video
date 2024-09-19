@@ -263,6 +263,7 @@ const Register = () => {
                   fullWidth
                   variant="contained"
                   onClick={()=>handleRegister()}
+                  
                 >
                   Sign up
                 </Button>
@@ -270,7 +271,9 @@ const Register = () => {
                   Already have an account?{' '}
                   <span>
                     <Link
+                      className="text-blue-600 underline"
                       href={`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`}
+                      
                     >
                       Sign in
                     </Link>

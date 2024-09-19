@@ -89,7 +89,7 @@ export default function Sidebar() {
       <div className="mt-2"></div>
       <List>
         <ListItem className="my-1" key={1} disablePadding sx={{ display: "block" }}>
-          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemButton href="/" sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <HomeIcon fontSize="medium"></HomeIcon>
             <ListItemText className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
