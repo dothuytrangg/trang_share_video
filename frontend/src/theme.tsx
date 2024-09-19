@@ -6,10 +6,7 @@ import { useAppSelector } from "./stores/hookStore";
 import { PaletteMode } from "@mui/material";
 import { useEffect, useState } from "react";
 import { nextLocalStorage } from "./util/localStoreage";
-import { useDispatch } from "react-redux";
-import { initialBootState } from "./stores/features/masterSlice";
-import StoreProvider from "./stores/providers";
-import { makeStore, AppStore } from "./stores/store";
+import { _GLOBAL } from "./contstants";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
@@ -17,40 +14,35 @@ const roboto = Roboto({
 });
 
 export default function Theme({ children }: { children: React.ReactNode }) {
-  let defaultTheme: any = "";
+  
+  let defaultTheme = _GLOBAL.DEFAULT_THEME;
+  let [mode, setMode] = useState(defaultTheme);
+  const masterStore = useAppSelector((state) => state.master);
 
-  let masterStore = useAppSelector((state) => state.master);
-  // useEffect(() => {
-  //   defaultTheme = masterStore.theme;
-  // });
-  // if (!defaultTheme) {
-    if (nextLocalStorage()?.getItem("master")) {
-      var parseStorage = JSON.parse(nextLocalStorage()?.getItem("master") as any);
-      if (parseStorage.theme) {
-        defaultTheme = parseStorage.theme;
-      } else {
-        defaultTheme = masterStore.theme;
-      }
-    } else {
-      defaultTheme = masterStore.theme;
+    let masterLocal;
+    if (global?.window !== undefined) {
+      masterLocal = window?.localStorage?.getItem("master");
     }
-  // }
-
-    var themeConfig = createTheme({
+      
+    if (masterLocal) {
+      let parseLocal = JSON.parse(masterLocal);
+      defaultTheme = parseLocal.theme;
+    }
+  
+    useEffect(() => {
+      setMode(masterStore.theme);
+      console.log("mode: ", mode);
+    }, [masterStore]);
+    const themeConfig = createTheme({
       palette: {
-        mode:defaultTheme,
+        mode: mode as PaletteMode,
       },
       typography: {
         fontFamily: roboto.style.fontFamily,
       },
     });
-
-
-
-  return (
   
-  <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>
 
 
-  );
+  return <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>;
 }

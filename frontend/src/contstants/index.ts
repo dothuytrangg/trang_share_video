@@ -5,6 +5,7 @@ const _GLOBAL = {
     DEFAULT_LANG:'vn',
     DARK:'dark',
     LIGHT:'light',
+    DEFAULT_THEME:'light',
     ROUTER_LOGIN:'login',
     ROUTER_REGISTER:'register',
 }

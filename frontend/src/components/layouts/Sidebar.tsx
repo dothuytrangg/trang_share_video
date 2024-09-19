@@ -10,7 +10,7 @@ import { changeTheme, toggleDrawer, updateLocalStorage } from "@/stores/features
 import PlaylistPlay from "@mui/icons-material/PlaylistPlay";
 import History from "@mui/icons-material/History";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import { redirect, useRouter } from "next/navigation";
 
@@ -59,6 +59,7 @@ export default function Sidebar() {
   const masterStore = useAppSelector((state) => state.master);
   const t = useTranslations("HomePage");
   const router = useRouter();
+  const locale = useLocale();
   
   const handleToggleTheme = () => {
     console.log('theme: ', theme);
@@ -68,7 +69,7 @@ export default function Sidebar() {
 
   const redirectHome = ()=>{
     console.log("teo")
-    router.replace(`/${masterStore.lang}`)
+    router.replace(`/${locale}`)
   }
 
   const textTheme = () => {

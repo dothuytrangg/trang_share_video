@@ -9,7 +9,7 @@ const initialState = {
   theme: "light",
   drawer: true,
   dark: false,
-  lang: '',
+  lang: 'vn',
   teo: '',
   is_login:false,
   access_token:'',
@@ -58,7 +58,7 @@ export const masterSlice = createSlice({
 
     },
     changeLanguage: (state, action) => {
-      state.lang = action.payload;
+      state.lang = 'en';
       state.teo = action.payload;
       console.log(' state.lang: ',  state.lang);
     },

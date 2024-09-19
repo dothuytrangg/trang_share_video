@@ -76,14 +76,14 @@ export default function Navbar() {
       pathNameSpilt[0] = lang;
       url = pathNameSpilt.join("/");
     }
-    // router.replace(`/${url}`);
-    dispatch(changeLanguage(lang))
+    dispatch(changeLanguage(locale))
+    router.push(`/${url}`);
   };
 
  const handleRedirectAuthenPage = () =>{
    console.log('masterStore.lang: ', masterStore.lang);
    console.log('masterStore navbar: ', masterStore);
-    // router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`)
+    router.push(`/${locale}/${_GLOBAL.ROUTER_LOGIN}`)
   }
 
   const Search = styled("div")(({ theme }) => ({
