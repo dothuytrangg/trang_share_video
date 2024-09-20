@@ -3,31 +3,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
 @Entity()
-export class User {
+export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  full_name: string;
+  name: string;
 
 
   @Column()
-  email: string;
+  description: string;
   
-  @Column()
-  password: string;
-
-  @Column({default:1})
-  role:number
-
-
+    
   @Column({nullable:true, default: null})
-  refresh_token: string;
-
-  
-  @Column({nullable:true, default: null})
-  avatar: string;
-
+  slug: string;
 
   @Column({ default:1 })
   status: number;

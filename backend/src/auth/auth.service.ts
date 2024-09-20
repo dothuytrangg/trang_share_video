@@ -73,7 +73,7 @@ export class AuthService {
         responseUser = {...response};
         responseUser.token = token.access_token;
         responseUser.user = {
-            id: user.id, email: user.email, name:user.full_name
+            id: user.id, email: user.email, name:user.full_name, role:user.role
         }
         return responseUser;
     }
@@ -108,8 +108,8 @@ export class AuthService {
   private async generateToken(payload: { id: number; email: string}) {
     const access_token = await this.jwtService.signAsync(payload);
     const refresh_token = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('SECRET'),
-      expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN'),
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRE'),
     });
     await this.userRepository.update(
       { email: payload.email },

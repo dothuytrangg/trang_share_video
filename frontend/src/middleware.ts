@@ -1,22 +1,44 @@
-import createMiddleware from 'next-intl/middleware';
-import { _GLOBAL } from './contstants';
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-export default createMiddleware({
-  // A list of all locales that are supported
-  locales: ['en', 'vn'],
- 
-  // Used when no locale matches
-  defaultLocale: _GLOBAL.DEFAULT_LANG
+import createMiddleware from "next-intl/middleware";
+import { withAuth } from "next-auth/middleware";
+import { NextRequest, NextResponse } from "next/server";
+import NotPermission from "./app/not-permission";
+
+export const locales = ["en", "vn"] as const;
+
+const intlMiddleware = createMiddleware({
+  locales: locales,
+  defaultLocale: "vn",
+  localeDetection: false,
 });
 
-// export function middleware(request: NextRequest) {
-//   console.log(request)
-//   return  NextResponse.next()
-//   // return NextResponse.redirect(new URL('/home', request.url))
-// }
- 
+const authMiddleware = withAuth(
+  function onSuccess(req) {
+    return intlMiddleware(req);
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => token != null,
+    },
+    pages: {
+      signIn: "/",
+    },
+  }
+);
+
+export default function middleware(req: NextRequest) {
+  const excludePattern = "^(/(" + locales.join("|") + "))?/admin/?.*?$";
+
+  const publicPathnameRegex = RegExp(excludePattern, "i");
+
+  const isPublicPage = !publicPathnameRegex.test(req.nextUrl.pathname);
+
+  if (isPublicPage) {
+    return intlMiddleware(req);
+  } else {
+    return NextResponse.redirect(new URL('/errors/permission', req.url))
+  }
+}
+
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/', '/(vn|en)/:path*']
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 };

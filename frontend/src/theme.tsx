@@ -31,12 +31,15 @@ export default function Theme({ children }: { children: React.ReactNode }) {
   
     useEffect(() => {
       setMode(masterStore.theme);
-      console.log("mode: ", mode);
     }, [masterStore]);
     const themeConfig = createTheme({
       palette: {
         mode: mode as PaletteMode,
+        secondary: {
+          main: '#fff',
+        },
       },
+     
       typography: {
         fontFamily: roboto.style.fontFamily,
       },
