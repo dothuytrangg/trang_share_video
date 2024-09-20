@@ -1,7 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import { withAuth } from "next-auth/middleware";
 import { NextRequest, NextResponse } from "next/server";
-import NotPermission from "./app/not-permission";
 
 export const locales = ["en", "vn"] as const;
 
