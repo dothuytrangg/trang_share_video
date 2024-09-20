@@ -7,13 +7,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import { useDispatch, useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { changeLanguage, initialBootState, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
-
+import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
+import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import React, { useEffect } from "react";
-import { AccountCircle } from "@mui/icons-material";
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import React, { useEffect, useState } from "react";
+import { AccountCircle, TextFields } from "@mui/icons-material";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
@@ -45,24 +46,25 @@ export default function Navbar() {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   // const open = useAppSelector((state) => state.master.drawer) as boolean;
-  const masterStore = useAppSelector((state:any) => state.master);
-  
+  const masterStore = useAppSelector((state: any) => state.master);
+  const [isLogin, setIsLogin] = useState(false)
+  const [loading, setLoading] = useState(true)
+ 
+
+  useEffect(() => {
+    setIsLogin(masterStore.is_login)
+    setLoading(masterStore.loading)
+    }, [masterStore])
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
     dispatch(updateLocalStorage());
   };
 
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAuth(event.target.checked);
-  };
 
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -70,7 +72,7 @@ export default function Navbar() {
 
   const handleChangeLanguage = async () => {
     let pathNameSpilt = pathName.split("/").filter((x) => x);
-    let lang:any = (locale == _GLOBAL.EN ? _GLOBAL.VN : _GLOBAL.EN);
+    let lang: any = (locale == _GLOBAL.EN ? _GLOBAL.VN : _GLOBAL.EN);
     let url = "";
     if (pathNameSpilt[0] == _GLOBAL.EN || pathNameSpilt[0] == _GLOBAL.VN) {
       pathNameSpilt[0] = lang;
@@ -80,103 +82,103 @@ export default function Navbar() {
     router.push(`/${url}`);
   };
 
- const handleRedirectAuthenPage = () =>{
-   console.log('masterStore.lang: ', masterStore.lang);
-   console.log('masterStore navbar: ', masterStore);
+  const handleRedirectAuthenPage = () => {
     router.push(`/${locale}/${_GLOBAL.ROUTER_LOGIN}`)
   }
 
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(3),
-      width: "auto",
-    },
-  }));
 
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }));
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const renderButtonThreeDot = () => {
+    if (!isLogin) {
+      return <IconButton
+        size="large"
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleClick}
+        color="inherit"
+      >
+        <MoreVertOutlinedIcon />
+      </IconButton>
+    }
+  }
+  const handleLogout = () =>{
+    dispatch(logout())
+    dispatch(updateLocalStorage())
+    router.push(`${locale}`)
+  }
 
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    "& .MuiInputBase-input": {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create("width"),
-      width: "100%",
-      [theme.breakpoints.up("md")]: {
-        width: "20ch",
-      },
-    },
-  }));
+  const renderButtonAcction = () => {
+    if (!isLogin) {
+      return <Button onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
+        {t('login')}
+      </Button>
+    } else {
+      return  <Button onClick={handleClick} variant="outlined" startIcon={<AccountCircle />}>
+        {masterStore.user.name}
+      </Button>
+    }
+  }
   return (
-    <AppBar position="fixed">
-      <Toolbar>
-        <IconButton color="inherit" aria-label="open drawer" onClick={handleToggleDrawer} edge="start">
-          <MenuIcon />
-        </IconButton>
+    <Box >
+      <AppBar color="secondary" position="fixed">
+        <Toolbar>
+          <IconButton sx={{ mr: 2 }} color="inherit" aria-label="open drawer" onClick={handleToggleDrawer} edge="start">
+            <MenuIcon />
+          </IconButton>
+                <Typography variant="inherit" color="inherit" component="div" >
+              <Image src={logo} alt="Picture of the author" width={70} height={50}></Image>
+            </Typography>
+            <Box sx={{ flexGrow: 0.5 }} />
+   
+            <TextField
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+              size="small"
+              style = {{width: 500}}
+              placeholder={t('search') + "..."}
+              
+            />
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton
+            onClick={handleClick}
+            size="small"
+            sx={{ ml: 2 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+          </IconButton>
 
-        <Typography variant="inherit" color="inherit" component="div" sx={{ flexGrow: 1 }}>
-          <Image src={logo} alt="Picture of the author" width={70} height={50}></Image>
-        </Typography>
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase placeholder={t('search')+ "..."} inputProps={{ "aria-label": "search" }} />
-        </Search>
-        <Button color="secondary" onClick={handleRedirectAuthenPage} variant="outlined">{t('login')} & {t('register')}</Button>
-        {auth && (
-          <div>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleClose}>{t('profile')}</MenuItem>
-              <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
-              <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
-              <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
-            </Menu>
-          </div>
-        )}
-      </Toolbar>
-    </AppBar>
+          {renderButtonThreeDot()}
+
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
+
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem className="px-5" onClick={handleClose}>{t('profile')}</MenuItem>
+            <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
+            <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
+            <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
+            <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
+          </Menu>
+          {renderButtonAcction()}
+
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 }

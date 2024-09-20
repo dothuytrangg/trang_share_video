@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import exp from 'constants';
 import { useAppSelector } from '@/stores/hookStore';
 import { _GLOBAL } from '@/contstants';
+import { useLocale } from 'next-intl';
 
 
 
@@ -80,6 +81,7 @@ const Register = () => {
   const [email,setEmail] = React.useState('');
   const [password,setPassword] = React.useState('');
   const [full_name,setName] = React.useState('');
+  const locale = useLocale();
   // This code only runs on the client side, to determine the system color preference
   React.useEffect(() => {
     // Check if there is a preferred mode in localStorage
@@ -272,7 +274,7 @@ const Register = () => {
                   <span>
                     <Link
                       className="text-blue-600 underline"
-                      href={`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`}
+                      href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`}
                       
                     >
                       Sign in

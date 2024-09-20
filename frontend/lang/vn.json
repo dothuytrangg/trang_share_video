@@ -13,8 +13,12 @@
         "profile":"Thông tin",
         "setting":"Thiết lập",
         "account":"Tài khoản",
-         "login":"Đăng Nhập",
+        "login":"Đăng Nhập",
         "register":"Đăng Kí",
-        "search":"Tìm kiếm" 
+        "logout":"Đăng xuất",
+        "search":"Tìm kiếm" ,
+        "management_account":"Quản lí tài khoản",
+        "management_category":"Quản lí danh mục"
+
     } 
 }

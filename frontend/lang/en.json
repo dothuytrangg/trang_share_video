@@ -1,21 +1,23 @@
 {
-    "HomePage":{
-        "home":"Home",
-        "theme":"Theme",
-        "light":"Light",
-        "dark":"Dark",
-        "language":"Language",
-        "en":"English",
-        "vn":"Vietnames",
-        "playlist":"PlayList",
-        "playlist_history":"Playlist History",
-        "playlist_liked":"Playlist Liked",
-        "profile":"Profile",
-        "setting":"Setting",
-        "account":"Account",
-        "login":"Login",
-        "register":"Register",
-        "search":"Search" 
-
-    } 
+  "HomePage": {
+    "home": "Home",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "en": "English",
+    "vn": "Vietnames",
+    "playlist": "PlayList",
+    "playlist_history": "Playlist History",
+    "playlist_liked": "Playlist Liked",
+    "profile": "Profile",
+    "setting": "Setting",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "search": "Search",
+   "management_category": "Category Management",
+    "management_account": "Account Magement"
+  }
 }

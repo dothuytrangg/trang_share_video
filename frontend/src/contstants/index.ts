@@ -8,6 +8,9 @@ const _GLOBAL = {
     DEFAULT_THEME:'light',
     ROUTER_LOGIN:'login',
     ROUTER_REGISTER:'register',
+    ROUTE_ADMIN:'admin',
+    ROUTE_ADMIN_CATEGORY:'category',
+    ROUTE_ADMIN_ACCOUNT:'account',
 }
 
 

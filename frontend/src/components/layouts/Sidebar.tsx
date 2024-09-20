@@ -1,5 +1,5 @@
 "use client";
-import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme, useTheme } from "@mui/material";
+import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme, useTheme, Tooltip } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
@@ -13,7 +13,9 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import { redirect, useRouter } from "next/navigation";
-
+import CategoryIcon from '@mui/icons-material/Category';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useState } from "react";
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -60,21 +62,22 @@ export default function Sidebar() {
   const t = useTranslations("HomePage");
   const router = useRouter();
   const locale = useLocale();
-  
+  // const [widthSideBar, setWidthSideBar] = useState(300)
+
   const handleToggleTheme = () => {
-    console.log('theme: ', theme);
+    console.log("theme: ", theme);
     dispatch(changeTheme());
     dispatch(updateLocalStorage());
   };
 
-  const redirectHome = ()=>{
-    console.log("teo")
-    router.replace(`/${locale}`)
-  }
+  const redirectHome = () => {
+    console.log("teo");
+    router.replace(`/${locale}`);
+  };
 
   const textTheme = () => {
     let result = "";
-    console.log(' (masterStore.lang : ',  (masterStore.lang ))
+    console.log(" (masterStore.lang : ", masterStore.lang);
     if (masterStore.lang == _GLOBAL.EN) {
       console.log("masterStore.theme == _GLOBAL.DARK: ", masterStore.theme == _GLOBAL.DARK);
       if (masterStore.theme == _GLOBAL.DARK) {
@@ -91,34 +94,80 @@ export default function Sidebar() {
     }
     return result;
   };
+  const widthSideBar = () => {
+    if (masterStore.drawer) {
+      if (locale == _GLOBAL.EN) {
+        return 240
+      } else {
+        return 200
+      }
+    }
+
+  }
   return (
-    <Drawer variant="permanent" open={open}>
+    <Drawer sx={{
+      width: widthSideBar(),
+      flexShrink: 0,
+      '& .MuiDrawer-paper': {
+        width: widthSideBar(),
+        boxSizing: 'border-box',
+      },
+
+    }} variant="permanent" open={open}>
       <br />
       <br />
       <div className="mt-2"></div>
       <List>
         <ListItem className="my-1" key={1} disablePadding sx={{ display: "block" }}>
           <ListItemButton onClick={redirectHome} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <HomeIcon fontSize="medium"></HomeIcon>
-            <ListItemText  className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
+            <Tooltip title={t("home")} placement="right-start">
+              <HomeIcon fontSize="medium"></HomeIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
           <ListItemButton onClick={handleToggleTheme} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            {masterStore.theme === _GLOBAL.DARK ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}
-            <ListItemText className={open ? "mx-3" : ""} primary={t('theme')} sx={{ opacity: open ? 1 : 0 }} />
+            <Tooltip title={t("theme")} placement="right-start">
+              {masterStore.theme === _GLOBAL.DARK ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("theme")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
           <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <PlaylistPlay></PlaylistPlay>
-            <ListItemText className={open ? "mx-3" : ""} primary={t('playlist')} sx={{ opacity: open ? 1 : 0 }} />
+            <Tooltip title={t("playlist")} placement="right-start">
+              <PlaylistPlay></PlaylistPlay>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
           <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <History></History>
-            <ListItemText className={open ? "mx-3" : ""} primary={t('playlist_history')} sx={{ opacity: open ? 1 : 0 }} />
+            <Tooltip title={t("playlist_history")} placement="right-start">
+              <History></History>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_history")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
           <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <ThumbUpOffAltIcon></ThumbUpOffAltIcon>
-            <ListItemText className={open ? "mx-3" : ""} primary={t('playlist_liked')} sx={{ opacity: open ? 1 : 0 }} />
+            <Tooltip title={t("playlist_liked")} placement="right-start">
+              <ThumbUpOffAltIcon></ThumbUpOffAltIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
+          }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_category")} placement="right-start">
+              <CategoryIcon></CategoryIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_category")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_ACCOUNT}`)
+          }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_account")} placement="right-start">
+              <AccountCircleIcon></AccountCircleIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_account")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
         </ListItem>
       </List>
