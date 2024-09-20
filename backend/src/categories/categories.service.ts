@@ -1,26 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
+import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
+import { Category } from 'src/categories/entities/categories.entity';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
-  }
+    constructor(@InjectRepository(Category) private categoryRepository:Repository<Category>){}
+    
+    async findAll():Promise<Category[]>{
+        return await this.categoryRepository.find({
+            select:['id','name','description','slug','status','created_at','updated_at']
+        })
+    }
+    // async findAll(query:FilterUserDto):Promise<any>{
+    //     const items_per_page = Number(query.items_per_page) || 10;
+    //     const page = Number(query.page) || 1;
+    //     const skip = (page - 1)* items_per_page;
+    //     const keyword = query.search || '';
+    //     const [res, total] = await this.userRepository.findAndCount({
+    //         where:[
+    //             {full_name: Like('%' + keyword + '%')},
+    //             {email: Like('%' + keyword + '%')},
 
-  findAll() {
-    return `This action returns all categories`;
-  }
+    //         ],
+    //         order: {created_at:"DESC"},
+    //         take:items_per_page,
+    //         skip:skip,
+    //         select:['id','full_name','email','status','created_at','updated_at']
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
+    //     })
+    //     const lastPage = Math.ceil(total / items_per_page);
+    //     const nextPage = page + 1 > lastPage ? null : page + 1;
+    //     const prevPage = page - 1 < 1 ? null : page - 1;
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
+    //     return {
+    //         data: res,
+    //         total,
+    //         currenPage:page,
+    //         nextPage,
+    //         prevPage,
+    //         lastPage
+    //     }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
-  }
+    // }
+
+
+    async findOne(id:number):Promise<Category>{
+        return await this.categoryRepository.findOneBy({id});
+    }
+
+    async create(createCategoryDto:CreateCategoryDto):Promise<Category>{
+        return await this.categoryRepository.save(createCategoryDto);
+    }
+    async update(id:number,updateCategoryDto:UpdateCategoryDto):Promise<UpdateResult>{
+        return await this.categoryRepository.update(id,updateCategoryDto);
+    }
+
+    async delete(id:number):Promise<DeleteResult>{
+        return await this.categoryRepository.delete(id);
+    }
+
 }
