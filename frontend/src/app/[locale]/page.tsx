@@ -10,9 +10,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/stores/hookStore";
 import { initialBootState } from "@/stores/features/masterSlice";
 import { useDispatch } from "react-redux";
+import { cookies } from "next/headers";
 export default function HomePage() {
   const t = useTranslations("HomePage");
-
+  
   return (
     <div className="grid">
     

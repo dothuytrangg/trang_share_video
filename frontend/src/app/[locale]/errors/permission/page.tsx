@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import { NextPage } from 'next';
 import { makeStore } from '@/stores/store';
 import { useEffect } from 'react';
+import Link from 'next/link';
+import Button from '@mui/material/Button'
 
 interface Props {}
 
@@ -18,6 +20,10 @@ const Page: NextPage<Props> = ({}) => {
     <div className='flex h-screen '>
       <div className='grid grid-cols-1 m-auto'>
         <div className='text-5xl text-center mt-5'>You Don't Have Permission</div>
+        <br />
+        <Button  variant="outlined" color="primary">
+        Back  
+        </Button>
       </div>
     </div>
   )

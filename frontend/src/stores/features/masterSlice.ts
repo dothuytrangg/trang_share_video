@@ -1,9 +1,9 @@
 "use client";
 
 import { _GLOBAL } from "@/contstants";
-import { nextLocalStorage } from "@/util/localStoreage";
 import { createSlice } from "@reduxjs/toolkit";
 
+import secureLocalStorage from "react-secure-storage";
 const initialState = {
   theme: "light",
   drawer: true,
@@ -13,6 +13,8 @@ const initialState = {
   teo: "",
   is_login: false,
   access_token: "",
+  isAdmin:false,
+  isAuth:false,
   user: "",
 };
 
@@ -25,23 +27,37 @@ export const masterSlice = createSlice({
       state.access_token = action.payload.token;
       state.user = action.payload.user;
       state.is_login = true;
+      console.log('action.payload.user.role: ', action.payload.user.role);
+      if(action.payload.user.role == _GLOBAL.ROLE_ADMIN){
+        state.isAdmin = true;
+      }
+      state.isAuth = true;
+    },
+    setIsAdmin : (state,action) =>{
+      state.isAdmin = action.payload
+    },
+    setIsAuth : (state,action) =>{
+      state.isAuth = action.payload
     },
     initialBootState: (state) => {
-      let masterLocalStorage = nextLocalStorage()?.getItem("master");
-      if (masterLocalStorage) {
-        let parseLocalStorage = JSON.parse(masterLocalStorage);
-        state.theme = parseLocalStorage.theme;
-        state.drawer = parseLocalStorage.drawer;
-        state.dark = parseLocalStorage.dark;
-        state.lang = parseLocalStorage.lang;
-        state.is_login = parseLocalStorage.is_login;
-        state.access_token = parseLocalStorage.access_token;
-        state.user = parseLocalStorage.user;
-      } else {
-        nextLocalStorage()?.setItem("master", JSON.stringify(initialState));
+      if(typeof window !== 'undefined'){
+        let masterLocalStorage = secureLocalStorage.getItem("master") as string;
+        if (masterLocalStorage) {
+          let parseLocalStorage = JSON.parse(masterLocalStorage);
+          state.theme = parseLocalStorage.theme;
+          state.drawer = parseLocalStorage.drawer;
+          state.dark = parseLocalStorage.dark;
+          state.lang = parseLocalStorage.lang;
+          state.isAdmin = parseLocalStorage.isAdmin;
+          state.isAuth = parseLocalStorage.isAuth;
+          state.is_login = parseLocalStorage.is_login;
+          state.access_token = parseLocalStorage.access_token;
+          state.user = parseLocalStorage.user;
+        } else {
+          secureLocalStorage.setItem("master", JSON.stringify(initialState));
+        }
+        state.loading = false;
       }
-      state.loading = false;
-      console.log("state.loading : ", state.loading);
     },
     changeTheme: (state) => {
       if (state.theme == "light") {
@@ -51,7 +67,6 @@ export const masterSlice = createSlice({
         state.theme = "light";
         state.dark = true;
       }
-      updateLocalStorage();
     },
     toggleDrawer: (state) => {
       state.drawer = !state.drawer;
@@ -62,21 +77,21 @@ export const masterSlice = createSlice({
     changeLanguage: (state, action) => {
       state.lang = "en";
       state.teo = action.payload;
-      console.log(" state.lang: ", state.lang);
     },
     updateLocalStorage: (state: any) => {
-      nextLocalStorage()?.setItem("master", JSON.stringify(state));
+     secureLocalStorage.setItem("master", JSON.stringify(state));
     },
     logout: (state) => {
       state.is_login = false;
+      state.isAdmin = false;
+      state.isAuth = false;
       state.user = "";
       state.access_token = "";
-      updateLocalStorage();
     },
   },
 });
 
-export const { changeTheme, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage, loginSuccess, logout, closeDrawer } =
+export const { changeTheme, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage, loginSuccess, logout, closeDrawer,setIsAdmin, setIsAuth } =
   masterSlice.actions;
 
 export default masterSlice.reducer;

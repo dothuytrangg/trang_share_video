@@ -107,7 +107,7 @@ export default function Navbar() {
   const handleLogout = () =>{
     dispatch(logout())
     dispatch(updateLocalStorage())
-    router.push(`${locale}`)
+    router.push(`/${locale}`)
   }
 
   const renderButtonAcction = () => {
