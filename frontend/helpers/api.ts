@@ -1,6 +1,8 @@
+import { _ENV } from "@/contstants";
 import axios from "axios";
 
-export default function requestApi(endpoint ,method,body,responseType = 'json') {
+export default function requestApi(endpoint:any ,method:any,body:any,responseType = 'json') {
+    let URL = '';
     const headers = {
         "Accept":"application/json",
         "Content-Type":"application/json",
@@ -33,13 +35,18 @@ export default function requestApi(endpoint ,method,body,responseType = 'json') 
           return { success: false };
         }
       );
-      
 
+      if(process.env.NODE_ENV == 'development'){
+        URL = _ENV.NEXT_URL_LOCAL
+      }else{
+        URL = _ENV.NEXT_URL_PRODUCTION
+      }
+      
     return instance.request({
         method:method,
-        url:`http://localhost:2070/${endpoint}`,
+        url:`${URL}/${endpoint}`,
         data:body,
-        responseType:responseType
+        responseType:responseType as any
     })
 }
 

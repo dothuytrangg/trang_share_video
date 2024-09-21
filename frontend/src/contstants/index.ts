@@ -15,4 +15,9 @@ const _GLOBAL = {
   ROLE_ADMIN: 3,
 };
 
-export { _GLOBAL };
+const _ENV ={
+    NEXT_URL_LOCAL: "http://localhost:2070",
+    NEXT_URL_PRODUCTION: "https://trang-backend.congcucuatoi.com",
+}
+
+export { _GLOBAL, _ENV };
