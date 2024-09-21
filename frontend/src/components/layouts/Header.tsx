@@ -32,22 +32,28 @@ export default function RootLayout({
     setLoading(masterStore.loading)
     setTheme(masterStore.theme)
     middlewareApp();
-  }, [pathname, theme])
+  }, [pathname, theme, loading])
 
   const redirectPermissionPage = () => {
     return router.replace(`/${locale}/errors/permission`);
   }
 
   const middlewareApp = () => {
+
     const locales = ["en", "vn"] as const;
     const excludePattern = "^(/(" + locales.join("|") + "))?/admin/?.*?$";
+    const preventRouter = "^(/(" + locales.join("|") + "))?/(login|register)/?.*?$";
    
     const publicPathnameRegex = RegExp(excludePattern, "i");
 
     let isAdminPage = publicPathnameRegex.test(pathname);
+    if(masterStore.isAuth){
+      if(RegExp(preventRouter, "i").test(pathname)){
+        router.back()
+      }
+    }
 
     if (isAdminPage) {
-   
       setRouteAdmin(true)
       let localUser = JSON.parse(secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string);
       if (localUser) {
@@ -62,8 +68,8 @@ export default function RootLayout({
       }
     }else{
       setRouteAdmin(false)
-      
     }
+
   
   }
   const renderLayout = () => {

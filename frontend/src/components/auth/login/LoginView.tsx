@@ -74,44 +74,24 @@ const LoginView = () => {
   const masterStore = useAppSelector((state) => state.master);
   let [errorLogin, setErrorLogin] = React.useState('');
   const t = useTranslations("HomePage");
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const dispatch = useAppDispatch();
-  // const defaultTheme = createTheme({ palette: { mode } });
-  // const SignInTheme = createTheme(getSignInTheme(mode));
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const locale = useLocale();
 
 
-  // const handleLogin = () => {
-  //    if(!(validateInputs())){
-  //        console.log("invalid")
-  //    }else{
-  //     console.log(email,password);
-  //     router.replace('/');
-
-  //    }
-
-  // }
 
 
 
-  // This code only runs on the client side, to determine the system color preference
 
 
 
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -179,9 +159,11 @@ const LoginView = () => {
     }
   };
 
-  return (
-
-    <SignInContainer direction="column" justifyContent="space-between">
+  const renderLogin = () => {
+    if (masterStore.isAuth) {
+      router.replace(`/${locale}`)
+    }else{
+      return <SignInContainer direction="column" justifyContent="space-between">
       <Stack
         sx={{
           justifyContent: 'center',
@@ -271,32 +253,14 @@ const LoginView = () => {
               </span>
             </Typography>
           </Box>
-          {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              type="submit"
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-            <Button
-              type="submit"
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
-            </Button>
-          </Box> */}
         </Card>
       </Stack>
     </SignInContainer>
+    }
+    
+  }
 
-
-  );
+  return renderLogin();
 };
 
 export default LoginView;

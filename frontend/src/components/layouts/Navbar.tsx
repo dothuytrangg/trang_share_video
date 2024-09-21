@@ -129,7 +129,9 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
                 <Typography variant="inherit" color="inherit" component="div" >
-              <Image src={logo} alt="Picture of the author" width={70} height={50}></Image>
+              <Image onClick={()=>{
+                router.replace(`/${locale}`)
+              }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
             </Typography>
             <Box sx={{ flexGrow: 0.5 }} />
    
