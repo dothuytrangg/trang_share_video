@@ -1,18 +1,18 @@
 version: '3.8'
 services:
 
-  frontend:
-    image: trang_share_video/frontend
-    container_name: trang_share_video_frontend
-    restart: unless-stopped
-    ports:
-      - "2050:2050"
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+  # frontend:
+  #   image: trang_share_video/frontend
+  #   container_name: trang_share_video_frontend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "2050:2050"
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.prod
     
-    networks:
-      - trang-prod-network
+  #   networks:
+  #     - trang-prod-network
 
   backend:
     image: trang_share_video/backend
