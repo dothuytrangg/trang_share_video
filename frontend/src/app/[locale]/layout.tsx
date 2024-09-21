@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import dynamic from 'next/dynamic'
 import Header from '@/components/layouts/Header'
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "TUN STUDIO",
@@ -33,7 +34,6 @@ export default function RootLayout({
 }) {
   const t = useTranslations("HomePage");
   const messages = useMessages();
-  
   // console.log("theme: ", theme);
   return (
     <html lang={locale} suppressHydrationWarning={true}>

@@ -5,8 +5,8 @@ import { ThemeProvider } from "@emotion/react";
 import { useAppSelector } from "./stores/hookStore";
 import { PaletteMode } from "@mui/material";
 import { useEffect, useState } from "react";
-import { nextLocalStorage } from "./util/localStoreage";
 import { _GLOBAL } from "./contstants";
+import secureLocalStorage from "react-secure-storage";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
@@ -19,13 +19,13 @@ export default function Theme({ children }: { children: React.ReactNode }) {
   let [mode, setMode] = useState(defaultTheme);
   const masterStore = useAppSelector((state) => state.master);
 
-    let masterLocal;
+    let masterLocal:any;
     if (global?.window !== undefined) {
-      masterLocal = window?.localStorage?.getItem("master");
+      masterLocal = secureLocalStorage.getItem("master");
     }
       
     if (masterLocal) {
-      let parseLocal = JSON.parse(masterLocal);
+      let parseLocal = JSON.parse(masterLocal) as any;
       defaultTheme = parseLocal.theme;
     }
   

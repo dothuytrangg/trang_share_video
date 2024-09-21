@@ -15,7 +15,7 @@ import { _GLOBAL } from "@/contstants";
 import { redirect, useRouter } from "next/navigation";
 import CategoryIcon from '@mui/icons-material/Category';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useState } from "react";
+import React, { useState } from "react";
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -71,15 +71,12 @@ export default function Sidebar() {
   };
 
   const redirectHome = () => {
-    console.log("teo");
     router.replace(`/${locale}`);
   };
 
   const textTheme = () => {
     let result = "";
-    console.log(" (masterStore.lang : ", masterStore.lang);
     if (masterStore.lang == _GLOBAL.EN) {
-      console.log("masterStore.theme == _GLOBAL.DARK: ", masterStore.theme == _GLOBAL.DARK);
       if (masterStore.theme == _GLOBAL.DARK) {
         result = `${t("theme")} ${t("dark")}`;
       } else {
@@ -103,6 +100,30 @@ export default function Sidebar() {
       }
     }
 
+  }
+
+  const renderButtonAdmin = () =>{
+    if(masterStore.isAdmin){
+     return <React.Fragment>
+<ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
+          }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_category")} placement="right-start">
+              <CategoryIcon></CategoryIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_category")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_ACCOUNT}`)
+          }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_account")} placement="right-start">
+              <AccountCircleIcon></AccountCircleIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_account")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+     </React.Fragment>
+    }
   }
   return (
     <Drawer sx={{
@@ -152,23 +173,7 @@ export default function Sidebar() {
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
-          <ListItemButton onClick={() => {
-            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
-          }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <Tooltip title={t("management_category")} placement="right-start">
-              <CategoryIcon></CategoryIcon>
-            </Tooltip>
-            <ListItemText className={open ? "mx-3" : ""} primary={t("management_category")} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-
-          <ListItemButton onClick={() => {
-            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_ACCOUNT}`)
-          }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-            <Tooltip title={t("management_account")} placement="right-start">
-              <AccountCircleIcon></AccountCircleIcon>
-            </Tooltip>
-            <ListItemText className={open ? "mx-3" : ""} primary={t("management_account")} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
+          {renderButtonAdmin()}
         </ListItem>
       </List>
     </Drawer>
