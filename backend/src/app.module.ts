@@ -9,7 +9,13 @@ import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSourceOptions),UsersModule, AuthModule,ConfigModule.forRoot(), CategoriesModule],
+  imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    UsersModule,
+    AuthModule,
+    ConfigModule.forRoot(),
+    CategoriesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
