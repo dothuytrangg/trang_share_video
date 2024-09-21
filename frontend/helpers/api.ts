@@ -36,11 +36,13 @@ export default function requestApi(endpoint:any ,method:any,body:any,responseTyp
         }
       );
 
+      console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
       if(process.env.NODE_ENV == 'development'){
         URL = _ENV.NEXT_URL_LOCAL
       }else{
         URL = _ENV.NEXT_URL_PRODUCTION
       }
+      console.log('URL: ', URL);
       
     return instance.request({
         method:method,
