@@ -49,6 +49,7 @@ export default function Navbar() {
   const masterStore = useAppSelector((state: any) => state.master);
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState()
  
 
   useEffect(() => {

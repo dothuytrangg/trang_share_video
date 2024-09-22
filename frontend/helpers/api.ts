@@ -1,8 +1,15 @@
-import { _ENV } from "@/contstants";
+import  {_ENV, _GLOBAL } from "@/contstants";
+import { logout, updateLocalStorage } from "@/stores/features/masterSlice";
+import { makeStore } from "@/stores/store";
 import axios from "axios";
-
+import { useLocale } from "next-intl";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
+import secureLocalStorage from "react-secure-storage";
+import { NextResponse } from 'next/server';
+import { useAppSelector } from "@/stores/hookStore";
 export default function requestApi(endpoint:any ,method:any,body:any,responseType = 'json') {
-    let URL = '';
+    let URL_API = '';
     const headers = {
         "Accept":"application/json",
         "Content-Type":"application/json",
@@ -12,12 +19,13 @@ export default function requestApi(endpoint:any ,method:any,body:any,responseTyp
 
     instance.interceptors.request.use(
         (config) => {
-        //   const authStore = encryptStorage.getItem("auth");
-        //   if (authStore) {
-        //     if (authStore.accessToken) {
-        //       config.headers["Authorization"] = "Bearer " + authStore.accessToken;
-        //     }
-        //   }
+          const authStore = JSON.parse(secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string);
+          console.log('authStore: ', authStore);
+          if (authStore) {
+            if (authStore.access_token) {
+              config.headers["Authorization"] = "Bearer " + authStore.access_token;
+            }
+          }
       
           return config;
         },
@@ -30,23 +38,34 @@ export default function requestApi(endpoint:any ,method:any,body:any,responseTyp
         (config) => {
           return config?.data || { success: false, statusCode: 401 };
         },
-        (error) => {
-          console.log(error);
+        async (error) => {
+         
+          console.log('error.status: ', error.status);
+          if(error.status == 401){
+            const authStore = JSON.parse(secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string);
+            await makeStore().dispatch(logout());
+            await makeStore().dispatch(updateLocalStorage());
+            // if(authStore){
+            //   console.log('authStore: ', authStore);
+            //   return NextResponse.redirect(new URL(`/${authStore.lang}/${_GLOBAL.ROUTER_LOGIN}`, 'http://localhost:8080')); 
+            // }else{
+            //   return NextResponse.redirect(new URL(`http://localhost:8080/${_GLOBAL.DEFAULT_LANG}/${_GLOBAL.ROUTER_LOGIN}`)); 
+            // }
+      
+          }
           return { success: false };
         }
       );
 
-      console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
       if(process.env.NODE_ENV == 'development'){
-        URL = _ENV.NEXT_URL_LOCAL
+        URL_API = _ENV.NEXT_URL_LOCAL
       }else{
-        URL = _ENV.NEXT_URL_PRODUCTION
+        URL_API = _ENV.NEXT_URL_PRODUCTION
       }
-      console.log('URL: ', URL);
       
     return instance.request({
         method:method,
-        url:`${URL}/${endpoint}`,
+        url:`${URL_API}/${endpoint}`,
         data:body,
         responseType:responseType as any
     })
