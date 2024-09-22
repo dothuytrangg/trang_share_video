@@ -80,6 +80,7 @@ export default function Navbar() {
       url = pathNameSpilt.join("/");
     }
     dispatch(changeLanguage(locale))
+    dispatch(updateLocalStorage());
     router.push(`/${url}`);
   };
 

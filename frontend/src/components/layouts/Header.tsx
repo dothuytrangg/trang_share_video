@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter,useSearchParams } from "next/navigation";
 import secureLocalStorage from "react-secure-storage";
 import { useLocale } from "next-intl";
 import { useDispatch } from "react-redux";
@@ -29,6 +29,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const locale = useLocale();
   const dispatch = useAppDispatch();
+  const searchQueryParams = useSearchParams();
   useEffect(() => {
     setLoading(masterStore.loading)
     setTheme(masterStore.theme)
@@ -47,15 +48,15 @@ export default function RootLayout({
     const preventRouter = "^(/(" + locales.join("|") + "))?/(login|register)/?.*?$";
 
     const publicPathnameRegex = RegExp(excludePattern, "i");
-
+ 
+    console.log('searchQueryParams: ', searchQueryParams);
+    // return;
     let isAdminPage = publicPathnameRegex.test(pathname);
-    console.log('masterStore.isAuth: ', masterStore.isAuth);
+ 
     if (isAuth) {
       if (RegExp(preventRouter, "i").test(pathname)) {
-        router.back()
+        // router.push(`/${locale}`)
       }
-    }else{
-      router.push(`/${locale}/${_GLOBAL.ROUTER_LOGIN}`)
     }
 
     if (isAdminPage) {
