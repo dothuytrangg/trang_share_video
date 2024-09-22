@@ -2,7 +2,6 @@
 
 import { _GLOBAL } from "@/contstants";
 import { createSlice } from "@reduxjs/toolkit";
-
 import secureLocalStorage from "react-secure-storage";
 const initialState = {
   theme: "light",
@@ -27,7 +26,7 @@ export const masterSlice = createSlice({
       state.access_token = action.payload.token;
       state.user = action.payload.user;
       state.is_login = true;
-      console.log('action.payload.user.role: ', action.payload.user.role);
+  
       if(action.payload.user.role == _GLOBAL.ROLE_ADMIN){
         state.isAdmin = true;
       }

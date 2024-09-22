@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AdminAuth } from 'src/auth/admin.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
+// import { AuthGuard } from '';
 import { CategoriesService } from 'src/categories/categories.service';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
 import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
@@ -9,9 +11,9 @@ import { Category } from 'src/categories/entities/categories.entity';
 export class CategoriesController {
     constructor(private categoryService:CategoriesService){}
 
-    @UseGuards(AuthGuard)
+    @UseGuards(AdminAuth)
     @Get()
-    fFindAll():Promise<Category[]>{
+    findAll():Promise<Category[]>{
         
         return this.categoryService.findAll();
     }

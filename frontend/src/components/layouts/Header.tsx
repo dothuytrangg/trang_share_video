@@ -8,9 +8,9 @@ import Sidebar from "./Sidebar";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter,useSearchParams } from "next/navigation";
 import secureLocalStorage from "react-secure-storage";
 import { useLocale } from "next-intl";
 import { useDispatch } from "react-redux";
@@ -24,15 +24,18 @@ export default function RootLayout({
   const [theme, setTheme] = useState('light')
   const masterStore = useAppSelector((state) => state.master)
   const [routeAdmin, setRouteAdmin] = useState(false)
+  const [isAuth, setIsAuth] = useState(false)
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
   const dispatch = useAppDispatch();
+  const searchQueryParams = useSearchParams();
   useEffect(() => {
     setLoading(masterStore.loading)
     setTheme(masterStore.theme)
+    setIsAuth(masterStore.isAuth)
     middlewareApp();
-  }, [pathname, theme, loading])
+  }, [pathname, theme, loading, masterStore])
 
   const redirectPermissionPage = () => {
     return router.replace(`/${locale}/errors/permission`);
@@ -43,13 +46,16 @@ export default function RootLayout({
     const locales = ["en", "vn"] as const;
     const excludePattern = "^(/(" + locales.join("|") + "))?/admin/?.*?$";
     const preventRouter = "^(/(" + locales.join("|") + "))?/(login|register)/?.*?$";
-   
-    const publicPathnameRegex = RegExp(excludePattern, "i");
 
+    const publicPathnameRegex = RegExp(excludePattern, "i");
+ 
+    console.log('searchQueryParams: ', searchQueryParams);
+    // return;
     let isAdminPage = publicPathnameRegex.test(pathname);
-    if(masterStore.isAuth){
-      if(RegExp(preventRouter, "i").test(pathname)){
-        router.back()
+ 
+    if (isAuth) {
+      if (RegExp(preventRouter, "i").test(pathname)) {
+        // router.push(`/${locale}`)
       }
     }
 
@@ -66,11 +72,11 @@ export default function RootLayout({
       } else {
         redirectPermissionPage();
       }
-    }else{
+    } else {
       setRouteAdmin(false)
     }
 
-  
+
   }
   const renderLayout = () => {
     let classNameBackground = routeAdmin ? (masterStore.theme == _GLOBAL.LIGHT ? 'bg-gray-100' : '') : ''
@@ -82,13 +88,14 @@ export default function RootLayout({
         <CircularProgress color="inherit" />
       </Backdrop>
     } else {
-      return <Box className={ classNameBackground} sx={{ display: "flex", height: '100vh' }}>
-        <Navbar></Navbar>
-        <Sidebar></Sidebar>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 7 }}>
-          {children}
-        </Box>
-
+      return <Box className={classNameBackground} sx={{ display: "flex", height: '100vh' }}>
+          <Navbar></Navbar>
+          <Sidebar></Sidebar>
+          <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 7 }}>
+        <React.StrictMode>
+            {children}
+        </React.StrictMode>
+          </Box>
       </Box>
     }
   }

@@ -15,6 +15,7 @@ import { NextIntlClientProvider, useMessages } from "next-intl";
 import dynamic from 'next/dynamic'
 import Header from '@/components/layouts/Header'
 import { cookies } from "next/headers";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "TUN STUDIO",
@@ -42,10 +43,12 @@ export default function RootLayout({
           <StoreProvider>
             <Theme>
               <AppRouterCacheProvider>
+      <React.StrictMode>
                 <CssBaseline />
                 <Header >
                   {children}
                 </Header>
+        </React.StrictMode>
               </AppRouterCacheProvider>
             </Theme>
           </StoreProvider>

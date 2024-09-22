@@ -49,6 +49,7 @@ export default function Navbar() {
   const masterStore = useAppSelector((state: any) => state.master);
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState()
  
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function Navbar() {
       url = pathNameSpilt.join("/");
     }
     dispatch(changeLanguage(locale))
+    dispatch(updateLocalStorage());
     router.push(`/${url}`);
   };
 

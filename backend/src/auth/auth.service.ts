@@ -44,6 +44,14 @@ export class AuthService {
     return response;
   }
 
+  async findUserById(id:any){
+    let user = await this.userRepository.findOne({where:{
+      id:id
+    }})
+    return user;
+  }
+
+
   async login(loginUserDto: LoginUserDto) {
     let response = common_response
     const user = await this.userRepository.findOne({
@@ -64,7 +72,7 @@ export class AuthService {
         return response;
     }
     //generate access token and refresh token
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, role:user.role };
     let token =  await this.generateToken(payload);
     let responseUser:any;
     if(token.access_token){
@@ -91,7 +99,7 @@ export class AuthService {
         refresh_token,
       });
       if (checkExistToken) {
-        return this.generateToken({ id: verify.id, email: verify.email });
+        return this.generateToken({ id: verify.id, email: verify.email, role:verify.role });
       } else {
         throw new HttpException(
           'Refresh token is not valid',
@@ -105,7 +113,7 @@ export class AuthService {
       );
     }
   }
-  private async generateToken(payload: { id: number; email: string}) {
+  private async generateToken(payload: { id: number; email: string, role:number}) {
     const access_token = await this.jwtService.signAsync(payload);
     const refresh_token = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
