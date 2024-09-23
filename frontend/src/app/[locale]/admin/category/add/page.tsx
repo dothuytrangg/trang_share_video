@@ -72,19 +72,16 @@ const Page: NextPage<Props> = ({}) => {
     if (!loading) {
       return (
         <React.StrictMode>
-          <div className="grid grid-cols-1">
-            <div className="grid grid-cols-1">
+          <div className="flex w-80">
+            <div className="flex-auto w-60 ">
               <Card sx={{}}>
                 <form
                   className="p-10  border-radius-5"
                   onSubmit={handleSubmit}
                   noValidate
                 >
-                  <FormControl>
-                    <div className="flex">
-                      <div className="flex-none w-20">
-                        <FormLabel htmlFor="email">Email</FormLabel>
-                      </div>
+                  <div className="flex">
+                    <FormControl>
                       <div className="flex-none w-80">
                         <TextField
                           value={name}
@@ -95,6 +92,7 @@ const Page: NextPage<Props> = ({}) => {
                           helperText={nameErrorMessage}
                           id="name"
                           type="text"
+                          label="Category name"
                           size="small"
                           name="name"
                           placeholder="Category name..."
@@ -105,8 +103,8 @@ const Page: NextPage<Props> = ({}) => {
                           sx={{ ariaLabel: "email" }}
                         />
                       </div>
-                    </div>
-                  </FormControl>
+                    </FormControl>
+                  </div>
                   <div className="flex-none w-20">
                     <Button
                       type="submit"
