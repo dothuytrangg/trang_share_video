@@ -21,6 +21,9 @@ import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '@/stores/hookStore';
 import requestApi from '../../../../../helpers/api';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { _GLOBAL } from '@/contstants';
 function createData(
   name: string,
   calories: number,
@@ -33,6 +36,8 @@ function createData(
 const Page: NextPage<Props> = ({ }) => {
   var ranonce = false;
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const locale = useLocale();
   const [categories, setCategories] = useState([]);
   const masterStore = useAppSelector(state => state.master);
   useEffect(() => {
@@ -40,6 +45,7 @@ const Page: NextPage<Props> = ({ }) => {
     if (!ranonce) {
       if (masterStore.isAdmin) {
         setLoading(false);
+
       }
       loadCategories();
       ranonce = true
@@ -67,7 +73,9 @@ const Page: NextPage<Props> = ({ }) => {
         <React.StrictMode>
           <div className="m-5 mt-20">
             <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-              <Button variant="outlined" startIcon={<AddIcon />}>
+              <Button onClick={()=>{
+                router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}/${_GLOBAL.ROUTE_ADMIN_ADD}`)
+              }} variant="outlined" startIcon={<AddIcon />}>
                 Thêm danh mục
               </Button>
 

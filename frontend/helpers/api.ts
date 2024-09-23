@@ -47,7 +47,7 @@ export default function requestApi(
       return config?.data || { success: false, statusCode: 401 };
     },
     async (error) => {
-      if (error.status == 401) {
+      if (error.status == 401 || error.status == 403) {
         const authStore = JSON.parse(
           secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
         );
