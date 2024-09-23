@@ -10,6 +10,7 @@ const _GLOBAL = {
   ROUTER_REGISTER: "register",
   ROUTE_ADMIN: "admin",
   ROUTE_ADMIN_CATEGORY: "category",
+  ROUTE_ADMIN_ADD: "add",
   ROUTE_ADMIN_ACCOUNT: "account",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,

@@ -1,3 +1,4 @@
+'use client'
 import createMiddleware from "next-intl/middleware";
 import { withAuth } from "next-auth/middleware";
 import { NextRequest, NextResponse } from "next/server";
@@ -6,11 +7,10 @@ import { _GLOBAL } from "./contstants";
 import { cookies } from "next/headers";
 
 export const locales = ["en", "vn"] as const;
-
+ 
 const intlMiddleware = createMiddleware({
   locales: locales,
-  defaultLocale: "vn",
-  localeDetection: false,
+  defaultLocale: "en",
 });
 
 const authMiddleware = withAuth(
