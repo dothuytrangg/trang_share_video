@@ -17,6 +17,10 @@ export class User {
   @Column()
   password: string;
 
+  @Column({default:1})
+  role:number
+
+
   @Column({nullable:true, default: null})
   refresh_token: string;
 

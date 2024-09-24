@@ -1,0 +1,15 @@
+import {redirect} from 'next/navigation';
+import {getRequestConfig} from 'next-intl/server';
+import { NextResponse } from 'next/server';
+ 
+// Can be imported from a shared config
+const locales = ['en', 'vn'];
+ 
+export default getRequestConfig(async ({locale}) => {
+  // Validate that the incoming `locale` parameter is valid
+  if (!locales.includes(locale as any)) redirect('/login')
+
+  return {
+    messages: (await import(`../lang/${locale}.json`)).default
+  };
+});

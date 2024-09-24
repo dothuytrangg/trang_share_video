@@ -1,17 +1,21 @@
-'use client'
-import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme ,useTheme} from "@mui/material";
+"use client";
+import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme, useTheme, Tooltip } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
 import MuiDrawer from "@mui/material/Drawer";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores/hookStore";
-import { changeTheme, toggleDrawer } from "@/stores/features/masterSlice";
-import { PlaylistPlay, ThumbDownAltOutlined } from "@mui/icons-material";
-import HistoryIcon from '@mui/icons-material/History';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-
-
+import { changeTheme, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
+import PlaylistPlay from "@mui/icons-material/PlaylistPlay";
+import History from "@mui/icons-material/History";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import { useLocale, useTranslations } from "next-intl";
+import { _GLOBAL } from "@/contstants";
+import { redirect, useRouter } from "next/navigation";
+import CategoryIcon from '@mui/icons-material/Category';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import React, { useState } from "react";
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -24,75 +28,154 @@ const openedMixin = (theme: Theme): CSSObject => ({
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: "hidden",
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(${theme.spacing(8)} + 1px)`,
-    },
-  });
-  
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-    boxSizing: "border-box",
-    ...(open && {
-      ...openedMixin(theme),
-      "& .MuiDrawer-paper": openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      "& .MuiDrawer-paper": closedMixin(theme),
-    }),
-  }));
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
 
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+}));
 
 export default function Sidebar() {
-    const theme = useTheme();
-    const dispatch = useDispatch();
-    const open = useAppSelector((state) => state.master.drawer) as boolean;
-    const masterStore = useAppSelector((state) => state.master);
- 
-    const handleToggleTheme = () => {
-        dispatch(changeTheme());
-      };
-    return (
-        <Drawer variant="permanent" open={open}>
-        <br />
-        <br />
-        <div className="mt-2"></div>
-        <List>
-          <ListItem className="my-1" key={1} disablePadding sx={{ display: "block" }}>
-            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const open = useAppSelector((state) => state.master.drawer) as boolean;
+  const masterStore = useAppSelector((state) => state.master);
+  const t = useTranslations("HomePage");
+  const router = useRouter();
+  const locale = useLocale();
+  // const [widthSideBar, setWidthSideBar] = useState(300)
+
+  const handleToggleTheme = () => {
+    console.log("theme: ", theme);
+    dispatch(changeTheme());
+    dispatch(updateLocalStorage());
+  };
+
+  const redirectHome = () => {
+    router.replace(`/${locale}`);
+  };
+
+  const textTheme = () => {
+    let result = "";
+    if (masterStore.lang == _GLOBAL.EN) {
+      if (masterStore.theme == _GLOBAL.DARK) {
+        result = `${t("theme")} ${t("dark")}`;
+      } else {
+        result = `${t("light")} ${t("theme")}`;
+      }
+    } else {
+      if (masterStore.theme == _GLOBAL.DARK) {
+        result = `${t("theme")} ${t("dark")}`;
+      } else {
+        result = `${t("theme")} ${t("light")}`;
+      }
+    }
+    return result;
+  };
+  const widthSideBar = () => {
+    if (masterStore.drawer) {
+      if (locale == _GLOBAL.EN) {
+        return 240
+      } else {
+        return 200
+      }
+    }
+
+  }
+
+  const renderButtonAdmin = () =>{
+    if(masterStore.isAdmin){
+     return <React.Fragment>
+<ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
+          }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_category")} placement="right-start">
+              <CategoryIcon></CategoryIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_category")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_ACCOUNT}`)
+          }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_account")} placement="right-start">
+              <AccountCircleIcon></AccountCircleIcon>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_account")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+     </React.Fragment>
+    }
+  }
+  return (
+    <Drawer sx={{
+      width: widthSideBar(),
+      flexShrink: 0,
+      '& .MuiDrawer-paper': {
+        width: widthSideBar(),
+        boxSizing: 'border-box',
+      },
+
+    }} variant="permanent" open={open}>
+      <br />
+      <br />
+      <div className="mt-2"></div>
+      <List>
+        <ListItem className="my-1" key={1} disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={redirectHome} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("home")} placement="right-start">
               <HomeIcon fontSize="medium"></HomeIcon>
-              <ListItemText className={open ? "mx-3" : ""} primary={"Trang chủ"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            <ListItemButton onClick={handleToggleTheme} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-              {masterStore.theme === "dark" ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}
-              <ListItemText className={open ? "mx-3" : ""} primary={"Chủ Đề"} sx={{ opacity: open ? 1 : 0 }} />
-              
-            </ListItemButton>
-            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+          <ListItemButton onClick={handleToggleTheme} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("theme")} placement="right-start">
+              {masterStore.theme === _GLOBAL.DARK ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("theme")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("playlist")} placement="right-start">
               <PlaylistPlay></PlaylistPlay>
-              <ListItemText className={open ? "mx-3" : ""} primary={"Danh sách phát"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
 
-            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
-              <HistoryIcon></HistoryIcon>
-              <ListItemText className={open ? "mx-3" : ""} primary={"Lịch sử phát"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("playlist_history")} placement="right-start">
+              <History></History>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_history")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
 
-            <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("playlist_liked")} placement="right-start">
               <ThumbUpOffAltIcon></ThumbUpOffAltIcon>
-              <ListItemText className={open ? "mx-3" : ""} primary={"Danh sách đã thích "} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-            
-          </ListItem>
-        </List>
-      </Drawer>
-    );
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+
+          {renderButtonAdmin()}
+        </ListItem>
+      </List>
+    </Drawer>
+  );
 }

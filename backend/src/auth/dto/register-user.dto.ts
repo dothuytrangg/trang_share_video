@@ -9,10 +9,10 @@ export class RegisterUserDto{
     @IsNotEmpty()
     @IsString()
     @MinLength(3, {
-        message: 'name is too short',
+        message: 'full_name is too short',
       })
     @MaxLength(50, {
-        message: 'name is too long',
+        message: 'full_name is too long',
     })
     full_name: string;
     

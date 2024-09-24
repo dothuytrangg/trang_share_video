@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 export default function Videos() {
   const router = useRouter();
   const handleOnClick=()=>{
-      router.replace('/detail');
+      router.replace('/en/detail');
 
      
   }
