@@ -1,3 +1,4 @@
+import { common } from '@mui/material/colors';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
@@ -20,7 +21,9 @@ export class CategoriesService {
     });
     if (catgegories) {
       response.data = catgegories;
+     
     }
+   
     return response;
   }
   // async findAll(query:FilterUserDto):Promise<any>{
@@ -60,7 +63,21 @@ export class CategoriesService {
   }
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    return await this.categoryRepository.save(createCategoryDto);
+    let response = common_response;
+    try {
+      let category = await this.categoryRepository.save(createCategoryDto);
+      if (category) {
+        response.category = category;
+        return response;
+      } else {
+        response.success = false;
+      }
+      return response;
+    } catch (error) {
+      response.success = false;
+      response.message = error;
+      return response;
+    }
   }
   async update(
     id: number,
@@ -70,6 +87,16 @@ export class CategoriesService {
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return await this.categoryRepository.delete(id);
+    let response = common_response;
+    let categories =  await this.categoryRepository.delete(id);
+    if(categories.affected == 1){
+       response.success = true;
+       return response;
+    }else{
+      response.success = false;
+      
+    }
+    return response;
+    // return await this.categoryRepository.delete(id);
   }
 }

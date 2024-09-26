@@ -13,8 +13,8 @@ export class CategoriesController {
 
     @UseGuards(AdminAuth)
     @Get()
-    findAll():Promise<Category[]>{
-        
+    findAll(){
+        // console.log("sasa")
         return this.categoryService.findAll();
     }
 
@@ -24,7 +24,7 @@ export class CategoriesController {
     findOne(@Param('id') id:string):Promise<Category>{
         return this.categoryService.findOne(Number(id));
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)
     @Post()
     create(@Body() createCategoryDto:CreateCategoryDto):Promise<Category>{
