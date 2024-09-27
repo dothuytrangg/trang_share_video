@@ -76,6 +76,8 @@ const ListCategory = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [openAddDialog,setOpenAddDialog] = useState(false);
+  const [openUpdateDialog,setOpenUpdateDialog] = useState(false);
  
 
   const dispatch = useAppDispatch();
@@ -88,9 +90,9 @@ const ListCategory = () => {
       ranonce = true;
     }
   }, []);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // const [open, setOpen] = React.useState(false);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
   const loadCategories = async () => {
     var check = await requestApi("categories", "GET", (res: any) => {
       // if (res.success) {  
@@ -169,7 +171,7 @@ const handleCreateCategory = (): void => {
      
           // setCategories(res.data)
           console.log('create success')
-          setOpen(false)
+          setOpenAddDialog(false)
           setSnackbarMessage("Category created successfully!");
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
@@ -186,6 +188,47 @@ const handleCreateCategory = (): void => {
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
         // Handle login failure (e.g., show error message)
+      });
+  }
+};
+
+const [selectedCategory, setSelectedCategory] = useState<any>(null);
+const handleOpenUpdateDialog = (category:any) => {
+  console.log('categoy',category);
+  setSelectedCategory(category);
+  setName(category.name); // Set giá trị hiện tại của category name
+  setDescription(category.description); // Set giá trị hiện tại của description
+  setOpenUpdateDialog(true);
+};
+
+const handleUpdateCategory = (categoryId: string) => {
+  const valid: boolean = validateInputs();
+
+  if (valid) {
+    const CategoryData_update = { name, description };
+
+    requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
+      .then((res: any) => {
+        if (res.success) {
+          // Cập nhật danh sách categories sau khi cập nhật thành công
+           console.log('res update',res)
+           dispatch(updateLocalStorage());
+          // Đóng dialog và thông báo thành công
+          setOpenUpdateDialog(false);
+          setSnackbarMessage("Category updated successfully!");
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+        } else {
+          setSnackbarMessage(res.message || "Category update failed.");
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
+        }
+      })
+      .catch((err: any) => {
+        console.error("Update category failed:", err.response?.data || err.message);
+        setSnackbarMessage("An error occurred while updating the category.");
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
       });
   }
 };
@@ -225,8 +268,8 @@ const handleDeleteCategory = (categoryId: string) => {
         <div className="grid grid-cols-1 gap-4">
           <React.StrictMode>
           <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openAddDialog}
+        onClose={() => setOpenAddDialog(false)}
         PaperProps={{
           component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -275,8 +318,65 @@ const handleDeleteCategory = (categoryId: string) => {
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={()=>setOpenAddDialog(false)}>Cancel</Button>
           <Button type="submit" >Add</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openUpdateDialog}
+        onClose={() => setOpenUpdateDialog(false)}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault(); 
+            handleUpdateCategory(selectedCategory.id)
+       
+          },
+        }}
+      >
+        <DialogTitle>Update category</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+          To add a new category, please enter the category name below. We will update your list immediately after submission.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            error={nameError}
+            helperText={nameErrorMessage}
+            onChange={(val) => {
+              setName(val.target.value);
+            }}
+            value={name}
+            margin="dense"
+            id="name"
+            name="name"
+            label="Name category"
+            type="text"
+            fullWidth
+            variant="standard"
+            placeholder="Name category..."
+          />
+           <TextField
+            autoFocus
+            error={descriptionError}
+            helperText={descriptionErrorMessage}
+            onChange={(val) => {
+              setDescription(val.target.value);
+            }}
+            value={description}
+            margin="dense"
+            id="description"
+            name="description"
+            label="description"
+            type="text"
+            fullWidth
+            variant="standard"
+          />
+      
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setOpenUpdateDialog(false)}>Cancel</Button>
+          <Button type="submit" >Update</Button>
         </DialogActions>
       </Dialog>
       {/* Snackbar for notifications */}
@@ -292,7 +392,7 @@ const handleDeleteCategory = (categoryId: string) => {
        
         <div className="m-5 mt-20">
               <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-                <Button onClick={handleOpen} variant="outlined" startIcon={<AddIcon />}>
+                <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
                   Thêm danh mục
                 </Button>
 
@@ -317,7 +417,7 @@ const handleDeleteCategory = (categoryId: string) => {
                         </TableCell>
                      
                         <TableCell  >
-                          <Button variant="outlined" color="primary">
+                          <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(category)} >
                             Edit
                           </Button>
                           <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteCategory(category.id)}>

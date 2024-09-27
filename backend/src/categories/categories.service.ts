@@ -19,11 +19,25 @@ export class CategoriesService {
     let catgegories = await this.categoryRepository.find({
       select: ['id', 'name', 'description', 'created_at'],
     });
-    if (catgegories) {
+    if(catgegories.length > 0){
+      // console.log(catgegories.length)
       response.data = catgegories;
-     
+      response.success = true;
+      // console.log('res',response);
+      // console.log(response.data);
+      return response;
     }
-   
+    // console.log(catgegories);
+    // if (catgegories) {
+    //   response.data = catgegories;
+    //   response.success = true
+    //   // console.log(response);
+    //   return response;
+    // }
+    // else{
+    //   response.success = false;
+    // }
+    // console.log(response.data);
     return response;
   }
   // async findAll(query:FilterUserDto):Promise<any>{
@@ -83,7 +97,17 @@ export class CategoriesService {
     id: number,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<UpdateResult> {
-    return await this.categoryRepository.update(id, updateCategoryDto);
+    let response = common_response;
+  
+    let updateCategory =  await this.categoryRepository.update(id, updateCategoryDto);
+    if(updateCategory.affected == 1){
+      response.success = true;
+      return response;
+    }else{
+      response.success = false;
+    }
+  
+    return response;
   }
 
   async delete(id: number): Promise<DeleteResult> {

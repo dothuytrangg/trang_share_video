@@ -69,6 +69,7 @@ export default function requestApi(
     url: `${URL_API}/${endpoint}`,
     data: body,
     responseType: responseType as any,
+    trang:''
   })
   return instance.request({
     method: method,
