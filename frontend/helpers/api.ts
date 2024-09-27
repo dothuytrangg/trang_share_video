@@ -12,12 +12,13 @@ import { useActionState } from "react";
 export default function requestApi(
   endpoint: any,
   method: any,
-  body: any,
+  body?: any,
   responseType = "json"
 ) {
   let URL_API = "";
   const headers = {
     Accept: "application/json",
+    
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   };
@@ -25,15 +26,15 @@ export default function requestApi(
 
   instance.interceptors.request.use(
     (config) => {
-      const authStore = JSON.parse(
-        secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
-      );
-      console.log("authStore: ", authStore);
-      if (authStore) {
-        if (authStore.access_token) {
-          config.headers["Authorization"] = "Bearer " + authStore.access_token;
+        const authStore = JSON.parse(
+          secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
+        );
+        console.log("authStore: ", authStore);
+        if (authStore) {
+          if (authStore.access_token) {
+            config.headers["Authorization"] = "Bearer " + authStore.access_token;
+          }
         }
-      }
 
       return config;
     },
@@ -63,13 +64,19 @@ export default function requestApi(
   } else {
     URL_API = _ENV.NEXT_URL_PRODUCTION;
   }
-
+  console.log({
+    method: method,
+    url: `${URL_API}/${endpoint}`,
+    data: body,
+    responseType: responseType as any,
+  })
   return instance.request({
     method: method,
     url: `${URL_API}/${endpoint}`,
     data: body,
     responseType: responseType as any,
   });
+  
 }
 
 /// wrong
