@@ -18,12 +18,12 @@ export default function Category() {
     });
     console.log('check hompage',check)
     setCategories(check.data);
-    console.log('category',categories)
+    // console.log('category',categories)
   };
   const renderCategory = () => {
-    if (categories.length === 0) {
-      return <p>No categories found.</p>;
-    }
+    // if (categories.length === 0) {
+    //   return <p>No categories found.</p>;
+    // }
 
     return categories.map((category: any, index: number) => (
       <Button

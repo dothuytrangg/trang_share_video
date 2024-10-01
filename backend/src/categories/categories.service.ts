@@ -81,7 +81,11 @@ export class CategoriesService {
     try {
       let category = await this.categoryRepository.save(createCategoryDto);
       if (category) {
-        response.category = category;
+        // let categories = await this.categoryRepository.find({
+        //   select: ['id', 'name', 'description', 'created_at'],
+        // });
+        // response.data = categories;
+        response.category = category
         return response;
       } else {
         response.success = false;
