@@ -94,14 +94,17 @@ const ListCategory = () => {
   // const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
   const loadCategories = async () => {
-    var check = await requestApi("categories", "GET", (res: any) => {
-      // if (res.success) {  
-        
-      //   console.log('categories:'+ categories);
-      // }
-    });
-    console.log(check)
-    setCategories(check.data);
+      await requestApi("categories", "GET").then((res:any)=>{
+      console.log('res',res);
+      if(res.success){
+        setCategories(res.data);
+      }
+
+    }).catch((err:any)=>{
+        console.error(err);
+    })
+    // console.log(check)
+    // setCategories(check.data);
     // console.log('category hhh',categories);
   };
 
@@ -135,14 +138,14 @@ const ListCategory = () => {
 };
 
 function slugify(str: string): string {
-  // Chuyển đổi ký tự Unicode có dấu thành ký tự không dấu
+
   str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
 
-  str = str.replace(/^\s+|\s+$/g, ''); // loại bỏ khoảng trắng ở đầu và cuối
-  str = str.toLowerCase(); // chuyển thành chữ thường
-  str = str.replace(/[^a-z0-9 -]/g, '') // loại bỏ các ký tự không phải chữ và số
-           .replace(/\s+/g, '-') // thay thế khoảng trắng bằng dấu gạch ngang
-           .replace(/-+/g, '-'); // loại bỏ dấu gạch ngang liên tiếp
+  str = str.replace(/^\s+|\s+$/g, ''); 
+  str = str.toLowerCase(); 
+  str = str.replace(/[^a-z0-9 -]/g, '') 
+           .replace(/\s+/g, '-') 
+           .replace(/-+/g, '-'); 
 
   return str;
 }
@@ -158,13 +161,13 @@ const handleCreateCategory = (): void => {
     console.log(CategoryData);
     requestApi("categories", "POST", CategoryData)
       .then((res: any) => {
+        console.log('res create',res);
         if (res.success) {
           setErrorCreate("");
           // dispatch(loginSuccess({ ...res }));
           dispatch(updateLocalStorage());
           // router.replace(`/${locale}/admin/category`)
-     
-          // setCategories(res.data)
+          loadCategories();
           console.log('create success')
           setOpenAddDialog(false)
           setSnackbarMessage("Category created successfully!");
@@ -205,10 +208,10 @@ const handleUpdateCategory = (categoryId: string) => {
     requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
       .then((res: any) => {
         if (res.success) {
-          // Cập nhật danh sách categories sau khi cập nhật thành công
+           loadCategories()
            console.log('res update',res)
            dispatch(updateLocalStorage());
-          // Đóng dialog và thông báo thành công
+       
           setOpenUpdateDialog(false);
           setSnackbarMessage("Category updated successfully!");
           setSnackbarSeverity("success");
@@ -233,12 +236,8 @@ const handleDeleteCategory = (categoryId: string) => {
     .then((res: any) => {
       
       if (res.success) {
+        loadCategories()
         console.log("Category deleted:", res);
-
-        // setCategories((prevCategories) =>
-        //   prevCategories.filter((category) => category.id !== categoryId)
-        // );
-
         setSnackbarMessage("Category deleted successfully!");
         setSnackbarSeverity("success");
         setOpenSnackbar(true);
