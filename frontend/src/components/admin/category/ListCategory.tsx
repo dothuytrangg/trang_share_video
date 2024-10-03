@@ -95,7 +95,7 @@ const ListCategory = () => {
   // const handleClose = () => setOpen(false);
   const loadCategories = async () => {
       await requestApi("categories", "GET").then((res:any)=>{
-      console.log('res',res);
+      // console.log('res',res);
       if(res.success){
         setCategories(res.data);
       }
@@ -165,7 +165,7 @@ const handleCreateCategory = (): void => {
         if (res.success) {
           setErrorCreate("");
           // dispatch(loginSuccess({ ...res }));
-          dispatch(updateLocalStorage());
+          // dispatch(updateLocalStorage());
           // router.replace(`/${locale}/admin/category`)
           loadCategories();
           console.log('create success')

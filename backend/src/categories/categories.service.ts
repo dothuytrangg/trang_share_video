@@ -81,10 +81,6 @@ export class CategoriesService {
     try {
       let category = await this.categoryRepository.save(createCategoryDto);
       if (category) {
-        // let categories = await this.categoryRepository.find({
-        //   select: ['id', 'name', 'description', 'created_at'],
-        // });
-        // response.data = categories;
         response.category = category
         return response;
       } else {
@@ -104,7 +100,7 @@ export class CategoriesService {
     let response = common_response;
   
     let updateCategory =  await this.categoryRepository.update(id, updateCategoryDto);
-    if(updateCategory.affected == 1){
+    if(updateCategory){
       response.success = true;
       return response;
     }else{
@@ -117,7 +113,7 @@ export class CategoriesService {
   async delete(id: number): Promise<DeleteResult> {
     let response = common_response;
     let categories =  await this.categoryRepository.delete(id);
-    if(categories.affected == 1){
+    if(categories){
        response.success = true;
        return response;
     }else{
