@@ -13,11 +13,16 @@ import { storageConfig } from 'helpers/config';
 export class UsersController {
 
     constructor(private userService:UsersService){}
+    // @UseGuards(AuthGuard)
+    // @Get()
+    // fFindAll(@Query() query: FilterUserDto):Promise<User[]>{
+    //     console.log(query);
+    //     return this.userService.findAll(query);
+    // }
     @UseGuards(AuthGuard)
     @Get()
-    fFindAll(@Query() query: FilterUserDto):Promise<User[]>{
-        console.log(query);
-        return this.userService.findAll(query);
+    fFindAll():Promise<User[]>{
+        return this.userService.findAll();
     }
 
     @UseGuards(AuthGuard)
@@ -27,7 +32,7 @@ export class UsersController {
     }
        
     @UseGuards(AuthGuard)
-    @UsePipes(ValidationPipe)
+    // @UsePipes(ValidationPipe)
     @Post()
     create(@Body() createUserDto:CreateUserDto):Promise<User>{
         return this.userService.create(createUserDto);
