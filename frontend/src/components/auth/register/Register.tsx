@@ -24,7 +24,13 @@ import {
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
 import { PaletteMode } from '@mui/material';
 import Image from 'next/image';
+import requestApi from '../../../../helpers/api';
 import { useRouter } from 'next/navigation';
+import exp from 'constants';
+import { useAppSelector } from '@/stores/hookStore';
+import { _GLOBAL } from '@/contstants';
+import { useLocale } from 'next-intl';
+import secureLocalStorage from 'react-secure-storage';
 
 
 
@@ -59,7 +65,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   }),
 }));
 
-const Register = ()=> {
+const Register = () => {
   const router = useRouter();
   const logo = '/image/logo.png'
   const [mode, setMode] = React.useState<PaletteMode>('light');
@@ -70,44 +76,15 @@ const Register = ()=> {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-  // This code only runs on the client side, to determine the system color preference
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [full_name, setName] = React.useState('');
+  const locale = useLocale();
 
 
-  const handleRegister = () => {
-    if (!(validateInputs())) {
-      console.log("invalid")
-    } else {
-     router.replace('/sendotp');
-
-    }
-
-  }
 
 
-  React.useEffect(() => {
-    // Check if there is a preferred mode in localStorage
-    const savedMode = localStorage.getItem('themeMode') as PaletteMode | null;
-    if (savedMode) {
-      setMode(savedMode);
-    } else {
-      // If no preference is found, it uses system preference
-      const systemPrefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)',
-      ).matches;
-      setMode(systemPrefersDark ? 'dark' : 'light');
-    }
-  }, []);
-
-  const toggleColorMode = () => {
-    const newMode = mode === 'dark' ? 'light' : 'dark';
-    setMode(newMode);
-    localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
-  };
-
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
-
+  const masterStore = useAppSelector((state) => state.master);
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
@@ -145,165 +122,149 @@ const Register = ()=> {
     return isValid;
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (validateInputs()) {
-      try {
-        //khuc nay dang test thoi
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-      //    body: JSON.stringify({ email, password }),
-        });
+    const data = new FormData(event.currentTarget);
+    console.log({
+      full_name: data.get('full_name'),
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+  };
 
-        if (response.ok) {
-          // Login successful
-          const userData = await response.json();
-          // Store user data in state or context if needed
-          console.log('Login successful:', userData);
-          router.replace('/dashboard');
-        } else {
-          // Login failed
-          const errorData = await response.json();
-          setEmailError(true);
-          setEmailErrorMessage(errorData.message || 'Login failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        setEmailError(true);
-        setEmailErrorMessage('An error occurred. Please try again later.');
-      }
+  const handleRegister = (): void => {
+    const valid: boolean = validateInputs();
+
+    if (valid) {
+      const registerData = {
+        full_name,
+        email,
+        password,
+
+      };
+
+      requestApi('auth/register', 'POST', registerData)
+        .then((res: any) => {
+          if (res.success) {
+            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
+          } else {
+            setErrorRegister(res.message)
+          }
+
+
+          // Handle successful registration, e.g., store token or redirect
+          // router.replace('/'); // Example: Redirect to home or login page
+        })
+        .catch((err: any) => {
+          console.error('Registration failed:', err.response?.data || err.message);
+          // Handle registration failure (e.g., show error message)
+        });
     }
   };
 
-  return (
-   
-  
-    //   <ThemeProvider theme={showCustomTheme ? SignUpTheme : defaultTheme}>
-     
+  const renderRegister = () => {
+    if (masterStore.isAuth) {
+      router.replace(`/${locale}`)
+    } else {
+      return <SignUpContainer direction="column" justifyContent="space-between">
+        <Stack
+          sx={{
+            justifyContent: 'center',
+            height: '100dvh',
+            p: 2,
+          }}
+        >
+          <Card variant="outlined">
+            <Image src={logo} alt='author' width={50} height={50} ></Image>
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            >
+              Sign up
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+            >
+              <FormControl>
+                <FormLabel htmlFor="full_name">Full name</FormLabel>
+                <TextField
+                  autoComplete="full_name"
+                  onChange={(val) => { setName(val.target.value) }}
+                  name="full_name"
+                  fullWidth
+                  id="full_name"
+                  placeholder="Jon Snow"
+                  error={nameError}
+                  helperText={nameErrorMessage}
+                  color={nameError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <TextField
+                  fullWidth
+                  id="email"
+                  placeholder="your@email.com"
+                  name="email"
+                  onChange={(val) => { setEmail(val.target.value) }}
+                  autoComplete="email"
+                  variant="outlined"
+                  error={emailError}
+                  helperText={emailErrorMessage}
+                  color={passwordError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <TextField
+                  fullWidth
+                  name="password"
+                  onChange={(val) => { setPassword(val.target.value) }}
+                  placeholder="••••••"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  variant="outlined"
+                  error={passwordError}
+                  helperText={passwordErrorMessage}
+                  color={passwordError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              {errorRegister && (<p className='text-red-600 text-center'  >{errorRegister}</p>)}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                onClick={() => handleRegister()}
 
-        <SignUpContainer direction="column" justifyContent="space-between">
-          <Stack
-            sx={{
-              justifyContent: 'center',
-              height: '100dvh',
-              p: 2,
-            }}
-          >
-            <Card variant="outlined">
-              <Image src={logo} alt='author' width={50} height={50} ></Image>
-              <Typography
-                component="h1"
-                variant="h4"
-                sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
               >
                 Sign up
+              </Button>
+              <Typography sx={{ textAlign: 'center' }}>
+                Already have an account?{' '}
+                <span>
+                  <Link
+                    className="text-blue-600 underline"
+                    href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`}
+
+                  >
+                    Sign in
+                  </Link>
+                </span>
               </Typography>
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-              >
-                <FormControl>
-                  <FormLabel htmlFor="name">Full name</FormLabel>
-                  <TextField
-                    autoComplete="name"
-                    name="name"
-                    required
-                    fullWidth
-                    id="name"
-                    placeholder="Jon Snow"
-                    error={nameError}
-                    helperText={nameErrorMessage}
-                    color={nameError ? 'error' : 'primary'}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="email">Email</FormLabel>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    placeholder="your@email.com"
-                    name="email"
-                    autoComplete="email"
-                    variant="outlined"
-                    error={emailError}
-                    helperText={emailErrorMessage}
-                    color={passwordError ? 'error' : 'primary'}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    placeholder="••••••"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                    variant="outlined"
-                    error={passwordError}
-                    helperText={passwordErrorMessage}
-                    color={passwordError ? 'error' : 'primary'}
-                  />
-                </FormControl>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive updates via email."
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  onClick={() => handleRegister()}
-                >
-                  Sign up
-                </Button>
-                <Typography sx={{ textAlign: 'center' }}>
-                  Already have an account?{' '}
-                  <span>
-                    <Link
-                      href="/login"
-                      variant="body2"
-                      sx={{ alignSelf: 'center' }}
-                    >
-                      Sign in
-                    </Link>
-                  </span>
-                </Typography>
-              </Box>
-              <Divider>
-                <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-              </Divider>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert('Sign up with Google')}
-                  startIcon={<GoogleIcon />}
-                >
-                  Sign up with Google
-                </Button>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert('Sign up with Facebook')}
-                  startIcon={<FacebookIcon />}
-                >
-                  Sign up with Facebook
-                </Button>
-              </Box>
-            </Card>
-          </Stack>
-        </SignUpContainer>
-    //   </ThemeProvider>
-  
-  )
+            </Box>
+
+
+          </Card>
+        </Stack>
+      </SignUpContainer>
+
+    }
+  }
+
+  return renderRegister();
 }
-export default Register;
+export default Register

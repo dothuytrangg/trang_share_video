@@ -116,24 +116,25 @@ const ListCategory = () => {
 
     let isValid = true;
 
-    if (!name.value || name.value.length < 3 ) {
+    // Validate name
+    if (!name.value) {
         setNameError(true);
-        setNameErrorMessage("Please enter a valid category name.");
+      setNameErrorMessage("Category name isn't empty.");
+        isValid = false;
+    } else if (name.value.length < 3) {
+        setNameError(true);
+        setNameErrorMessage("Category name must be at least 3 characters long.");
+        isValid = false;
+    } else if (name.value.length > 30) {
+        setNameError(true);
+      setNameErrorMessage("Category name must be less than 30 characters.");
         isValid = false;
     } else {
         setNameError(false);
         setNameErrorMessage("");
     }
 
-    if (!description.value || description.value.length < 3 ) {
-        setDescriptionError(true);
-        setDescriptionErrorMessage("Description must be at least 3 characters long.");
-        isValid = false;
-    } else {
-        setDescriptionError(false);
-        setDescriptionErrorMessage("");
-    }
-
+    setDescriptionError(false);
     return isValid;
 };
 
