@@ -11,19 +11,13 @@ export class CreateCategoryDto{
     @MinLength(3, {
         message: 'name is too short',
       })
-    @MaxLength(50, {
+    @MaxLength(30, {
         message: 'name is too long',
     })
     name: string;
     
-    @IsNotEmpty()
+
     @IsString()
-    @MinLength(3, {
-        message: 'name is too short',
-      })
-    @MaxLength(300, {
-        message: 'name is too long',
-    })
     description: string;
     
 

@@ -1,6 +1,8 @@
 
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import moment from 'moment-timezone';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 
 @Entity()
 export class Category {
@@ -8,10 +10,17 @@ export class Category {
   id: number;
 
   @Column()
+  @MinLength(3, {
+    message: 'Category name must be at least 3 characters long.',
+  })
+  @IsNotEmpty({ message: "Category name isn't empty."})
+  @MaxLength(30, {
+    message: 'Category name must be less than 30 characters.',
+  })
   name: string;
 
 
-  @Column()
+  @Column({nullable:true, default: null})
   description: string;
   
     
@@ -21,11 +30,12 @@ export class Category {
   @Column({ default:1 })
   status: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ })
   created_at: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn({ })
   updated_at: Date;
+
 
   
 }
