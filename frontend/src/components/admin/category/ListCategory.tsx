@@ -76,6 +76,8 @@ const ListCategory = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [openAddDialog,setOpenAddDialog] = useState(false);
+  const [openUpdateDialog,setOpenUpdateDialog] = useState(false);
  
 
   const dispatch = useAppDispatch();
@@ -88,26 +90,24 @@ const ListCategory = () => {
       ranonce = true;
     }
   }, []);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // const [open, setOpen] = React.useState(false);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
   const loadCategories = async () => {
-    var check = await requestApi("categories", "GET", (res: any) => {
-      // if (res.success) {  
-        
-      //   console.log('categories:'+ categories);
-      // }
-    });
-    console.log(check)
-    setCategories(check.data);
+      await requestApi("categories", "GET").then((res:any)=>{
+      // console.log('res',res);
+      if(res.success){
+        setCategories(res.data);
+      }
+
+    }).catch((err:any)=>{
+        console.error(err);
+    })
+    // console.log(check)
+    // setCategories(check.data);
+    // console.log('category hhh',categories);
   };
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
+
 
 
   const validateInputs = () => {
@@ -139,14 +139,14 @@ const ListCategory = () => {
 };
 
 function slugify(str: string): string {
-  // Chuyển đổi ký tự Unicode có dấu thành ký tự không dấu
+
   str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
 
-  str = str.replace(/^\s+|\s+$/g, ''); // loại bỏ khoảng trắng ở đầu và cuối
-  str = str.toLowerCase(); // chuyển thành chữ thường
-  str = str.replace(/[^a-z0-9 -]/g, '') // loại bỏ các ký tự không phải chữ và số
-           .replace(/\s+/g, '-') // thay thế khoảng trắng bằng dấu gạch ngang
-           .replace(/-+/g, '-'); // loại bỏ dấu gạch ngang liên tiếp
+  str = str.replace(/^\s+|\s+$/g, ''); 
+  str = str.toLowerCase(); 
+  str = str.replace(/[^a-z0-9 -]/g, '') 
+           .replace(/\s+/g, '-') 
+           .replace(/-+/g, '-'); 
 
   return str;
 }
@@ -162,15 +162,15 @@ const handleCreateCategory = (): void => {
     console.log(CategoryData);
     requestApi("categories", "POST", CategoryData)
       .then((res: any) => {
+        console.log('res create',res);
         if (res.success) {
           setErrorCreate("");
           // dispatch(loginSuccess({ ...res }));
-          dispatch(updateLocalStorage());
+          // dispatch(updateLocalStorage());
           // router.replace(`/${locale}/admin/category`)
-     
-          // setCategories(res.data)
+          loadCategories();
           console.log('create success')
-          setOpen(false)
+          setOpenAddDialog(false)
           setSnackbarMessage("Category created successfully!");
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
@@ -191,17 +191,54 @@ const handleCreateCategory = (): void => {
   }
 };
 
+const [selectedCategory, setSelectedCategory] = useState<any>(null);
+const handleOpenUpdateDialog = (category:any) => {
+  console.log('categoy',category);
+  setSelectedCategory(category);
+  setName(category.name); // Set giá trị hiện tại của category name
+  setDescription(category.description); // Set giá trị hiện tại của description
+  setOpenUpdateDialog(true);
+};
+
+const handleUpdateCategory = (categoryId: string) => {
+  const valid: boolean = validateInputs();
+
+  if (valid) {
+    const CategoryData_update = { name, description };
+
+    requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
+      .then((res: any) => {
+        if (res.success) {
+           loadCategories()
+           console.log('res update',res)
+           dispatch(updateLocalStorage());
+       
+          setOpenUpdateDialog(false);
+          setSnackbarMessage("Category updated successfully!");
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+        } else {
+          setSnackbarMessage(res.message || "Category update failed.");
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
+        }
+      })
+      .catch((err: any) => {
+        console.error("Update category failed:", err.response?.data || err.message);
+        setSnackbarMessage("An error occurred while updating the category.");
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      });
+  }
+};
+
 const handleDeleteCategory = (categoryId: string) => {
   requestApi(`categories/${categoryId}`, "DELETE")
     .then((res: any) => {
       
       if (res.success) {
+        loadCategories()
         console.log("Category deleted:", res);
-
-        // setCategories((prevCategories) =>
-        //   prevCategories.filter((category) => category.id !== categoryId)
-        // );
-
         setSnackbarMessage("Category deleted successfully!");
         setSnackbarSeverity("success");
         setOpenSnackbar(true);
@@ -226,8 +263,8 @@ const handleDeleteCategory = (categoryId: string) => {
         <div className="grid grid-cols-1 gap-4">
           <React.StrictMode>
           <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openAddDialog}
+        onClose={() => setOpenAddDialog(false)}
         PaperProps={{
           component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -276,8 +313,65 @@ const handleDeleteCategory = (categoryId: string) => {
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={()=>setOpenAddDialog(false)}>Cancel</Button>
           <Button type="submit" >Add</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openUpdateDialog}
+        onClose={() => setOpenUpdateDialog(false)}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault(); 
+            handleUpdateCategory(selectedCategory.id)
+       
+          },
+        }}
+      >
+        <DialogTitle>Update category</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+          To add a new category, please enter the category name below. We will update your list immediately after submission.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            error={nameError}
+            helperText={nameErrorMessage}
+            onChange={(val) => {
+              setName(val.target.value);
+            }}
+            value={name}
+            margin="dense"
+            id="name"
+            name="name"
+            label="Name category"
+            type="text"
+            fullWidth
+            variant="standard"
+            placeholder="Name category..."
+          />
+           <TextField
+            autoFocus
+            error={descriptionError}
+            helperText={descriptionErrorMessage}
+            onChange={(val) => {
+              setDescription(val.target.value);
+            }}
+            value={description}
+            margin="dense"
+            id="description"
+            name="description"
+            label="description"
+            type="text"
+            fullWidth
+            variant="standard"
+          />
+      
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setOpenUpdateDialog(false)}>Cancel</Button>
+          <Button type="submit" >Update</Button>
         </DialogActions>
       </Dialog>
       {/* Snackbar for notifications */}
@@ -293,7 +387,7 @@ const handleDeleteCategory = (categoryId: string) => {
        
         <div className="m-5 mt-20">
               <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-                <Button onClick={handleOpen} variant="outlined" startIcon={<AddIcon />}>
+                <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
                   Thêm danh mục
                 </Button>
 
@@ -318,7 +412,7 @@ const handleDeleteCategory = (categoryId: string) => {
                         </TableCell>
                      
                         <TableCell  >
-                          <Button variant="outlined" color="primary">
+                          <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(category)} >
                             Edit
                           </Button>
                           <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteCategory(category.id)}>
