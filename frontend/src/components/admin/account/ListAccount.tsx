@@ -1,7 +1,6 @@
 
 'use client'
 
-
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -59,8 +58,8 @@ const ListAccount = () => {
     }
   }, []);
 
-  const loadUsers = async () => {
-    await requestApi("users", "GET").then((res:any)=>{
+  const loadUsers = () => {
+     requestApi("users", "GET").then((res:any)=>{
     console.log('res',res);
     if(res.success){
       setUsers(res.data);

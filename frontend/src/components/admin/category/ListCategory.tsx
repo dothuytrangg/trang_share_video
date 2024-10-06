@@ -93,8 +93,8 @@ const ListCategory = () => {
   // const [open, setOpen] = React.useState(false);
   // const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
-  const loadCategories = async () => {
-      await requestApi("categories", "GET").then((res:any)=>{
+  const loadCategories = () => {
+       requestApi("categories", "GET").then((res:any)=>{
       // console.log('res',res);
       if(res.success){
         setCategories(res.data);

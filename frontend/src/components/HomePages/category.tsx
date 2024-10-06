@@ -8,8 +8,8 @@ export default function Category() {
   useEffect(() => {
       loadCategories();
   }, []);
-  const loadCategories = async () => {
-    var check = await requestApi("categories", "GET", (res: any) => {
+  const loadCategories =  () => {
+    var check =  requestApi("categories", "GET", (res: any) => {
       // if (res.success) {  
       //   console.log('res',res)
       //   console.log('categories:'+ categories);
@@ -17,7 +17,7 @@ export default function Category() {
       console.log(res);
     });
     console.log('check hompage',check)
-    setCategories(check.data);
+   // setCategories(check.data);
     // console.log('category',categories)
   };
   const renderCategory = () => {

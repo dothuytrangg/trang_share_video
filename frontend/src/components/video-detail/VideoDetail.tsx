@@ -1,3 +1,5 @@
+
+'use client'
 import React from 'react';
 import { Box, Grid, Typography, Avatar, Button, IconButton, TextField } from '@mui/material';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
