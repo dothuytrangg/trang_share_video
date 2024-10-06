@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, TextField } from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField } from "@mui/material";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
 import requestApi from "../../../../helpers/api";
 
@@ -64,7 +64,8 @@ const ListCategory = () => {
   const [nameErrorMessage, setNameErrorMessage] = useState("");
   const [descriptionError, setDescriptionError] = useState(false);
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-
+  const [page,setPage] = useState(1);
+  const [lastPage,setLastPage] = useState(1);
   // Custom Alert for Snackbar
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -86,18 +87,19 @@ const ListCategory = () => {
       if (masterStore.isAdmin) {
         setLoading(false);
       }
-      loadCategories();
+      loadCategories(page);
       ranonce = true;
     }
   }, []);
   // const [open, setOpen] = React.useState(false);
   // const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
-  const loadCategories = async () => {
-      await requestApi("categories", "GET").then((res:any)=>{
-      // console.log('res',res);
+  const loadCategories = async (pageSelected:number) => {
+      await requestApi(`categories?page=${pageSelected}&items_per_page=5&search`, "GET").then((res:any)=>{
+      console.log('res category',res);
       if(res.success){
         setCategories(res.data);
+        setLastPage(res.lastPage);
       }
 
     }).catch((err:any)=>{
@@ -167,7 +169,7 @@ const handleCreateCategory = (): void => {
           // dispatch(loginSuccess({ ...res }));
           // dispatch(updateLocalStorage());
           // router.replace(`/${locale}/admin/category`)
-          loadCategories();
+          loadCategories(page);
           console.log('create success')
           setOpenAddDialog(false)
           setSnackbarMessage("Category created successfully!");
@@ -208,7 +210,7 @@ const handleUpdateCategory = (categoryId: string) => {
     requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
       .then((res: any) => {
         if (res.success) {
-           loadCategories()
+           loadCategories(page)
            console.log('res update',res)
            dispatch(updateLocalStorage());
        
@@ -236,7 +238,7 @@ const handleDeleteCategory = (categoryId: string) => {
     .then((res: any) => {
       
       if (res.success) {
-        loadCategories()
+        loadCategories(page)
         console.log("Category deleted:", res);
         setSnackbarMessage("Category deleted successfully!");
         setSnackbarSeverity("success");
@@ -255,6 +257,12 @@ const handleDeleteCategory = (categoryId: string) => {
       setOpenSnackbar(true);
     });
 };
+
+const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  setPage(value);
+  loadCategories(value);
+};
+  
  
   const renderPage = () => {
     if (!loading) {
@@ -427,7 +435,12 @@ const handleDeleteCategory = (categoryId: string) => {
                 
                 </TableBody>
                 </Table>
+  
               </TableContainer>
+              <Stack spacing={2}>
+                  <Pagination style={{margin:10}}  count={lastPage} page={page} onChange={handleChange}  variant="outlined" color="primary"  />
+              
+                </Stack>
 
             </div>
           </React.StrictMode>
