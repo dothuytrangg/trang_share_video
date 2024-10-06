@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AdminAuth } from 'src/auth/admin.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 // import { AuthGuard } from '';
 import { CategoriesService } from 'src/categories/categories.service';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
+import { FilterCategoryDto } from 'src/categories/dto/filter-category.dto';
 import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
 import { Category } from 'src/categories/entities/categories.entity';
 
@@ -11,11 +12,12 @@ import { Category } from 'src/categories/entities/categories.entity';
 export class CategoriesController {
     constructor(private categoryService:CategoriesService){}
 
+
     @UseGuards(AdminAuth)
     @Get()
-    findAll(){
-        // console.log("sasa")
-        return this.categoryService.findAll();
+    findAll(@Query() query:FilterCategoryDto):Promise<Category[]>{
+        console.log(query);
+        return this.categoryService.findAll(query);
     }
 
 

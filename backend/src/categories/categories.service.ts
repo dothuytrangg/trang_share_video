@@ -2,10 +2,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
+import { FilterCategoryDto } from 'src/categories/dto/filter-category.dto';
 import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
 import { Category } from 'src/categories/entities/categories.entity';
 import { common_response } from 'src/ultils/common';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
@@ -14,63 +15,58 @@ export class CategoriesService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async findAll(): Promise<Category[]> {
-    let response = common_response;
-    let catgegories = await this.categoryRepository.find({
-      select: ['id', 'name', 'description', 'created_at'],
-    });
-    if(catgegories.length > 0){
-      // console.log(catgegories.length)
-      response.data = catgegories;
-      response.success = true;
-      // console.log('res',response);
-      // console.log(response.data);
-      return response;
-    }
-    // console.log(catgegories);
-    // if (catgegories) {
-    //   response.data = catgegories;
-    //   response.success = true
-    //   // console.log(response);
-    //   return response;
-    // }
-    // else{
-    //   response.success = false;
-    // }
-    // console.log(response.data);
-    return response;
-  }
-  // async findAll(query:FilterUserDto):Promise<any>{
-  //     const items_per_page = Number(query.items_per_page) || 10;
-  //     const page = Number(query.page) || 1;
-  //     const skip = (page - 1)* items_per_page;
-  //     const keyword = query.search || '';
-  //     const [res, total] = await this.userRepository.findAndCount({
-  //         where:[
-  //             {full_name: Like('%' + keyword + '%')},
-  //             {email: Like('%' + keyword + '%')},
+  // async findAll(): Promise<Category[]> {
+  //   let response = common_response;
+  //   let catgegories = await this.categoryRepository.find({
+  //     select: ['id', 'name', 'description', 'created_at'],
+  //   });
+  //   if(catgegories.length > 0){
+  //     // console.log(catgegories.length)
+  //     response.data = catgegories;
+  //     response.success = true;
+  //     return response;
+  //   }
 
-  //         ],
-  //         order: {created_at:"DESC"},
-  //         take:items_per_page,
-  //         skip:skip,
-  //         select:['id','full_name','email','status','created_at','updated_at']
-
-  //     })
-  //     const lastPage = Math.ceil(total / items_per_page);
-  //     const nextPage = page + 1 > lastPage ? null : page + 1;
-  //     const prevPage = page - 1 < 1 ? null : page - 1;
-
-  //     return {
-  //         data: res,
-  //         total,
-  //         currenPage:page,
-  //         nextPage,
-  //         prevPage,
-  //         lastPage
-  //     }
-
+  //   return response;
   // }
+  async findAll(query:FilterCategoryDto):Promise<any>{
+    let response = common_response;
+    const items_per_page = Number(query.items_per_page) || 3;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1)* items_per_page;
+    const keyword = query.search || '';
+    const [res, total] = await this.categoryRepository.findAndCount({
+        where:[
+            {name: Like('%' + keyword + '%')}
+           
+
+        ],
+        order: {created_at:"DESC"},
+        take:items_per_page,
+        skip:skip,
+        select: ['id', 'name', 'description', 'created_at'],
+
+    })
+    const lastPage = Math.ceil(total / items_per_page);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+    if([res, total]){
+      response.success = true;
+      response.data = res;
+      response.page = page;
+      response.lastPage = lastPage;
+      response.nextPage = nextPage;
+      response.prevPage = prevPage;
+      response.total = total;
+      return response;
+    }else{
+      response.success = false;
+    }
+
+    return response;
+
+}
+
 
   async findOne(id: number): Promise<Category> {
     return await this.categoryRepository.findOneBy({ id });
