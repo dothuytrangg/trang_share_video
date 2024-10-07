@@ -122,24 +122,30 @@ const LoginView = () => {
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email.value) {
       setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
+      setEmailErrorMessage('Email not empty');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+      setEmailError(true);
+      setEmailErrorMessage('Invalid email address.');
       isValid = false;
     } else {
       setEmailError(false);
-      setEmailErrorMessage("");
+      setEmailErrorMessage('');
     }
-
-    if (!password.value || password.value.length < 6) {
+    if (!password.value) {
       setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
+      setPasswordErrorMessage('Password not empty');
+      isValid = false;
+    } else if (password.value.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
     } else {
       setPasswordError(false);
-      setPasswordErrorMessage("");
+      setPasswordErrorMessage('');
     }
-
     return isValid;
   };
 

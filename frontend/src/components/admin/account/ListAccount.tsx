@@ -81,31 +81,41 @@ const validateInputs = () => {
 
   if (!full_name.value ) {
     setNameError(true);
-    setNameErrorMessage("Please enter full name.");
+    setNameErrorMessage("Name not empty");
+    isValid = false;
+  } else if(full_name.value.length < 3){
+    setNameError(true);
+    setNameErrorMessage("Name must be at least 3 characters long.");
     isValid = false;
   } else {
     setNameError(false);
     setNameErrorMessage("");
   }
 
-  if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+  if (!email.value) {
     setEmailError(true);
-    setEmailErrorMessage("Please enter a valid email address.");
+    setEmailErrorMessage('Email not empty');
+    isValid = false;
+  } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+    setEmailError(true);
+    setEmailErrorMessage('Invalid email address.');
     isValid = false;
   } else {
     setEmailError(false);
-    setEmailErrorMessage("");
+    setEmailErrorMessage('');
   }
-
-  if (!password.value || password.value.length < 6) {
+  if (!password.value) {
     setPasswordError(true);
-    setPasswordErrorMessage("Password must be at least 6 characters long.");
+    setPasswordErrorMessage('Password not empty');
+    isValid = false;
+  } else if (password.value.length < 6) {
+    setPasswordError(true);
+    setPasswordErrorMessage('Password must be at least 6 characters long.');
     isValid = false;
   } else {
     setPasswordError(false);
-    setPasswordErrorMessage("");
+    setPasswordErrorMessage('');
   }
-
   return isValid;
 };
 

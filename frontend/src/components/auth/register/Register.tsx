@@ -92,16 +92,23 @@ const Register = () => {
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email.value) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage('Email not empty');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+      setEmailError(true);
+      setEmailErrorMessage('Invalid email address.');
       isValid = false;
     } else {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-
-    if (!password.value || password.value.length < 6) {
+     if (!password.value) {
+      setPasswordError(true);
+      setPasswordErrorMessage('Password not empty');
+      isValid = false;
+    } else if (password.value.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
@@ -109,12 +116,16 @@ const Register = () => {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-
-    if (!name.value || name.value.length < 1) {
+    if (!name.value) {
       setNameError(true);
-      setNameErrorMessage('Name is required.');
+      setNameErrorMessage('Name not empty');
       isValid = false;
-    } else {
+    }else if (name.value.length < 3) {
+      setNameError(true);
+      setNameErrorMessage('Name must be at least 3 characters long.');
+      isValid = false;
+    }
+     else {
       setNameError(false);
       setNameErrorMessage('');
     }

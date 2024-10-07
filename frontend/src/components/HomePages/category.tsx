@@ -5,27 +5,27 @@ import { useEffect, useState } from "react";
 
 export default function Category() {
   const [categories, setCategories] = useState([]);
-  const [page,setPage] = useState(1)
-  const [lastPage,setLastPage] = useState(1)
+  const [page, setPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
   useEffect(() => {
-      loadCategories(page);
+    loadCategories(page);
   }, []);
-  const loadCategories = async (pageSelected:number) => {
-    await requestApi(`categories?page=${pageSelected}&items_per_page=10&search`, "GET").then((res:any)=>{
-    console.log('res category',res);
-    if(res.success){
-      setCategories(res.data);
-      setLastPage(res.lastPage);
-    }
+  const loadCategories = async (pageSelected: number) => {
+    await requestApi(`categories?page=${pageSelected}&items_per_page=10&search`, "GET").then((res: any) => {
+      console.log('res category', res);
+      if (res.success) {
+        setCategories(res.data);
+        setLastPage(res.lastPage);
+      }
 
-  }).catch((err:any)=>{
+    }).catch((err: any) => {
       console.error(err);
-  })
-  // console.log(check)
-  // setCategories(check.data);
-  // console.log('category hhh',categories);
-};
- 
+    })
+    // console.log(check)
+    // setCategories(check.data);
+    // console.log('category hhh',categories);
+  };
+
   const renderCategory = () => {
     // if (categories.length === 0) {
     //   return <p>No categories found.</p>;
