@@ -13,7 +13,7 @@ import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import requestApi from '../../../../helpers/api';
-import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, TextField } from '@mui/material';
+import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { updateLocalStorage } from '@/stores/features/masterSlice';
 function createData(
   name: string,
@@ -45,7 +45,7 @@ const ListAccount = () => {
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
- 
+  const [page,setPage] = useState(1);
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -53,16 +53,18 @@ const ListAccount = () => {
       if (masterStore.isAdmin) {
         setLoading(false);
       }
-      loadUsers();
+      loadUsers(page);
       ranonce = true;
     }
   }, []);
+  // users?page=2&items_per_page=3&search
 
-  const loadUsers = () => {
-     requestApi("users", "GET").then((res:any)=>{
+  const loadUsers = async (pageSelected:number) => {
+    await requestApi(`users?page=${pageSelected}&items_per_page=5&search`, "GET").then((res:any)=>{
     console.log('res',res);
     if(res.success){
       setUsers(res.data);
+      setLastPage(res.lastPage)
     }
 
   }).catch((err:any)=>{
@@ -124,6 +126,8 @@ const updateValidateInputs = () => {
 
   return isValid;
 };
+
+const [lastPage,setLastPage] = useState(1);
 const handleCreateUser = (): void => {
   const valid: boolean = validateInputs();
 
@@ -137,7 +141,7 @@ const handleCreateUser = (): void => {
       .then((res: any) => {
         console.log('res create',res);
         if (res.success) {
-          loadUsers()
+          loadUsers(page)
           console.log('create success')
           setOpenAddDialog(false)
           setSnackbarMessage("User created successfully!");
@@ -176,7 +180,7 @@ const handleUpdateUser = (userId: string) => {
     requestApi(`users/${userId}`, "PUT", userData_update)
       .then((res: any) => {
         if (res.success) {
-           loadUsers();
+           loadUsers(page);
            console.log('res update',res)
            dispatch(updateLocalStorage());
        
@@ -205,7 +209,7 @@ const handleDeleteUser = (userId: string) => {
     .then((res: any) => {
       
       if (res.success) {
-        loadUsers()
+        loadUsers(page)
         setSnackbarMessage("User deleted successfully!");
         setSnackbarSeverity("success");
         setOpenSnackbar(true);
@@ -222,6 +226,10 @@ const handleDeleteUser = (userId: string) => {
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
     });
+};
+const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  setPage(value);
+  loadUsers(value);
 };
   
 
@@ -368,6 +376,7 @@ const handleDeleteUser = (userId: string) => {
                   <TableCell>ID</TableCell>
                   <TableCell >Full Name</TableCell>
                   <TableCell >Email</TableCell>
+                  <TableCell >Role</TableCell>
                   <TableCell >Created at</TableCell>
                   <TableCell >Action</TableCell>
                 </TableRow>
@@ -379,6 +388,9 @@ const handleDeleteUser = (userId: string) => {
                         <TableCell>{user.id}</TableCell>
                         <TableCell >{user.full_name}</TableCell>
                         <TableCell >{user.email}</TableCell>
+                        <TableCell >{
+                           user.role == 3 ? 'admin' :'user'
+                          }</TableCell>
                         <TableCell >
                           {user.created_at}
                         </TableCell>
@@ -400,12 +412,22 @@ const handleDeleteUser = (userId: string) => {
                 
                 </TableBody>
             </Table>
+  
           </TableContainer>
+          <Stack spacing={2}>
+      <Pagination style={{margin:10}}  count={lastPage} page={page} onChange={handleChange}  variant="outlined" color="primary"  />
+  
+    </Stack>
+ 
+
+
 
         </div>
+    
 
 
         </React.StrictMode>
+
   
       </div>
     }

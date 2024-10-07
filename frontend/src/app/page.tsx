@@ -1,7 +1,7 @@
 import { _GLOBAL } from '@/contstants';
 import { useLocale } from 'next-intl';
 import { redirect } from 'next/navigation';
-import SendOTP from '@/components/sendOTP';
+
 
 
 

@@ -6,18 +6,18 @@ import { useEffect, useState } from "react";
 export default function Category() {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-      loadCategories();
+    loadCategories();
   }, []);
-  const loadCategories =  () => {
-    var check =  requestApi("categories", "GET", (res: any) => {
+  const loadCategories = async () => {
+    var check = await requestApi("categories", "GET", (res: any) => {
       // if (res.success) {  
       //   console.log('res',res)
       //   console.log('categories:'+ categories);
       // }
       console.log(res);
     });
-    console.log('check hompage',check)
-   // setCategories(check.data);
+    console.log('check hompage', check)
+    setCategories(check.data);
     // console.log('category',categories)
   };
   const renderCategory = () => {
@@ -33,7 +33,7 @@ export default function Category() {
         variant="contained"
         size="small"
       >
-        {category.name} 
+        {category.name}
       </Button>
     ));
   };

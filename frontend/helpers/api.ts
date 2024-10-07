@@ -13,6 +13,7 @@ export default function requestApi(
   endpoint: any,
   method: any,
   body?: any,
+  // page?: number,   // Add optional query parameters here
   responseType = "json"
 ) {
   let URL_API = "";
@@ -74,6 +75,7 @@ export default function requestApi(
   return instance.request({
     method: method,
     url: `${URL_API}/${endpoint}`,
+    // params: {page},  // Add the query parameters here
     data: body,
     responseType: responseType as any,
   });

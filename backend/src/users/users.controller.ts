@@ -13,17 +13,17 @@ import { storageConfig } from 'helpers/config';
 export class UsersController {
 
     constructor(private userService:UsersService){}
-    // @UseGuards(AuthGuard)
-    // @Get()
-    // fFindAll(@Query() query: FilterUserDto):Promise<User[]>{
-    //     console.log(query);
-    //     return this.userService.findAll(query);
-    // }
     @UseGuards(AuthGuard)
     @Get()
-    fFindAll():Promise<User[]>{
-        return this.userService.findAll();
+    FindAllPage(@Query() query: FilterUserDto):Promise<User[]>{
+        // console.log(query);
+        return this.userService.findAllPage(query);
     }
+    // @UseGuards(AuthGuard)
+    // @Get()
+    // FindAll():Promise<User[]>{
+    //     return this.userService.findAll();
+    // }
 
     @UseGuards(AuthGuard)
     @Get(':id')
