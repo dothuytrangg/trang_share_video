@@ -18,7 +18,8 @@
         "logout":"Đăng xuất",
         "search":"Tìm kiếm" ,
         "management_account":"Quản lí tài khoản",
-        "management_category":"Quản lí danh mục"
+        "management_category":"Quản lí danh mục",
+        "addCategory":"Thêm danh mục"
 
     } 
 }

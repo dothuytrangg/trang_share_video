@@ -18,6 +18,9 @@
     "logout": "Logout",
     "search": "Search",
    "management_category": "Category Management",
-    "management_account": "Account Magement"
+    "management_account": "Account Magement",
+    "addCategory":"Add category"
+    
   }
+
 }

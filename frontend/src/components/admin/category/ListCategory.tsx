@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField } from "@mui/material";
@@ -54,7 +54,6 @@ const ListCategory = () => {
   var ranonce = false;
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const locale = useLocale();
   const [categories, setCategories] = useState([]);
   const masterStore = useAppSelector((state) => state.master);
   const [name, setName] = useState("");
@@ -66,6 +65,8 @@ const ListCategory = () => {
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
   // Custom Alert for Snackbar
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -79,6 +80,7 @@ const ListCategory = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+
 
 
   const dispatch = useAppDispatch();
@@ -404,7 +406,7 @@ const ListCategory = () => {
             <div className="m-5 mt-20">
               <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
                 <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
-                  Thêm danh mục
+                  {t('addCategory')}
                 </Button>
 
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">

@@ -87,6 +87,7 @@ const LoginView = () => {
   var oneTime = false;
   useEffect(() => {
     if (!oneTime) {
+      console.log('locale: ', locale);
       const action = query.get("action");
       if (action == "logout") {
         dispatch(logout());
