@@ -92,9 +92,9 @@ const LoginView = () => {
         dispatch(logout());
         dispatch(updateLocalStorage());
         setApprove(true);
-      }else if(!masterStore.isAuth){
+      } else if (!masterStore.isAuth) {
         setApprove(true)
-      }else{
+      } else {
         console.log('locale: ', locale);
         router.push(`/${locale}`)
       }
@@ -169,7 +169,7 @@ const LoginView = () => {
 
   const renderLogin = () => {
     if (!approve) {
-     
+
     } else {
       return (
         <SignInContainer direction="column" justifyContent="space-between">
