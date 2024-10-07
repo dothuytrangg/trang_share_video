@@ -13,7 +13,7 @@ export class CategoriesController {
     constructor(private categoryService:CategoriesService){}
 
 
-    @UseGuards(AdminAuth)
+    @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query:FilterCategoryDto):Promise<Category[]>{
         console.log(query);
