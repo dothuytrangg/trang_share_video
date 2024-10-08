@@ -130,10 +130,11 @@ const LoginView = () => {
       setEmailError(true);
       setEmailErrorMessage('Invalid email address.');
       isValid = false;
-    } else {
+    } else{
       setEmailError(false);
       setEmailErrorMessage('');
     }
+//----------------------------password-----------------------------------------
     if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage('Password not empty');
@@ -235,6 +236,7 @@ const LoginView = () => {
                   />
                 </FormControl>
                 <FormControl>
+                  <FormLabel htmlFor="password">Password</FormLabel>
                   <TextField
                     value={password}
                     onChange={(val) => {

@@ -83,14 +83,24 @@ const validateInputs = () => {
     setNameError(true);
     setNameErrorMessage("Name not empty");
     isValid = false;
-  } else if(full_name.value.length < 3){
+  } else if(full_name.value.length > 3){
     setNameError(true);
-    setNameErrorMessage("Name must be at least 3 characters long.");
+    setNameErrorMessage("Name must be at most 3 characters long.");
     isValid = false;
-  } else {
+  } else if (full_name.value.length < 20) 
+    {
+      setNameError(true);
+      setNameErrorMessage("Name must be at least 20 characters long.");
+      isValid = false;
+    }else if (full_name){
+    setNameError(true);
+    setNameErrorMessage("Name already exists");
+    isValid = false;
+    }else{
     setNameError(false);
     setNameErrorMessage("");
   }
+//----------------------------email-----------------------------------------
 
   if (!email.value) {
     setEmailError(true);
@@ -100,10 +110,15 @@ const validateInputs = () => {
     setEmailError(true);
     setEmailErrorMessage('Invalid email address.');
     isValid = false;
-  } else {
+  } else if(email){
+    setEmailError(true);
+    setEmailErrorMessage('Email already exists');
+    isValid = false;
+  }else {
     setEmailError(false);
     setEmailErrorMessage('');
   }
+//----------------------------password--------------------------------
   if (!password.value) {
     setPasswordError(true);
     setPasswordErrorMessage('Password not empty');
@@ -124,15 +139,26 @@ const updateValidateInputs = () => {
 
   let isValid = true;
 
-  if (!full_name.value ) {
+  if (!full_name.value) {
     setNameError(true);
-    setNameErrorMessage("Please enter full name.");
+    setNameErrorMessage("Name not empty");
+    isValid = false;
+  } else if (full_name.value.length > 3) {
+    setNameError(true);
+    setNameErrorMessage("Name must be at more 3 characters long.");
+    isValid = false;
+  } else if (full_name.value.length < 20) {
+    setNameError(true);
+    setNameErrorMessage("Name must be at least 20 characters long.");
+    isValid = false;
+  } else if (full_name) {
+    setNameError(true);
+    setNameErrorMessage("Name already exists");
     isValid = false;
   } else {
     setNameError(false);
     setNameErrorMessage("");
   }
-
 
   return isValid;
 };

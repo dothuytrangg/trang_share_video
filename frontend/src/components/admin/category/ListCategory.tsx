@@ -127,6 +127,11 @@ const ListCategory = () => {
       setNameErrorMessage('Name must be at least 3 characters long.');
       isValid = false;
     }
+    else if (name) {
+      setNameError(true);
+      setNameErrorMessage('Name already exists');
+      isValid = false;
+    }
     else {
       setNameError(false);
       setNameErrorMessage('');

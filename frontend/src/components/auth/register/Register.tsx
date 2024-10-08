@@ -100,14 +100,16 @@ const Register = () => {
       setEmailError(true);
       setEmailErrorMessage('Invalid email address.');
       isValid = false;
-    } else {
+    }else{
       setEmailError(false);
       setEmailErrorMessage('');
     }
+//----------------------------password-----------------------------------------
+
      if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage('Password not empty');
-      isValid = false;
+       isValid = false;
     } else if (password.value.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 6 characters long.');
@@ -116,16 +118,16 @@ const Register = () => {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
+//----------------------------name-----------------------------------------
     if (!name.value) {
       setNameError(true);
       setNameErrorMessage('Name not empty');
       isValid = false;
     }else if (name.value.length < 3) {
       setNameError(true);
-      setNameErrorMessage('Name must be at least 3 characters long.');
+      setNameErrorMessage('Name must be at more 3 characters long.');
       isValid = false;
-    }
-     else {
+    } else{
       setNameError(false);
       setNameErrorMessage('');
     }
@@ -143,7 +145,7 @@ const Register = () => {
     });
   };
 
-  const handleRegister = (): void => {
+  const handleRegister = async (): Promise<void> => {
     const valid: boolean = validateInputs();
 
     if (valid) {
@@ -154,22 +156,37 @@ const Register = () => {
 
       };
 
-      requestApi('auth/register', 'POST', registerData)
-        .then((res: any) => {
-          if (res.success) {
-            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
-          } else {
-            setErrorRegister(res.message)
-          }
+      try {
+        // Make the API request
+        const res = await requestApi('auth/register', 'POST', registerData);
 
-
-          // Handle successful registration, e.g., store token or redirect
-          // router.replace('/'); // Example: Redirect to home or login page
-        })
-        .catch((err: any) => {
-          console.error('Registration failed:', err.response?.data || err.message);
-          // Handle registration failure (e.g., show error message)
-        });
+        // Check backend response (accessing data from res.data)
+        if (res.data.success === true) {
+          // If registration successful, redirect to login
+          router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
+        } else {
+          // Handle backend error messages
+          setErrorRegister(res.data.message);
+          setEmailError(true);
+          setEmailErrorMessage(res.data.message);
+   
+        }
+      } catch (err: any) {
+        // Handling Axios errors
+        if (err.response) {
+          // Error from the server
+          console.error('Registration failed:', err.response.data.message);
+          setErrorRegister(err.response.data.message || 'Registration failed. Please try again.');
+        } else if (err.request) {
+          // No response from the server
+          console.error('No response received from server:', err.request);
+          setErrorRegister('No response from server. Please try again.');
+        } else {
+          // Any other errors
+          console.error('Unexpected error occurred:', err.message);
+          setErrorRegister('An unexpected error occurred. Please try again.');
+        }
+      }
     }
   };
 

@@ -17,7 +17,9 @@
     "register": "Register",
     "logout": "Logout",
     "search": "Search",
-   "management_category": "Category Management",
-    "management_account": "Account Magement"
+    "management_category": "Category Management",
+    "management_account": "Account Magement",
+    "signin_login": "Sign in",
+    "signin_password": "Password"
   }
 }

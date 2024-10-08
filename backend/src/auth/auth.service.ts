@@ -13,6 +13,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { common_response } from 'src/ultils/common';
+import validator from 'validator';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,17 @@ export class AuthService {
       response.success = false;
       response.message = 'Email already existed';
       return response;
+    } else if (!validator.isEmail(registerUserDto.email)){
+      response.success = false;
+      response.message = 'Email must be a valid email...';
+      return response;
     }
+    if (!registerUserDto.password) {
+      response.success = false;
+      response.message = 'Password not empty';
+      return response;
+    } 
+
     const hashPassword = await this.hashPassword(registerUserDto.password);
     let user = await this.userRepository.save({
         ...registerUserDto,
@@ -61,7 +72,12 @@ export class AuthService {
         response.success = false;
         response.message = "User not existing."
         return response;
-    }
+    } 
+     if (!validator.isEmail(loginUserDto.email)){
+      response.success = false;
+      response.message = 'Email must be a valid email...';
+      return response;
+    } 
     const checkPass = await bcrypt.compareSync(
       loginUserDto.password,
       user.password,
