@@ -17,23 +17,10 @@ export class AuthController {
         console.log('register api');
         console.log(registerUserDto);
 
-        try {
+       
             const response = await this.authService.register(registerUserDto);
             return response;
-        } catch (error) {
-            if (error instanceof ConflictException) {
-                throw new HttpException(error.message, HttpStatus.CONFLICT);
-            }
-            throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
-    @Get('check-email')
-    async checkEmail(@Query('email') email: string): Promise<{ exists: boolean }> {
-        const exists = await this.authService.checkEmailExists(email);
-        return { exists };
-    }
-
-
     @Post('login')
     @UsePipes(ValidationPipe)
     login(@Body() loginUserDto:LoginUserDto): Promise<any>{

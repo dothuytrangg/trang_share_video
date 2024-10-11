@@ -27,14 +27,19 @@ export class AuthService {
   async register(registerUserDto: RegisterUserDto) {
     let response = common_response;
 
-    const emailExists = await this.checkEmailExists(registerUserDto.email);
-    if (emailExists) {
-      throw new ConflictException('Email already exists');
-    }else if (!validator.isEmail(registerUserDto.email)) {
+    // const emailExist  = await this.userRepository.findOne({
+    //   where: { email: registerUserDto.email },
+    // });
+    // if (emailExist) {
+    //   response.success = false;
+    //   throw new ConflictException('Email already exists');
+    // }
+    if (!validator.isEmail(registerUserDto.email)){
       response.success = false;
-      response.message = 'Email must be a valid email.';
+      response.message = 'Email must be a valid email...';
       return response;
     }
+
 
     if (!registerUserDto.password) {
       response.success = false;
@@ -50,16 +55,15 @@ export class AuthService {
       refresh_token: 'refresh_token_string',
       password: hashPassword,
     });
-    if (user) 
-    response.message = 'Registration successful';
-    return response;
-  }
+    if (user) {
+      response.success = true;  
+      response.message = 'Registration successful';
+    } else {
+      response.success = false;
+      response.message = 'Registration failed';
+    }
 
-  async checkEmailExists(email: string): Promise<boolean> {
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
-    return !!user; // Trả về true nếu user tồn tại, ngược lại false
+    return response;
   }
 
   async findUserById(id:any){

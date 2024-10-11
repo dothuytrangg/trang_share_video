@@ -1,6 +1,6 @@
+import { CreateUserDto } from './dto/create-user.dto';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/users.entity';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -71,12 +71,6 @@ export class UsersService {
     async findOne(id:number):Promise<User>{
         return await this.userRepository.findOneBy({id});
     }
-  async checkEmailExists(email: string): Promise<boolean> {
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
-    return !!user; // Trả về true nếu user tồn tại, ngược lại false
-  }
 
   async create(CreateUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
@@ -89,13 +83,14 @@ export class UsersService {
         return response;  
       }
 
-      const emailExists = await this.checkEmailExists(CreateUserDto.email);
-      if (emailExists) {
-        response.success = false;
-        response.message = 'Email already exists.';
-        return response;  
-      }
-
+      // const emailExist = await this.userRepository.findOne({
+      //   where: {email: CreateUserDto.email },
+      // });
+      // if(emailExist){
+      //   response.success = false;
+      //   response.message = 'Email already exists.';
+      //   return response;
+      // }
       // Hash the password
       const hashPassword = await this.hashPassword(CreateUserDto.password);
 
