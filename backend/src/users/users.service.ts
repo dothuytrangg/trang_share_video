@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/users.entity';
@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { FilterUserDto } from 'src/users/dto/filter-user.dto';
 import { common_response } from 'src/ultils/common';
+import validator from 'validator';
 
 
 @Injectable()
@@ -70,34 +71,67 @@ export class UsersService {
     async findOne(id:number):Promise<User>{
         return await this.userRepository.findOneBy({id});
     }
+  async checkEmailExists(email: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    return !!user; // Trả về true nếu user tồn tại, ngược lại false
+  }
 
-    async create(CreateUserDto:  CreateUserDto): Promise<User> {
-        let response = common_response;
-        try {
-          const hashPassword = await this.hashPassword(CreateUserDto.password);
-          let user = await this.userRepository.save({...CreateUserDto, refresh_token: 'refresh_token_string',
-            password: hashPassword})
-          if (user) {
-            response.user = user
-            return response;
-          } else {
-            response.success = false;
-          }
-          return response;
-        } catch (error) {
-          response.success = false;
-          response.message = error;
-          return response;
-        }
-      
+  async create(CreateUserDto: CreateUserDto): Promise<User> {
+    let response = common_response;
+
+    try {
+      // Validate email existence and format
+      if (!validator.isEmail(CreateUserDto.email)) {
+        response.success = false;
+        response.message = 'Email must be a valid email.';
+        return response;  
       }
+
+      const emailExists = await this.checkEmailExists(CreateUserDto.email);
+      if (emailExists) {
+        response.success = false;
+        response.message = 'Email already exists.';
+        return response;  
+      }
+
+      // Hash the password
+      const hashPassword = await this.hashPassword(CreateUserDto.password);
+
+      // Create the user
+      let user = await this.userRepository.save({
+        ...CreateUserDto,
+        refresh_token: 'refresh_token_string',
+        password: hashPassword,
+      });
+
+      if (user) {
+        response.success = true;  
+        response.user = user;
+      } else {
+        response.success = false;
+        response.message = 'User creation failed.';
+      }
+    } catch (error) {
+      response.success = false;
+      response.message = error.message || 'An unexpected error occurred.';
+    }
+
+    return response;
+  }
+
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
       let response = common_response;
+      
   
       let updateUser =  await this.userRepository.update(id,updateUserDto);
       if(updateUser){
         response.success = true;
         return response;
+      } else if (!updateUserDto.full_name){
+        response.success = false;
+        response.message = 'Full name cannot be empty';
       }else{
         response.success = false;
       }

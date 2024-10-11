@@ -87,6 +87,7 @@ const LoginView = () => {
   var oneTime = false;
   useEffect(() => {
     if (!oneTime) {
+      console.log('locale: ', locale);
       const action = query.get("action");
       if (action == "logout") {
         dispatch(logout());
@@ -124,11 +125,11 @@ const LoginView = () => {
 
     if (!email.value) {
       setEmailError(true);
-      setEmailErrorMessage('Email not empty');
+      setEmailErrorMessage(t('email_not_empty'));
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
-      setEmailErrorMessage('Invalid email address.');
+      setEmailErrorMessage(t("email_invalid"));
       isValid = false;
     } else{
       setEmailError(false);
@@ -137,11 +138,11 @@ const LoginView = () => {
 //----------------------------password-----------------------------------------
     if (!password.value) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password not empty');
+      setPasswordErrorMessage(t('password_not_empty'));
       isValid = false;
     } else if (password.value.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage(t("password_least_6"));
       isValid = false;
     } else {
       setPasswordError(false);
@@ -200,7 +201,7 @@ const LoginView = () => {
                 variant="h4"
                 sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
               >
-                Sign in
+                {t('login')}
               </Typography>
               <Box
                 component="form"
@@ -236,7 +237,8 @@ const LoginView = () => {
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <FormLabel htmlFor="password">{t('password')}</FormLabel>
+                  {/* <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel> */}
                   <TextField
                     value={password}
                     onChange={(val) => {
@@ -266,16 +268,16 @@ const LoginView = () => {
                   variant="contained"
                   onClick={() => handleLogin()}
                 >
-                  Sign in
+                  {t("login")}
                 </Button>
                 <Typography sx={{ textAlign: "center" }}>
-                  Don&apos;t have an account?{" "}
+                  {t('signin_login_question')}
                   <span>
                     <Link
                       className="text-blue-600 underline"
                       href={`/${locale}/${_GLOBAL.ROUTER_REGISTER}`}
                     >
-                      Sign up
+                      {t('register')}
                     </Link>
                   </span>
                 </Typography>

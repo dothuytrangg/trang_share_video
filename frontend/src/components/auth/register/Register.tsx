@@ -1,38 +1,21 @@
-
-'use client'
+'use client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import Link from 'next/link';
+import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
-import {
-  createTheme,
-  ThemeProvider,
-  styled
-
-} from '@mui/material/styles';
-
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from '@/components/auth/login/theme/CustomizeIcon';
-import { PaletteMode } from '@mui/material';
-import Image from 'next/image';
-import requestApi from '../../../../helpers/api';
+import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
-import exp from 'constants';
+import requestApi from '../../../../helpers/api';
+import { useLocale, useTranslations } from 'next-intl';
 import { useAppSelector } from '@/stores/hookStore';
 import { _GLOBAL } from '@/contstants';
-import { useLocale } from 'next-intl';
-import secureLocalStorage from 'react-secure-storage';
-
-
+import Image from 'next/image';
+import Link from 'next/link';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -40,36 +23,23 @@ const Card = styled(MuiCard)(({ theme }) => ({
   alignSelf: 'center',
   width: '100%',
   padding: theme.spacing(4),
-  gap: theme.spacing(2),
   margin: 'auto',
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+  boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
   [theme.breakpoints.up('sm')]: {
     width: '450px',
   },
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
   height: '100%',
   padding: 4,
-  backgroundImage:
-    'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-  backgroundRepeat: 'no-repeat',
-  ...theme.applyStyles('dark', {
-    backgroundImage:
-      'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-  }),
+  backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
 }));
 
 const Register = () => {
   const router = useRouter();
-  const logo = '/image/logo.png'
-  const [mode, setMode] = React.useState<PaletteMode>('light');
-  let [errorRegister, setErrorRegister] = React.useState('');
+  const logo = '/image/logo.png';
+  const [errorRegister, setErrorRegister] = React.useState('');
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -80,219 +50,168 @@ const Register = () => {
   const [password, setPassword] = React.useState('');
   const [full_name, setName] = React.useState('');
   const locale = useLocale();
-
-
-
-
+  const t = useTranslations("HomePage");
   const masterStore = useAppSelector((state) => state.master);
-  const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-    const name = document.getElementById('full_name') as HTMLInputElement;
 
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      const res = await requestApi(`auth/check-email?email=${email}`, 'GET');
+      return res.exists; // Giả sử API trả về { exists: true/false }
+    } catch (err) {
+      console.error('Error checking email:', err);
+      return false; // Nếu có lỗi, coi như email không tồn tại
+    }
+  };
+
+  const validateInputs = async () => {
     let isValid = true;
 
-    if (!email.value) {
-      setEmailError(true);
-      setEmailErrorMessage('Email not empty');
+    if (!full_name) {
+      setNameError(true);
+      setNameErrorMessage(t('name'));
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Invalid email address.');
+    } else if (full_name.length < 3) {
+      setNameError(true);
+      setNameErrorMessage(t('name_least_3'));
       isValid = false;
-    }else{
-      setEmailError(false);
-      setEmailErrorMessage('');
+    } else {
+      setNameError(false);
+      setNameErrorMessage('');
     }
-//----------------------------password-----------------------------------------
 
-     if (!password.value) {
+    if (!email) {
+      setEmailError(true);
+      setEmailErrorMessage(t('email_not_empty'));
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true);
+      setEmailErrorMessage(t('email_invalid'));
+      isValid = false;
+    } else {
+      const emailExists = await checkEmailExists(email);
+      if (emailExists) {
+        setEmailError(true);
+        setEmailErrorMessage(t('email_exist'));
+        return false; // Ngừng quá trình kiểm tra
+      } else {
+        setEmailError(false);
+        setEmailErrorMessage('');
+      }
+    }
+
+    if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password not empty');
-       isValid = false;
-    } else if (password.value.length < 6) {
+      setPasswordErrorMessage(t('password_not_empty'));
+      isValid = false;
+    } else if (password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage(t('password_least_6'));
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-//----------------------------name-----------------------------------------
-    if (!name.value) {
-      setNameError(true);
-      setNameErrorMessage('Name not empty');
-      isValid = false;
-    }else if (name.value.length < 3) {
-      setNameError(true);
-      setNameErrorMessage('Name must be at more 3 characters long.');
-      isValid = false;
-    } else{
-      setNameError(false);
-      setNameErrorMessage('');
-    }
 
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      full_name: data.get('full_name'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Ngăn chặn hành động mặc định
 
-  const handleRegister = async (): Promise<void> => {
-    const valid: boolean = validateInputs();
+    const valid = await validateInputs(); // Chờ kết quả validateInputs
 
     if (valid) {
-      const registerData = {
-        full_name,
-        email,
-        password,
-
-      };
+      const registerData = { full_name, email, password };
 
       try {
-        // Make the API request
         const res = await requestApi('auth/register', 'POST', registerData);
-
-        // Check backend response (accessing data from res.data)
-        if (res.data.success === true) {
-          // If registration successful, redirect to login
-          router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
+        if (res && res.success) {
+          router.push(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
         } else {
-          // Handle backend error messages
-          setErrorRegister(res.data.message);
-          setEmailError(true);
-          setEmailErrorMessage(res.data.message);
-   
+          setErrorRegister(res.message);
         }
       } catch (err: any) {
-        // Handling Axios errors
-        if (err.response) {
-          // Error from the server
-          console.error('Registration failed:', err.response.data.message);
-          setErrorRegister(err.response.data.message || 'Registration failed. Please try again.');
-        } else if (err.request) {
-          // No response from the server
-          console.error('No response received from server:', err.request);
-          setErrorRegister('No response from server. Please try again.');
-        } else {
-          // Any other errors
-          console.error('Unexpected error occurred:', err.message);
-          setErrorRegister('An unexpected error occurred. Please try again.');
-        }
+        console.error('Registration failed:', err);
+        setErrorRegister('An error occurred. Please try again.');
       }
     }
   };
 
   const renderRegister = () => {
     if (masterStore.isAuth) {
-      router.replace(`/${locale}`)
+      router.replace(`/${locale}`);
     } else {
-      return <SignUpContainer direction="column" justifyContent="space-between">
-        <Stack
-          sx={{
-            justifyContent: 'center',
-            height: '100dvh',
-            p: 2,
-          }}
-        >
-          <Card variant="outlined">
-            <Image src={logo} alt='author' width={50} height={50} ></Image>
-            <Typography
-              component="h1"
-              variant="h4"
-              sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-            >
-              Sign up
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-            >
-              <FormControl>
-                <FormLabel htmlFor="full_name">Full name</FormLabel>
-                <TextField
-                  autoComplete="full_name"
-                  onChange={(val) => { setName(val.target.value) }}
-                  name="full_name"
-                  fullWidth
-                  id="full_name"
-                  placeholder="Jon Snow"
-                  error={nameError}
-                  helperText={nameErrorMessage}
-                  color={nameError ? 'error' : 'primary'}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
-                <TextField
-                  fullWidth
-                  id="email"
-                  placeholder="your@email.com"
-                  name="email"
-                  onChange={(val) => { setEmail(val.target.value) }}
-                  autoComplete="email"
-                  variant="outlined"
-                  error={emailError}
-                  helperText={emailErrorMessage}
-                  color={passwordError ? 'error' : 'primary'}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <TextField
-                  fullWidth
-                  name="password"
-                  onChange={(val) => { setPassword(val.target.value) }}
-                  placeholder="••••••"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  variant="outlined"
-                  error={passwordError}
-                  helperText={passwordErrorMessage}
-                  color={passwordError ? 'error' : 'primary'}
-                />
-              </FormControl>
-              {errorRegister && (<p className='text-red-600 text-center'  >{errorRegister}</p>)}
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                onClick={() => handleRegister()}
-
-              >
-                Sign up
-              </Button>
-              <Typography sx={{ textAlign: 'center' }}>
-                Already have an account?{' '}
-                <span>
-                  <Link
-                    className="text-blue-600 underline"
-                    href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`}
-
-                  >
-                    Sign in
-                  </Link>
-                </span>
+      return (
+        <SignUpContainer direction="column" justifyContent="space-between">
+          <Stack sx={{ justifyContent: 'center', height: '100dvh', p: 2 }}>
+            <Card variant="outlined">
+              <Image src={logo} alt='author' width={50} height={50} />
+              <Typography component="h1" variant="h4" sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                {t('register')}
               </Typography>
-            </Box>
-
-
-          </Card>
-        </Stack>
-      </SignUpContainer>
-
+              <Box component="form" onSubmit={handleRegister} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <FormControl>
+                  <FormLabel htmlFor="full_name">{t('input_name')}</FormLabel>
+                  <TextField
+                    fullWidth
+                    id="full_name"
+                    placeholder="Jon Snow"
+                    value={full_name}
+                    onChange={(e) => setName(e.target.value)}
+                    error={nameError}
+                    helperText={nameErrorMessage}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <TextField
+                    fullWidth
+                    id="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailErrorMessage(''); // Clear error message
+                    }}
+                    error={emailError}
+                    helperText={emailErrorMessage}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="password">{t('password')}</FormLabel>
+                  <TextField
+                    fullWidth
+                    id="password"
+                    type="password"
+                    placeholder="••••••"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordErrorMessage(''); // Clear error message
+                    }}
+                    error={passwordError}
+                    helperText={passwordErrorMessage}
+                  />
+                </FormControl>
+                {errorRegister && <p className='text-red-600 text-center'>{errorRegister}</p>}
+                <Button type="submit" fullWidth variant="contained">
+                  {t('register')}
+                </Button>
+                <Typography sx={{ textAlign: 'center' }}>
+                  {(t('have_account'))}{' '}
+                  <Link href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`} className="text-blue-600 underline">
+                    {t('login')}
+                  </Link>
+                </Typography>
+              </Box>
+            </Card>
+          </Stack>
+        </SignUpContainer>
+      );
     }
-  }
+  };
 
   return renderRegister();
-}
-export default Register
+};
+
+export default Register;

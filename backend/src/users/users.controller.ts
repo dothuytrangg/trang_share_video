@@ -35,7 +35,14 @@ export class UsersController {
     // @UsePipes(ValidationPipe)
     @Post()
     create(@Body() createUserDto:CreateUserDto):Promise<User>{
+        
         return this.userService.create(createUserDto);
+    }
+
+    @Get('check-email')
+    async checkEmail(@Query('email') email: string): Promise<{ exists: boolean }> {
+        const exists = await this.userService.checkEmailExists(email);
+        return { exists };
     }
 
     @UseGuards(AuthGuard)

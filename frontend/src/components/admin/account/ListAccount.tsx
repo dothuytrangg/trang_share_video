@@ -15,6 +15,11 @@ import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import requestApi from '../../../../helpers/api';
 import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { updateLocalStorage } from '@/stores/features/masterSlice';
+import { _GLOBAL } from '@/contstants';
+import router from 'next/router';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from "next/navigation";
+
 function createData(
   name: string,
   calories: number,
@@ -46,12 +51,24 @@ const ListAccount = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [page,setPage] = useState(1);
-
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
   const dispatch = useAppDispatch();
+
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      const res = await requestApi(`auth/check-email?email=${email}`, 'GET');
+      return res.exists; // Giả sử API trả về { exists: true/false }
+    } catch (err) {
+      console.error('Error checking email:', err);
+      return false; // Nếu có lỗi, coi như email không tồn tại
+    }
+  };
   useEffect(() => {
     if (!ranonce) {
       if (masterStore.isAdmin) {
         setLoading(false);
+      //  router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`);
       }
       loadUsers(page);
       ranonce = true;
@@ -72,30 +89,26 @@ const ListAccount = () => {
   })
 
 };
-const validateInputs = () => {
+  
+const validateInputs = async () => {
   const full_name = document.getElementById("full_name") as HTMLInputElement;
   const email = document.getElementById("email") as HTMLInputElement;
   const password = document.getElementById("password") as HTMLInputElement;
 
   let isValid = true;
-
-  if (!full_name.value ) {
+  if(!full_name.value){
     setNameError(true);
-    setNameErrorMessage("Name not empty");
+    setNameErrorMessage(t("name"));
     isValid = false;
-  } else if(full_name.value.length > 3){
+  }else if(full_name.value.length < 3){
     setNameError(true);
-    setNameErrorMessage("Name must be at most 3 characters long.");
+    setNameErrorMessage(t("name_least_3"));
     isValid = false;
-  } else if (full_name.value.length < 20) 
+  } else if (full_name.value.length > 20) 
     {
       setNameError(true);
-      setNameErrorMessage("Name must be at least 20 characters long.");
+      setNameErrorMessage(t("name_more_20"));
       isValid = false;
-    }else if (full_name){
-    setNameError(true);
-    setNameErrorMessage("Name already exists");
-    isValid = false;
     }else{
     setNameError(false);
     setNameErrorMessage("");
@@ -104,28 +117,32 @@ const validateInputs = () => {
 
   if (!email.value) {
     setEmailError(true);
-    setEmailErrorMessage('Email not empty');
+    setEmailErrorMessage(t('email_not_empty'));
     isValid = false;
   } else if (!/\S+@\S+\.\S+/.test(email.value)) {
     setEmailError(true);
-    setEmailErrorMessage('Invalid email address.');
+    setEmailErrorMessage(t('email_invalid'));
     isValid = false;
-  } else if(email){
-    setEmailError(true);
-    setEmailErrorMessage('Email already exists');
-    isValid = false;
-  }else {
-    setEmailError(false);
-    setEmailErrorMessage('');
+  } else {
+    // Pass the email value (string) to checkEmailExists
+    const emailExists = await checkEmailExists(email.value); // Corrected line
+    if (emailExists) {
+      setEmailError(true);
+      setEmailErrorMessage(t('email_exist'));
+      isValid = false; // Indicate that validation failed
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage('');
+    }
   }
 //----------------------------password--------------------------------
   if (!password.value) {
     setPasswordError(true);
-    setPasswordErrorMessage('Password not empty');
+    setPasswordErrorMessage(t('password_not_empty'));
     isValid = false;
   } else if (password.value.length < 6) {
     setPasswordError(true);
-    setPasswordErrorMessage('Password must be at least 6 characters long.');
+    setPasswordErrorMessage(t('password_least_6'));
     isValid = false;
   } else {
     setPasswordError(false);
@@ -141,19 +158,15 @@ const updateValidateInputs = () => {
 
   if (!full_name.value) {
     setNameError(true);
-    setNameErrorMessage("Name not empty");
+    setNameErrorMessage(t("name"));
     isValid = false;
-  } else if (full_name.value.length > 3) {
+  } else if (full_name.value.length <3 ) {
     setNameError(true);
-    setNameErrorMessage("Name must be at more 3 characters long.");
+    setNameErrorMessage(t("name_least_3"));
     isValid = false;
-  } else if (full_name.value.length < 20) {
+  } else if (full_name.value.length > 20) {
     setNameError(true);
-    setNameErrorMessage("Name must be at least 20 characters long.");
-    isValid = false;
-  } else if (full_name) {
-    setNameError(true);
-    setNameErrorMessage("Name already exists");
+    setNameErrorMessage(t("name_more_20"));
     isValid = false;
   } else {
     setNameError(false);
@@ -180,19 +193,19 @@ const handleCreateUser = (): void => {
           loadUsers(page)
           console.log('create success')
           setOpenAddDialog(false)
-          setSnackbarMessage("User created successfully!");
+          setSnackbarMessage(t("create_user_success"));
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
         } else {
-          setErrorCreate(res.message);
-          setSnackbarMessage(res.message || "User creation failed.");
+          setErrorCreate('');
+          setSnackbarMessage(t("create_user_failed"));
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
         }
       })
       .catch((err: any) => {
         console.error("Create user failed:", err.response?.data || err.message);
-        setSnackbarMessage("An error occurred while creating the user.");
+        setSnackbarMessage(t("create_user_occerred"));
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
       });
@@ -212,6 +225,7 @@ const handleUpdateUser = (userId: string) => {
 
   if (valid) {
     const userData_update = { full_name };
+    
 
     requestApi(`users/${userId}`, "PUT", userData_update)
       .then((res: any) => {
@@ -221,18 +235,18 @@ const handleUpdateUser = (userId: string) => {
            dispatch(updateLocalStorage());
        
           setOpenUpdateDialog(false);
-          setSnackbarMessage("User updated successfully!");
+          setSnackbarMessage(t("update_user_success"));
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
         } else {
-          setSnackbarMessage(res.message || "User update failed.");
+          setSnackbarMessage(res.message || t(("update_user_failed")));
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
         }
       })
       .catch((err: any) => {
         console.error("Update user failed:", err.response?.data || err.message);
-        setSnackbarMessage("An error occurred while updating the user.");
+        setSnackbarMessage(t("update_user_occerred"));
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
       });
@@ -246,19 +260,19 @@ const handleDeleteUser = (userId: string) => {
       
       if (res.success) {
         loadUsers(page)
-        setSnackbarMessage("User deleted successfully!");
+        setSnackbarMessage(t("delete_user_success"));
         setSnackbarSeverity("success");
         setOpenSnackbar(true);
       } else {
         console.error("Delete user failed:", res.message);
-        setSnackbarMessage(res.message || "Failed to delete user.");
+        setSnackbarMessage(res.message || t("delete_user_failed"));
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
       }
     })
     .catch((err: any) => {
       console.error("Delete user failed:", err.response?.data || err.message);
-      setSnackbarMessage("An error occurred while deleting the user.");
+      setSnackbarMessage(t("delete_user_occerred"));
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
     });
@@ -287,10 +301,10 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
           },
         }}
       >
-        <DialogTitle>Add User</DialogTitle>
+        <DialogTitle>{t("add_user")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-          To add a new user, please enter the user name below. We will update your list immediately after submission.
+          {t("add_text")}
           </DialogContentText>
           <TextField
             autoFocus
@@ -302,11 +316,11 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
             margin="dense"
             id="full_name"
             name="full_name"
-            label="Full Name"
+            label={t("name_account")}
             type="text"
             fullWidth
             variant="standard"
-            placeholder="Full name..."
+            placeholder= {t("input_name")}
           />
            <TextField
             autoFocus
@@ -314,6 +328,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
             helperText={emailErrorMessage}
             onChange={(val) => {
               setEmail(val.target.value);
+              setEmailErrorMessage('');
             }}
             margin="dense"
             id="email"
@@ -334,7 +349,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
             margin="dense"
             id="password"
             name="password"
-            label="Password"
+            label= {t("password")}
             type="password"
             fullWidth
             variant="standard"
@@ -343,8 +358,8 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setOpenAddDialog(false)}>Cancel</Button>
-          <Button type="submit" >Add</Button>
+          <Button onClick={()=>setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+          <Button type="submit" >{t("add_user")}</Button>
         </DialogActions>
       </Dialog>
      
@@ -360,10 +375,10 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
           },
         }}
       >
-        <DialogTitle>Update User</DialogTitle>
+        <DialogTitle>{t("update_user")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-          To update user, please enter the user name below. We will update your list immediately after submission.
+          {t("update_text")}
           </DialogContentText>
           <TextField
             autoFocus
@@ -376,18 +391,18 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
             margin="dense"
             id="full_name"
             name="full_name"
-            label="Full Name"
+            label= {t("name_account")}
             type="text"
             fullWidth
             variant="standard"
-            placeholder="Full name..."
+            placeholder= {t("input_name")}
           />
     
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setOpenUpdateDialog(false)}>Cancel</Button>
-          <Button type="submit" >Update</Button>
+          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+          <Button type="submit" >{t("btnUpdate")}</Button>
         </DialogActions>
       </Dialog>
             {/* Snackbar for notifications */}
@@ -403,18 +418,18 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         <div className="m-5 mt-20">
           <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
             <Button variant="outlined" startIcon={<AddIcon />} onClick={()=>setOpenAddDialog(true)}>
-              Thêm tài khoản
+                {t("addAccount")}
             </Button>
 
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
-                  <TableCell >Full Name</TableCell>
+                  <TableCell >{t("name_account")}</TableCell>
                   <TableCell >Email</TableCell>
-                  <TableCell >Role</TableCell>
-                  <TableCell >Created at</TableCell>
-                  <TableCell >Action</TableCell>
+                  <TableCell >{t("role")}</TableCell>
+                  <TableCell >{t("create_date")}</TableCell>
+                  <TableCell >{t("action")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -425,7 +440,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
                         <TableCell >{user.full_name}</TableCell>
                         <TableCell >{user.email}</TableCell>
                         <TableCell >{
-                           user.role == 3 ? 'admin' :'user'
+                           user.role == 3 ? (t("admin")) :(t('user'))
                           }</TableCell>
                         <TableCell >
                           {user.created_at}
@@ -433,10 +448,10 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
                      
                         <TableCell  >
                           <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
-                            Edit
+                            {t("edit")}
                           </Button>
                           <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteUser(user.id)} >
-                            Delete
+                            {t("delete")}
                           </Button>
                           
                         </TableCell>

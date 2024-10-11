@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField } from "@mui/material";
@@ -54,7 +54,6 @@ const ListCategory = () => {
   var ranonce = false;
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const locale = useLocale();
   const [categories, setCategories] = useState([]);
   const masterStore = useAppSelector((state) => state.master);
   const [name, setName] = useState("");
@@ -66,6 +65,9 @@ const ListCategory = () => {
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
+  const dispatch = useAppDispatch();
   // Custom Alert for Snackbar
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -80,12 +82,13 @@ const ListCategory = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
 
-
-  const dispatch = useAppDispatch();
   useEffect(() => {
     if (!ranonce) {
       if (masterStore.isAdmin) {
         setLoading(false);
+        router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`);
+        //tôi muốn thêm một api của user thay vì admin
+
       }
       loadCategories(page);
       ranonce = true;
@@ -120,36 +123,21 @@ const ListCategory = () => {
 
     if (!name.value) {
       setNameError(true);
-      setNameErrorMessage('Name not empty');
+      setNameErrorMessage(t('name'));
       isValid = false;
     } else if (name.value.length < 3) {
       setNameError(true);
-      setNameErrorMessage('Name must be at least 3 characters long.');
+      setNameErrorMessage(t('name_least_3'));
       isValid = false;
-    }
-    else if (name) {
+    } else if(name.value.length > 20){
       setNameError(true);
-      setNameErrorMessage('Name already exists');
+      setNameErrorMessage(t('name_more_20'));
       isValid = false;
     }
     else {
       setNameError(false);
       setNameErrorMessage('');
     }
-
-    if (!description.value) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage("Description not empty");
-      isValid = false;
-    } else if(description.value.length < 3){ 
-      setDescriptionError(true);
-      setDescriptionErrorMessage('Description must be at least 3 characters long.');
-      isValid = false;
-    }else {
-      setDescriptionError(false);
-      setDescriptionErrorMessage('');
-    }
-
     return isValid;
   };
 
@@ -186,19 +174,19 @@ const ListCategory = () => {
             loadCategories(page);
             console.log('create success')
             setOpenAddDialog(false)
-            setSnackbarMessage("Category created successfully!");
+            setSnackbarMessage(t("create_category_success"));
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
           } else {
             setErrorCreate(res.message);
-            setSnackbarMessage(res.message || "Category creation failed.");
+            setSnackbarMessage(res.message || t("create_category_failed"));
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
           }
         })
         .catch((err: any) => {
           console.error("Create category failed:", err.response?.data || err.message);
-          setSnackbarMessage("An error occurred while creating the category.");
+          setSnackbarMessage(t("create_category_occerred"));
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
           // Handle login failure (e.g., show error message)
@@ -229,18 +217,18 @@ const ListCategory = () => {
             dispatch(updateLocalStorage());
 
             setOpenUpdateDialog(false);
-            setSnackbarMessage("Category updated successfully!");
+            setSnackbarMessage(t("update_caterogy_success"));
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
           } else {
-            setSnackbarMessage(res.message || "Category update failed.");
+            setSnackbarMessage(res.message || t("update_caterogy_failed"));
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
           }
         })
         .catch((err: any) => {
           console.error("Update category failed:", err.response?.data || err.message);
-          setSnackbarMessage("An error occurred while updating the category.");
+          setSnackbarMessage(t("update_category_occerred"));
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
         });
@@ -254,19 +242,19 @@ const ListCategory = () => {
         if (res.success) {
           loadCategories(page)
           console.log("Category deleted:", res);
-          setSnackbarMessage("Category deleted successfully!");
+          setSnackbarMessage(t("delete_category_success"));
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
         } else {
           console.error("Delete category failed:", res.message);
-          setSnackbarMessage(res.message || "Failed to delete category.");
+          setSnackbarMessage(res.message || t("delete_category_failed"));
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
         }
       })
       .catch((err: any) => {
         console.error("Delete category failed:", err.response?.data || err.message);
-        setSnackbarMessage("An error occurred while deleting the category.");
+        setSnackbarMessage(t("delete_category_occerred"));
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
       });
@@ -295,10 +283,10 @@ const ListCategory = () => {
                 },
               }}
             >
-              <DialogTitle>Add category</DialogTitle>
+              <DialogTitle>{t("addCategory")}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  To add a new category, please enter the category name below. We will update your list immediately after submission.
+                 {t("addCategory")}
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -310,11 +298,11 @@ const ListCategory = () => {
                   margin="dense"
                   id="name"
                   name="name"
-                  label="Name category"
+                  label={t("name_category")}
                   type="text"
                   fullWidth
                   variant="standard"
-                  placeholder="Name category..."
+                  placeholder={t("name_category")}
                 />
                 <TextField
                   autoFocus
@@ -326,7 +314,7 @@ const ListCategory = () => {
                   margin="dense"
                   id="description"
                   name="description"
-                  label="Description"
+                  label={t("description_text")}
                   type="text"
                   fullWidth
                   variant="standard"
@@ -334,8 +322,8 @@ const ListCategory = () => {
 
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
-                <Button type="submit" >Add</Button>
+                <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                <Button type="submit" >{t("add_user")}</Button>
               </DialogActions>
             </Dialog>
             <Dialog
@@ -350,11 +338,11 @@ const ListCategory = () => {
                 },
               }}
             >
-              <DialogTitle>Update category</DialogTitle>
+              <DialogTitle>{t("update_caterogy")}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  To add a new category, please enter the category name below. We will update your list immediately after submission.
-                </DialogContentText>
+                  {t("update_caterogy_text")}
+                  </DialogContentText>
                 <TextField
                   autoFocus
                   error={nameError}
@@ -366,11 +354,11 @@ const ListCategory = () => {
                   margin="dense"
                   id="name"
                   name="name"
-                  label="Name category"
+                  label={t("name_category")}
                   type="text"
                   fullWidth
                   variant="standard"
-                  placeholder="Name category..."
+                  placeholder={t("name_category")}
                 />
                 <TextField
                   autoFocus
@@ -383,7 +371,7 @@ const ListCategory = () => {
                   margin="dense"
                   id="description"
                   name="description"
-                  label="Description"
+                  label={t("description_text")}
                   type="text"
                   fullWidth
                   variant="standard"
@@ -391,8 +379,8 @@ const ListCategory = () => {
 
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setOpenUpdateDialog(false)}>Cancel</Button>
-                <Button type="submit" >Update</Button>
+                <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+                <Button type="submit" >{t("btnUpdate")}</Button>
               </DialogActions>
             </Dialog>
             {/* Snackbar for notifications */}
@@ -409,16 +397,16 @@ const ListCategory = () => {
             <div className="m-5 mt-20">
               <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
                 <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
-                  Thêm danh mục
+                  {t('addCategory')}
                 </Button>
 
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
                       <TableCell >ID</TableCell>
-                      <TableCell >Name</TableCell>
-                      <TableCell >Created Date</TableCell>
-                      <TableCell >Action</TableCell>
+                      <TableCell >{t("name_category")}</TableCell>
+                      <TableCell >{t("create_date")}</TableCell>
+                      <TableCell >{t("action")}</TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -434,10 +422,10 @@ const ListCategory = () => {
 
                           <TableCell  >
                             <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(category)} >
-                              Edit
+                              {t("edit")}
                             </Button>
                             <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleDeleteCategory(category.id)}>
-                              Delete
+                              {t("delete")}
                             </Button>
 
                           </TableCell>

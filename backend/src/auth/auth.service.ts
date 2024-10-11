@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -25,34 +26,40 @@ export class AuthService {
 
   async register(registerUserDto: RegisterUserDto) {
     let response = common_response;
-    const email = await this.userRepository.findOne({
-      where: { email: registerUserDto.email },
-    });
-    if (email) {
+
+    const emailExists = await this.checkEmailExists(registerUserDto.email);
+    if (emailExists) {
+      throw new ConflictException('Email already exists');
+    }else if (!validator.isEmail(registerUserDto.email)) {
       response.success = false;
-      response.message = 'Email already existed';
-      return response;
-    } else if (!validator.isEmail(registerUserDto.email)){
-      response.success = false;
-      response.message = 'Email must be a valid email...';
+      response.message = 'Email must be a valid email.';
       return response;
     }
+
     if (!registerUserDto.password) {
       response.success = false;
-      response.message = 'Password not empty';
+      response.message = 'Password cannot be empty';
       return response;
-    } 
+    }
+
+
 
     const hashPassword = await this.hashPassword(registerUserDto.password);
     let user = await this.userRepository.save({
-        ...registerUserDto,
-        refresh_token: 'refresh_token_string',
-        password: hashPassword,
+      ...registerUserDto,
+      refresh_token: 'refresh_token_string',
+      password: hashPassword,
     });
-    if(user){
-        response.success = true;
-    }
+    if (user) 
+    response.message = 'Registration successful';
     return response;
+  }
+
+  async checkEmailExists(email: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    return !!user; // Trả về true nếu user tồn tại, ngược lại false
   }
 
   async findUserById(id:any){
@@ -149,4 +156,6 @@ export class AuthService {
     const hash = await bcrypt.hash(password, saltRound);
     return hash;
   }
+  
+
 }

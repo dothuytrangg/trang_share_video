@@ -7,6 +7,8 @@ import { makeStore } from '@/stores/store';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import Button from '@mui/material/Button'
+import { useLocale, useTranslations } from "next-intl";
+
 
 interface Props {}
 
@@ -15,14 +17,15 @@ const Page: NextPage<Props> = ({}) => {
   useEffect(()=>{
     dispatch(closeDrawer())
   })
+  const t = useTranslations('HomePage')
 
   return (
     <div className='flex h-screen '>
       <div className='grid grid-cols-1 m-auto'>
-        <div className='text-5xl text-center mt-5'>You Don't Have Permission</div>
+        <div className='text-5xl text-center mt-5'>{t('permission')}</div>
         <br />
         <Button  variant="outlined" color="primary">
-        Back  
+          {t('btnBack')}
         </Button>
       </div>
     </div>

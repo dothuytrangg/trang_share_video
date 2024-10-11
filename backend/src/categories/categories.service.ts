@@ -75,13 +75,15 @@ export class CategoriesService {
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     let response = common_response;
     try {
+      
       let category = await this.categoryRepository.save(createCategoryDto);
       if (category) {
         response.category = category
         return response;
-      } else {
+      } else  {
         response.success = false;
       }
+
       return response;
     } catch (error) {
       response.success = false;
@@ -99,6 +101,10 @@ export class CategoriesService {
     if(updateCategory){
       response.success = true;
       return response;
+    }else if(!UpdateCategoryDto.name){
+      response.message = 'Name is required';
+      response.success = false;
+
     }else{
       response.success = false;
     }

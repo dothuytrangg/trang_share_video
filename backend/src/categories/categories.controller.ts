@@ -16,7 +16,7 @@ export class CategoriesController {
     @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query:FilterCategoryDto):Promise<Category[]>{
-        console.log(query);
+        // console.log(query);
         return this.categoryService.findAll(query);
     }
 

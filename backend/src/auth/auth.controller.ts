@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, HttpException, HttpStatus, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';//loi
 import { AuthService } from './auth.service';
 import { User } from 'src/users/entities/users.entity';
@@ -13,16 +13,26 @@ export class AuthController {
    
     @Post('register')
     @UsePipes(ValidationPipe)
-    register(@Body() registerUserDto:RegisterUserDto) {
+    async register(@Body() registerUserDto: RegisterUserDto) {
+        console.log('register api');
+        console.log(registerUserDto);
 
-        console.log('resgister api')
-       
-       console.log(registerUserDto);
-
-       return this.authService.register(registerUserDto)
-
-       
+        try {
+            const response = await this.authService.register(registerUserDto);
+            return response;
+        } catch (error) {
+            if (error instanceof ConflictException) {
+                throw new HttpException(error.message, HttpStatus.CONFLICT);
+            }
+            throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+    @Get('check-email')
+    async checkEmail(@Query('email') email: string): Promise<{ exists: boolean }> {
+        const exists = await this.authService.checkEmailExists(email);
+        return { exists };
+    }
+
 
     @Post('login')
     @UsePipes(ValidationPipe)
