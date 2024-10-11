@@ -55,15 +55,6 @@ const ListAccount = () => {
   const t = useTranslations("HomePage");
   const dispatch = useAppDispatch();
 
-  const checkEmailExists = async (email: string): Promise<boolean> => {
-    try {
-      const res = await requestApi(`auth/check-email?email=${email}`, 'GET');
-      return res.exists; // Giả sử API trả về { exists: true/false }
-    } catch (err) {
-      console.error('Error checking email:', err);
-      return false; // Nếu có lỗi, coi như email không tồn tại
-    }
-  };
   useEffect(() => {
     if (!ranonce) {
       if (masterStore.isAdmin) {
@@ -90,7 +81,7 @@ const ListAccount = () => {
 
 };
   
-const validateInputs = async () => {
+const validateInputs = () => {
   const full_name = document.getElementById("full_name") as HTMLInputElement;
   const email = document.getElementById("email") as HTMLInputElement;
   const password = document.getElementById("password") as HTMLInputElement;
@@ -124,17 +115,9 @@ const validateInputs = async () => {
     setEmailErrorMessage(t('email_invalid'));
     isValid = false;
   } else {
-    // Pass the email value (string) to checkEmailExists
-    const emailExists = await checkEmailExists(email.value); // Corrected line
-    if (emailExists) {
-      setEmailError(true);
-      setEmailErrorMessage(t('email_exist'));
-      isValid = false; // Indicate that validation failed
-    } else {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-  }
 //----------------------------password--------------------------------
   if (!password.value) {
     setPasswordError(true);

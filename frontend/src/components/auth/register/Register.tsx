@@ -53,17 +53,8 @@ const Register = () => {
   const t = useTranslations("HomePage");
   const masterStore = useAppSelector((state) => state.master);
 
-  const checkEmailExists = async (email: string): Promise<boolean> => {
-    try {
-      const res = await requestApi(`auth/check-email?email=${email}`, 'GET');
-      return res.exists; // Giả sử API trả về { exists: true/false }
-    } catch (err) {
-      console.error('Error checking email:', err);
-      return false; // Nếu có lỗi, coi như email không tồn tại
-    }
-  };
 
-  const validateInputs = async () => {
+  const validateInputs =  () => {
     let isValid = true;
 
     if (!full_name) {
@@ -87,17 +78,11 @@ const Register = () => {
       setEmailError(true);
       setEmailErrorMessage(t('email_invalid'));
       isValid = false;
-    } else {
-      const emailExists = await checkEmailExists(email);
-      if (emailExists) {
-        setEmailError(true);
-        setEmailErrorMessage(t('email_exist'));
-        return false; // Ngừng quá trình kiểm tra
-      } else {
+    }  else {
         setEmailError(false);
         setEmailErrorMessage('');
       }
-    }
+    
 
     if (!password) {
       setPasswordError(true);
@@ -115,28 +100,33 @@ const Register = () => {
     return isValid;
   };
 
-  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister =  async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Ngăn chặn hành động mặc định
 
-    const valid = await validateInputs(); // Chờ kết quả validateInputs
+    const valid = validateInputs();
 
     if (valid) {
-      const registerData = { full_name, email, password };
+      const registerData = {
+        full_name,
+        email,
+        password,
 
-      try {
-        const res = await requestApi('auth/register', 'POST', registerData);
-        if (res && res.success) {
-          router.push(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
-        } else {
-          setErrorRegister(res.message);
-        }
-      } catch (err: any) {
-        console.error('Registration failed:', err);
-        setErrorRegister('An error occurred. Please try again.');
-      }
+      };
+
+      requestApi('auth/register', 'POST', registerData)
+        .then((res: any) => {
+          if (res.success) {
+            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
+          } else {
+            setErrorRegister(res.message)
+          }
+        })
+        .catch((err: any) => {
+          console.error('Registration failed:', err.response?.data || err.message);
+          // Handle registration failure (e.g., show error message)
+        });
     }
   };
-
   const renderRegister = () => {
     if (masterStore.isAuth) {
       router.replace(`/${locale}`);
@@ -171,12 +161,13 @@ const Register = () => {
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
-                      setEmailErrorMessage(''); // Clear error message
+                      setEmailErrorMessage(''); // Clear error message when user changes input
                     }}
                     error={emailError}
-                    helperText={emailErrorMessage}
+                    helperText={emailErrorMessage} // Hiển thị thông báo lỗi
                   />
                 </FormControl>
+
                 <FormControl>
                   <FormLabel htmlFor="password">{t('password')}</FormLabel>
                   <TextField
@@ -194,6 +185,7 @@ const Register = () => {
                   />
                 </FormControl>
                 {errorRegister && <p className='text-red-600 text-center'>{errorRegister}</p>}
+
                 <Button type="submit" fullWidth variant="contained">
                   {t('register')}
                 </Button>

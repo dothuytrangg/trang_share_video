@@ -286,7 +286,7 @@ const ListCategory = () => {
               <DialogTitle>{t("addCategory")}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                 {t("addCategory")}
+                  {t("addText_category")}
                 </DialogContentText>
                 <TextField
                   autoFocus
