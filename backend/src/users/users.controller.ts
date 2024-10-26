@@ -19,11 +19,14 @@ export class UsersController {
         // console.log(query);
         return this.userService.findAllPage(query);
     }
-    // @UseGuards(AuthGuard)
-    // @Get()
-    // FindAll():Promise<User[]>{
-    //     return this.userService.findAll();
-    // }
+
+    @UseGuards(AuthGuard)
+    @Get('profile')
+    Profile(@Req() req:any):Promise<User>{
+        
+        return this.userService.findOne(Number(req.user_data.id))
+    }
+    
 
     @UseGuards(AuthGuard)
     @Get(':id')
@@ -58,7 +61,7 @@ export class UsersController {
         storage:storageConfig('avatar'),
         fileFilter:(req,file,cb)=>{
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg'];
+            const allowedExtArr = ['.jpg','.png','.jpeg','.webp'];
             if(!allowedExtArr.includes(ext)){
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
@@ -76,8 +79,8 @@ export class UsersController {
         }
 
         }))
-
     uploadAvatar(@Req() req:any,@UploadedFile() file:Express.Multer.File){
+
         console.log("upload avavar");
         console.log('user data',req.user_data)
         console.log(file)
@@ -89,7 +92,9 @@ export class UsersController {
             throw new BadRequestException('File is required');
         }
 
-        return this.userService.uploadAvatar(req.user_data.id,file.destination + '/' + file.filename);
+        return this.userService.uploadAvatar(req.user_data.id,file.fieldname + '/' + file.filename);
+
+   
     }
 
 }

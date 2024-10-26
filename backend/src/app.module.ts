@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'db/data-source';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CategoriesModule } from './categories/categories.module';
     AuthModule,
     ConfigModule.forRoot(),
     CategoriesModule,
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

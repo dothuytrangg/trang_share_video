@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -20,6 +20,7 @@ import { getMessages } from "next-intl/server";
 import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
 import { format } from "path";
 import { _GLOBAL } from "@/contstants";
+import requestApi from "../../../helpers/api";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -50,11 +51,28 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
- 
+  const [profileData,setProfileData] = useState<any>({});;
+  var ranonce = false;
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-    setLoading(masterStore.loading)
+     setLoading(masterStore.loading)
+  
+    // if (!ranonce) {
+    //   requestApi('users/profile','GET').then((res:any)=>{
+    //      if(res.success){
+    //          setProfileData({...res.data,avatar:'http://localhost:2070/'+ res.data.avatar})
+    //      }
+ 
+    //   }
+ 
+    //   ).catch((err)=>{
+    //    console.log('err',err);
+    //   })
+      
+    //    ranonce = true;
+    //  }
+    
     }, [masterStore])
 
   const handleToggleDrawer = () => {
@@ -111,6 +129,10 @@ export default function Navbar() {
     dispatch(updateLocalStorage())
     router.push(`/${locale}`)
   }
+  const handleProfile = ()=>{
+     router.replace(`/${locale}/profile`);
+     handleClose();
+  }
 
   const renderButtonAcction = () => {
     if (!isLogin) {
@@ -118,11 +140,15 @@ export default function Navbar() {
         {t('login')}
       </Button>
     } else {
-      return  <Button onClick={handleClick} variant="outlined" startIcon={<AccountCircle />}>
+      return  <Button onClick={handleClick} variant="outlined" startIcon={profileData.avatar 
+      ? (<Avatar src={profileData.avatar} sx={{ width: 20, height: 20}}/>) 
+      :(<AccountCircle />)}>
         {masterStore.user.name}
       </Button>
     }
   }
+
+
   return (
     <Box >
       <AppBar color="secondary" position="fixed">
@@ -173,7 +199,7 @@ export default function Navbar() {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem className="px-5" onClick={handleClose}>{t('profile')}</MenuItem>
+            <MenuItem className="px-5" onClick={handleProfile}>{t('profile')}</MenuItem>
             <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
             <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
             <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>

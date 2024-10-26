@@ -14,13 +14,14 @@ export default function requestApi(
   method: any,
   body?: any,
   // page?: number,   // Add optional query parameters here
-  responseType = "json"
+  responseType = "json",
+  contentType = "application/json"
 ) {
   let URL_API = "";
   const headers = {
     Accept: "application/json",
     
-    "Content-Type": "application/json",
+    "Content-Type": contentType,
     "Access-Control-Allow-Origin": "*",
   };
   const instance = axios.create({ headers });
@@ -49,7 +50,7 @@ export default function requestApi(
       return config?.data || { success: false, statusCode: 401 };
     },
     async (error) => {
-      if (error.status == 401 || error.status == 403) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
         const authStore = JSON.parse(
           secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
         );
