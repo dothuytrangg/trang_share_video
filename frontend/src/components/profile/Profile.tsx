@@ -44,7 +44,7 @@ const Profile= () => {
     if (!ranonce) {
      requestApi('users/profile','GET').then((res:any)=>{
         if(res.success){
-            setProfileData({...res.data,avatar:'http://localhost:2070'+'/'+  res.data.avatar})
+            setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+'/'+  res.data.avatar})
         }
 
      }
