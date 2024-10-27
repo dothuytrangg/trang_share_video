@@ -58,7 +58,7 @@ const Profile= () => {
      requestApi('users/profile','GET').then((res:any)=>{
         if(res.success){
             // setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/'+  res.data.avatar})
-            setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/'+  res.data.avatar})
+            setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
         }
 
      }
