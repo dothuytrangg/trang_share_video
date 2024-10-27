@@ -8,7 +8,8 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { User } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { storageConfig } from 'helpers/config';
-
+import fs, { readFileSync, unlink } from 'fs'
+import WebDav from 'src/ultils/WebDav';
 @Controller('users')
 export class UsersController {
 
@@ -42,6 +43,8 @@ export class UsersController {
         return this.userService.create(createUserDto);
     }
 
+   
+
     @UseGuards(AuthGuard)
     @UsePipes(ValidationPipe)
     @Put(':id')
@@ -58,10 +61,10 @@ export class UsersController {
     @Post('upload-avatar')
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('avatar',{
-        storage:storageConfig('avatar'),
+        storage:storageConfig('avatars'),
         fileFilter:(req,file,cb)=>{
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg','.webp'];
+            const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
             if(!allowedExtArr.includes(ext)){
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
@@ -79,11 +82,11 @@ export class UsersController {
         }
 
         }))
-    uploadAvatar(@Req() req:any,@UploadedFile() file:Express.Multer.File){
+    async uploadAvatar(@Req() req:any,@UploadedFile() file:Express.Multer.File){
 
-        console.log("upload avavar");
-        console.log('user data',req.user_data)
-        console.log(file)
+        // console.log("upload avavar");
+        // console.log('user data',req.user_data)
+        // console.log(file)
 
         if(req.fileValidationError){
             throw new BadRequestException(req.fileValidationError )
@@ -91,10 +94,20 @@ export class UsersController {
         if(!file){
             throw new BadRequestException('File is required');
         }
+        let fileName = file.filename;
+        let fileContent = readFileSync(file.path);
+        WebDav.put('avatars/'+fileName,fileContent).then(res=>{
+            if(res.status == 201){
+                //remove
+            //    unlink(file.path,(err)=>{
+            //     if (err) throw err;
+               
+            //    });
+            }
+        }).catch((e=>{
 
-        return this.userService.uploadAvatar(req.user_data.id,file.fieldname + '/' + file.filename);
-
-   
+        }))
+        return this.userService.uploadAvatar(req.user_data.id,file.filename); 
     }
 
 }
