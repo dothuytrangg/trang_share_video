@@ -57,7 +57,8 @@ const Profile= () => {
     if (!ranonce) {
      requestApi('users/profile','GET').then((res:any)=>{
         if(res.success){
-            setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/'+  res.data.avatar})
+            // setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/'+  res.data.avatar})
+            setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/'+  res.data.avatar})
         }
 
      }
@@ -99,6 +100,8 @@ const Profile= () => {
         <Typography variant="body2" color="textSecondary">
           Click the camera to upload a new avatar
         </Typography>
+        {/* <img src="file:///E:/2.Documents/KLTN/trang_share_video/backend/uploads/avatars/1730049494371-ti.jpg"></img> */}
+       {/* <img src="https://nextcloud.congcucuatoi.com/remote.php/dav/files/trang/avatars/1730048688091-z4550394229796_c3ccf594bdb60930a3e60bf95305f9ad.jpg"></img> */}
         <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >update</Button>
       </CardContent>
       <Snackbar
