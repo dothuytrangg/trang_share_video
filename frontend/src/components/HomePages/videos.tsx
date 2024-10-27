@@ -29,7 +29,7 @@ export default function Videos() {
         <Card key={i} sx={{ maxWidth: 345,my:1 }}>
           <CardMedia
             sx={{ height: 140 }}
-            image="http://localhost:2070/avatar/1729867775058-mongmee.webp"
+            image="http://localhost:2070/avatar/1729939926278-mongmee.webp"
             title="green iguana"
           />
           <CardContent>

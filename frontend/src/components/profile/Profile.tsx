@@ -1,17 +1,20 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Avatar, IconButton, Button, Typography } from '@mui/material';
+import { Card, CardContent, Avatar, IconButton, Button, Typography, Snackbar, Alert } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useAppDispatch } from '@/stores/hookStore';
 import requestApi from '../../../helpers/api';
 import { _ENV } from '@/contstants';
 
 const Profile= () => {
-  const [selectedImage, setSelectedImage] = useState(null);
+  // const [selectedImage, setSelectedImage] = useState(null);
   
   const [profileData,setProfileData] = useState<any>({});;
   const dispatch = useAppDispatch();
   var ranonce = false;
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
 
   const handleImageChange = (event:any) => {
@@ -33,9 +36,19 @@ const Profile= () => {
       console.log('res',res);
       if(res.success){
          console.log('upload success !!')
+         setSnackbarMessage("upload avatar successfully");
+         setSnackbarSeverity("success");
+         setOpenSnackbar(true);
+      }else{
+          setSnackbarMessage(("upload avatar failed"));
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
       }
     }).catch((err:any)=>{
        console.log('err',err);
+        setSnackbarMessage(("upload avatar failed"));
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
     })
     
   }
@@ -44,7 +57,7 @@ const Profile= () => {
     if (!ranonce) {
      requestApi('users/profile','GET').then((res:any)=>{
         if(res.success){
-            setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+'/'+  res.data.avatar})
+            setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/'+  res.data.avatar})
         }
 
      }
@@ -88,7 +101,18 @@ const Profile= () => {
         </Typography>
         <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >update</Button>
       </CardContent>
+      <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+          </Snackbar>
     </Card>
+              
+           
   );
 };
 
