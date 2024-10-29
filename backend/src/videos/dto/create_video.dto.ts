@@ -10,14 +10,7 @@ export class CreateVideoDto{
  
 
   
-    @Column()
-    @IsNotEmpty()
-    @MinLength(3, {
-        message: 'name is too short',
-      })
-    @MaxLength(30, {
-        message: 'name is too long',
-    })
+    @Column({})
     name: string;
   
     
@@ -56,8 +49,8 @@ export class CreateVideoDto{
     
 
     
-    @Column({ default:1 })
-    status: number;
+    @Column({default:'confirming'  })
+    status: string;
   
     // @ManyToOne(() => User, (user: User) => user.videos)
     // user: User;

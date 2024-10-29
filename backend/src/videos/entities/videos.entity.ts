@@ -52,8 +52,8 @@ export class Video {
   @ManyToOne(() => User, (user:any) => user.photos)
   user: User
   
-  @Column({ default:1 })
-  status: number;
+  @Column({default:'confirming'  })
+  status: string;
 
   @CreateDateColumn()
   created_at: Date;
