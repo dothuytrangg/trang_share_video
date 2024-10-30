@@ -16,6 +16,7 @@ import { redirect, useRouter } from "next/navigation";
 import CategoryIcon from '@mui/icons-material/Category';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import React, { useState } from "react";
+import { VideoLibraryOutlined } from "@mui/icons-material";
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -122,6 +123,15 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("management_account")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
+
+          <ListItemButton onClick={() => {
+            router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_VIDEO}`)
+          }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+            <Tooltip title={t("management_video")} placement="right-start">
+              <VideoLibraryOutlined></VideoLibraryOutlined>
+            </Tooltip>
+            <ListItemText className={open ? "mx-3" : ""} primary={t("management_video")} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
      </React.Fragment>
     }
   }
@@ -172,6 +182,8 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
+
+          
 
           {renderButtonAdmin()}
         </ListItem>

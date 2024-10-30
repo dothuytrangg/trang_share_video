@@ -12,6 +12,7 @@ const _GLOBAL = {
   ROUTE_ADMIN_CATEGORY: "category",
   ROUTE_ADMIN_ADD: "add",
   ROUTE_ADMIN_ACCOUNT: "account",
+  ROUTE_ADMIN_VIDEO: "video",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,
 };

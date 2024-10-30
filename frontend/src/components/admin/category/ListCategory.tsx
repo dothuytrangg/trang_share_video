@@ -87,7 +87,7 @@ const ListCategory = () => {
       if (masterStore.isAdmin) {
         setLoading(false);
         router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`);
-        //tôi muốn thêm một api của user thay vì admin
+        
 
       }
       loadCategories(page);

@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
+import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class VideosService {
@@ -13,21 +14,70 @@ export class VideosService {
                 @InjectRepository(User) private userRepository: Repository<User>)
     {}
 
-    async findAll():Promise<Video[]>{
-        let response = common_response;
-        let videos = await this.videoRepository.find({
-            select:['id','name','description','slug','user','timeout','url','likes','dislike','viewed','thumbnail','position','is_hot','status','created_at','updated_at'],
-            relations: ['user'],
-        })
-        if(videos){
-            response.success = true;
-            response.data = videos;
-            return response;
-        }else{
-            response.success = false
-        }
+    // async findAll():Promise<Video[]>{
+    //     let response = common_response;
+    //     let videos = await this.videoRepository.find({
+    //         select:['id','name','description','slug','user','timeout','url','likes','dislike','viewed','thumbnail','position','is_hot','status','created_at','updated_at'],
+    //         relations: ['user'],
+    //     })
+    //     if(videos){
+    //         response.success = true;
+    //         response.data = videos;
+    //         return response;
+    //     }else{
+    //         response.success = false
+    //     }
+    //     return response;
+    // }
+    async findAllPage(query:FilterVideoDto):Promise<any>{
+      let response = common_response;
+      const items_per_page = Number(query.items_per_page) || 3;
+      const page = Number(query.page) || 1;
+      const skip = (page - 1)* items_per_page;
+      const keyword = query.search || '';
+      const [res, total] = await this.videoRepository.findAndCount({
+          where:[
+              {name: Like('%' + keyword + '%')},
+            
+          ],
+          order: {created_at:"DESC"},
+          take:items_per_page,
+          skip:skip,
+          select:['id','name','description','slug','user','timeout','url','likes','dislike','viewed','thumbnail','position','is_hot','status','created_at','updated_at'],
+          relations: ['user'],
+      })
+      const lastPage = Math.ceil(total / items_per_page);
+      const nextPage = page + 1 > lastPage ? null : page + 1;
+      const prevPage = page - 1 < 1 ? null : page - 1;
+      let ok = [res, total]
+      if(ok){
+        response.success = true;
+        response.data = res;
+        response.page = page;
+        response.lastPage = lastPage;
+        response.nextPage = nextPage;
+        response.prevPage = prevPage;
+        response.total = total;
         return response;
+      }else{
+        response.success = false;
+      }
+
+      return response;
+
+  }
+  async findOne(id:number):Promise<Video>{
+    let response = common_response;
+    let video = await this.videoRepository.findOneBy({id});
+    if(video){
+      response.success = true;
+      response.data = video;
+      return response;
+    }else{
+      response.success = false;
     }
+    return response;
+  }
  
     async create(createVideoDto: CreateVideoDto,userId:number,thumbnail:string): Promise<Video> {
         let response = common_response;

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { readFileSync } from 'fs';
 import { storageConfig } from 'helpers/config';
@@ -6,6 +6,7 @@ import { extname } from 'path';
 import { AuthGuard } from 'src/auth/auth.guard';
 import WebDav from 'src/ultils/WebDav';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
+import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { VideosService } from 'src/videos/videos.service';
@@ -16,8 +17,14 @@ export class VideosController {
 
     @UseGuards(AuthGuard)
     @Get()
-    findAll():Promise<Video[]>{
-        return this.videoService.findAll();
+    findAll(@Query() query:FilterVideoDto):Promise<Video[]>{
+        return this.videoService.findAllPage(query)
+    }
+
+    @UseGuards(AuthGuard)
+    @Get(':id')
+    findOne(@Param('id') id:string):Promise<Video>{
+        return this.videoService.findOne(Number(id));
     }
         
     @UseGuards(AuthGuard)
