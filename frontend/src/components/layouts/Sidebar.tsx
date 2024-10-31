@@ -72,7 +72,7 @@ export default function Sidebar() {
   };
 
   const redirectHome = () => {
-    router.replace(`/${locale}`);
+    router.replace(`/${locale}/`);
   };
 
   const textTheme = () => {
@@ -156,6 +156,7 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("home")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
+
           <ListItemButton onClick={handleToggleTheme} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("theme")} placement="right-start">
               {masterStore.theme === _GLOBAL.DARK ? <LightModeIcon></LightModeIcon> : <DarkModeIcon></DarkModeIcon>}

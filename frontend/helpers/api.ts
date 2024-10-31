@@ -18,12 +18,21 @@ export default function requestApi(
   contentType = "application/json"
 ) {
   let URL_API = "";
+
+  const isFormData = body instanceof FormData;
+
+  // Cấu hình headers dựa trên loại nội dung
   const headers = {
     Accept: "application/json",
-    
-    "Content-Type": contentType,
     "Access-Control-Allow-Origin": "*",
+    ...(isFormData ? {} : { "Content-Type": contentType }),
   };
+  // const headers = {
+  //   Accept: "application/json",
+    
+  //   "Content-Type": contentType,
+  //   "Access-Control-Allow-Origin": "*",
+  // };
   const instance = axios.create({ headers });
 
   instance.interceptors.request.use(

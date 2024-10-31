@@ -90,6 +90,83 @@ const ListVideo = ()=>{
 
     return str;
   }
+  const validateInputs = () => {
+    const name = document.getElementById("name") as HTMLInputElement;
+    const description = document.getElementById("description") as HTMLInputElement;
+
+    let isValid = true;
+
+    if (!name.value) {
+      setNameError(true);
+      setNameErrorMessage(t('name'));
+      isValid = false;
+    } else if (name.value.length < 3) {
+      setNameError(true);
+      setNameErrorMessage(t('name_least_3'));
+      isValid = false;
+    } else if(name.value.length > 50){
+      setNameError(true);
+      setNameErrorMessage(t('name_more_20'));
+      isValid = false;
+    }
+    else {
+      setNameError(false);
+      setNameErrorMessage('');
+    }
+    return isValid;
+  };
+
+  function slugify_file(filename: string): string {
+    // Bước 1: Thêm dấu '-' giữa chữ số và chữ cái
+    filename = filename.replace(/(\d)([a-zA-Z])/g, "$1-$2");
+    
+    // Bước 2: Thay dấu '_' bằng dấu '-'
+    filename = filename.replace(/_/g, "-");
+  
+    return filename;
+  }
+
+
+  const handleCreateVideo = (): void => {
+    const valid: boolean = validateInputs();
+
+    if (valid && thumbnailFile) {
+        const slug = slugify(name);
+        // const file_thumbnail_db = slugify_file(thumbnailFile.lastModified + "-" + thumbnailFile.name);
+        const formData = new FormData();
+        
+        // Append the file with the correct field name as expected by the API
+        formData.append("thumbnail", thumbnailFile);
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("slug", slug);
+
+        requestApi("videos", "POST", formData)
+            .then((res: any) => {
+                if (res.success) {
+                    setOpenAddDialog(false);
+                    setSnackbarMessage(t("create_video_success"));
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    loadVideos(page);
+                } else {
+                    setErrorCreate(res.message || t("create_video_failed"));
+                    setSnackbarMessage(res.message || t("create_video_failed"));
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch((err: any) => {
+                console.error("Create video failed:", err);
+                setSnackbarMessage(t("create_video_occurred"));
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            });
+    } else {
+        console.log('No file selected for thumbnail.');
+    }
+};
+
 
       const handleDeleteVideo = (videoId: string) => {
         requestApi(`videos/${videoId}`, "DELETE")
@@ -127,7 +204,7 @@ const ListVideo = ()=>{
                 component: 'form',
                 onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                   event.preventDefault();
-                  // handleCreateCategory();
+                  handleCreateVideo();
 
                 },
               }}
@@ -170,11 +247,11 @@ const ListVideo = ()=>{
                   InputProps={{ style: { resize: 'vertical' } }}
                 />
                 <Button variant="contained" component="label">
-            Chọn ảnh 
+            Chọn ảnh cho video
             <input
               type="file"
               hidden
-              accept="image/*"
+              // accept="image/*"
               onChange={handleFileChange}
             />
           </Button>
