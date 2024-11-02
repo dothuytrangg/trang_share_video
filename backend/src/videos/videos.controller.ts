@@ -102,11 +102,18 @@ export class VideosController {
 
         }))
     update(@Param('id') id:string,@Body() updateVideoDto:UpdateVideoDto,@Req() req:any,@UploadedFile() file:Express.Multer.File){
+        // let existing = this.videoService.findOne(Number(id));
+        // if(updateVideoDto.thumbnail == existing.thumbnail){
+
+        // }
         console.log(file)
         if(req.fileValidationError){
             throw new BadRequestException(req.fileValidationError )
         }
         if(!file){
+            if(updateVideoDto.thumbnail != null){
+                return this.videoService.update(Number(id),updateVideoDto,updateVideoDto.thumbnail);
+            }
             throw new BadRequestException('File is required');
         }
         let fileName = file.filename;

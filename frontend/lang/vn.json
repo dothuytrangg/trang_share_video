@@ -53,6 +53,7 @@
         "admin":"Quản trị viên",
         "user":"Người dùng",
         "update_user":"Cập nhật người dùng",
+        "update_video":"Cập nhật video",
         "update_text":"Để cập nhật người dùng, vui lòng nhập tên người dùng bên dưới. Chúng tôi sẽ cập nhật danh sách của bạn ngay sau khi gửi.",
         "btnUpdate":"Cập nhật",
         "btnCancel":"Hủy",

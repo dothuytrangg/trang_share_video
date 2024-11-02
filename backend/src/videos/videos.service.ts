@@ -1,4 +1,4 @@
-import { Injectable, Req } from '@nestjs/common';
+import { Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
@@ -108,13 +108,35 @@ export class VideosService {
   async update(
         id: number,
         updateVideoDto: UpdateVideoDto,
-        thumbnail:string
+        thumbnail?:string
       ): Promise<UpdateResult> {
         let response = common_response;
       
-        let updateVideo =  await this.videoRepository.update(id,{...updateVideoDto,thumbnail:thumbnail} );
-        if(updateVideo.affected==1){
-          response.data = updateVideo;
+        // Lấy video hiện tại để kiểm tra và lưu `thumbnail` cũ nếu cần
+        const existingVideo = await this.videoRepository.findOneBy({ id });
+        if (!existingVideo) {
+            throw new NotFoundException('Video not found');
+        }
+    
+          //  const updateVideo = await this.videoRepository.update(id, {
+          //   ...updateVideoDto,
+          
+        // Nếu không có `thumbnail` mới, giữ lại `thumbnail` cũ
+        // const thumbnailToSave = thumbnail || existingVideo.thumbnail;
+        
+       // Determine if a new thumbnail should be saved or keep the existing one
+        const thumbnailToSave = thumbnail && thumbnail !== existingVideo.thumbnail
+        ? thumbnail
+        : existingVideo.thumbnail;
+        
+        // Perform the update with the determined thumbnail
+      const updateResult = await this.videoRepository.update(id, {
+        ...updateVideoDto,
+        thumbnail: thumbnailToSave,
+      });
+
+        if(updateResult.affected==1){
+          response.data = updateResult;
           response.success = true;
           return response;
         }else{

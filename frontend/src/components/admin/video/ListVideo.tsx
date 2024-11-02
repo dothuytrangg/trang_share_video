@@ -1,11 +1,12 @@
 import { _ENV, _GLOBAL } from "@/contstants";
-import { useAppSelector } from "@/stores/hookStore";
+import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import requestApi from "../../../../helpers/api";
 import AddIcon from "@mui/icons-material/Add";
+import { updateLocalStorage } from "@/stores/features/masterSlice";
 
 
 const ListVideo = ()=>{
@@ -16,6 +17,7 @@ const ListVideo = ()=>{
     const router = useRouter();
     const locale = useLocale();
     const t = useTranslations("HomePage");
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (!ranonce) {
           if (masterStore.isAdmin) {
@@ -66,8 +68,9 @@ const ListVideo = ()=>{
       const [nameErrorMessage, setNameErrorMessage] = useState("");
       const [descriptionError, setDescriptionError] = useState(false);
       const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-      const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-      const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); // URL tạm thời của ảnh
+      const [thumbnailFile, setThumbnailFile] = useState<File | null >(null);
+      const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
+      const [status, setStatus] = useState("confirming");
 
       const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
@@ -76,6 +79,7 @@ const ListVideo = ()=>{
           setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
         }
       };
+
 
 
   function slugify(str: string): string {
@@ -93,38 +97,55 @@ const ListVideo = ()=>{
   const validateInputs = () => {
     const name = document.getElementById("name") as HTMLInputElement;
     const description = document.getElementById("description") as HTMLInputElement;
-
+  
     let isValid = true;
-
+  
+  
     if (!name.value) {
       setNameError(true);
-      setNameErrorMessage(t('name'));
+      setNameErrorMessage(t("name_required"));
       isValid = false;
     } else if (name.value.length < 3) {
       setNameError(true);
-      setNameErrorMessage(t('name_least_3'));
+      setNameErrorMessage(t("name_least_3"));
       isValid = false;
-    } else if(name.value.length > 50){
+    } else if (name.value.length > 50) {
       setNameError(true);
-      setNameErrorMessage(t('name_more_20'));
+      setNameErrorMessage(t("name_more_50"));
       isValid = false;
-    }
-    else {
+    } else {
       setNameError(false);
-      setNameErrorMessage('');
+      setNameErrorMessage("");
     }
+  
+
+    if (!description.value) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_required"));
+      isValid = false;
+    } else if (description.value.length < 10) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_least_10"));
+      isValid = false;
+    } else if (description.value.length > 200) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_more_200"));
+      isValid = false;
+    } else {
+      setDescriptionError(false);
+      setDescriptionErrorMessage("");
+    }
+  
+   
+    // if (!thumbnailFile) {
+    //   setSnackbarMessage(t("thumbnail_required"));
+    //   setSnackbarSeverity("error");
+    //   setOpenSnackbar(true);
+    //   isValid = false;
+    // }
+  
     return isValid;
   };
-
-  function slugify_file(filename: string): string {
-    // Bước 1: Thêm dấu '-' giữa chữ số và chữ cái
-    filename = filename.replace(/(\d)([a-zA-Z])/g, "$1-$2");
-    
-    // Bước 2: Thay dấu '_' bằng dấu '-'
-    filename = filename.replace(/_/g, "-");
-  
-    return filename;
-  }
 
 
   const handleCreateVideo = (): void => {
@@ -132,10 +153,8 @@ const ListVideo = ()=>{
 
     if (valid && thumbnailFile) {
         const slug = slugify(name);
-        // const file_thumbnail_db = slugify_file(thumbnailFile.lastModified + "-" + thumbnailFile.name);
         const formData = new FormData();
         
-        // Append the file with the correct field name as expected by the API
         formData.append("thumbnail", thumbnailFile);
         formData.append("name", name);
         formData.append("description", description);
@@ -167,15 +186,84 @@ const ListVideo = ()=>{
     }
 };
 
+const [selectedVideo, setSelectedVideo] = useState<any>(null);
+const handleOpenUpdateDialog = (video: any) => {
+  console.log('video',video);
+  setSelectedVideo(video);
+  console.log(selectedVideo);
+  setName(video.name);
+  setDescription(video.description); 
+  setThumbnailFile(null);
+  setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
+  // console.log('console thumbnail',selectedVideo.thumbnail);
+  
+  // console.log('thumbnailFile',thumbnailFile);
+  setOpenUpdateDialog(true);
+};
 
-      const handleDeleteVideo = (videoId: string) => {
+const handleCloseUpdateDialog = () => {
+  setOpenUpdateDialog(false);
+  setThumbnailPreview(null);
+};
+
+const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
+  const valid: boolean = validateInputs();
+
+  if (valid) {
+   
+
+    const slug = slugify(name);
+    const formData = new FormData();
+    if (thumbnailFile) {
+      console.log('thumbnail',thumbnailFile);
+      
+      formData.append("thumbnail", thumbnailFile); 
+    } else {
+        
+      formData.append("thumbnail", thumbnail);
+    }
+    formData.append("status", status);
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("slug", slug);
+
+    requestApi(`videos/${VideoId}`, "PUT", formData)
+      .then((res: any) => {
+        if (res.success) {
+          loadVideos(page)
+          console.log('res update video', res)
+          dispatch(updateLocalStorage());
+
+          setOpenUpdateDialog(false);
+          setSnackbarMessage(t("update_video_success"));
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+        } else {
+          setSnackbarMessage(res.message || t("update_video_failed"));
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
+        }
+      })
+      .catch((err: any) => {
+        console.error("Update category failed:", err.response?.data || err.message);
+        setSnackbarMessage(t("update_video_occerred"));
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      });
+  }
+};
+
+
+
+
+const handleDeleteVideo = (videoId: string) => {
         requestApi(`videos/${videoId}`, "DELETE")
           .then((res: any) => {
     
             if (res.success) {
               loadVideos(page)
               console.log("Video deleted:", res);
-              setSnackbarMessage(t("delete_videos_success"));
+              setSnackbarMessage(t("delete_video_success"));
               setSnackbarSeverity("success");
               setOpenSnackbar(true);
             } else {
@@ -246,15 +334,15 @@ const ListVideo = ()=>{
                   rows={3} 
                   InputProps={{ style: { resize: 'vertical' } }}
                 />
-                <Button variant="contained" component="label">
-            Chọn ảnh cho video
-            <input
-              type="file"
-              hidden
-              // accept="image/*"
-              onChange={handleFileChange}
-            />
-          </Button>
+                    <Button variant="contained" component="label">
+                      Chọn ảnh cho video
+                      <input
+                        type="file"
+                        hidden
+                        // accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
 
           {/* Hiển thị ảnh thumbnail đã chọn */}
           {thumbnailPreview && (
@@ -269,6 +357,95 @@ const ListVideo = ()=>{
               <DialogActions>
                 <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
                 <Button type="submit" >{t("add_user")}</Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openUpdateDialog}
+              onClose={() => handleCloseUpdateDialog()}
+              PaperProps={{
+                component: 'form',
+                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                  event.preventDefault();
+                  handleUpdateVideo(selectedVideo.id,selectedVideo.thumbnail);
+
+                },
+              }}
+            >
+              <DialogTitle>{t("update_video")}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {/* {t("update_caterogy_text")} */}
+                  </DialogContentText>
+                <TextField
+                  autoFocus
+                  error={nameError}
+                  helperText={nameErrorMessage}
+                  onChange={(val) => {
+                    setName(val.target.value);
+                  }}
+                  value={name}
+                  margin="dense"
+                  id="name"
+                  name="name"
+                  label={t("name_video")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  placeholder={t("name_video")}
+                />
+                <TextField
+                  autoFocus
+                  error={descriptionError}
+                  helperText={descriptionErrorMessage}
+                  onChange={(val) => {
+                    setDescription(val.target.value);
+                  }}
+                  value={description}
+                  margin="dense"
+                  id="description"
+                  name="description"
+                  label={t("description_text")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                />
+
+                <Button variant="contained" component="label">
+                      Chọn ảnh cho video
+                      <input
+                        type="file"
+                        hidden
+                        // accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                </Button>
+                {thumbnailPreview && (
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Thumbnail preview" 
+                  style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
+                />
+                )}
+                       <TextField
+                            select
+                            label="Status"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            fullWidth
+                            SelectProps={{
+                                native: true,
+                            }}
+                            style={{marginTop:50}}
+                             >
+                            <option value="confirming">Confirming</option>
+                            <option value="confirmed">Confirmed</option>
+                      </TextField>
+
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+                <Button type="submit" >{t("btnUpdate")}</Button>
               </DialogActions>
             </Dialog>
                                 
@@ -321,12 +498,15 @@ const ListVideo = ()=>{
                           </TableCell>
 
                           <TableCell  >
-                            <Button variant="outlined" color="primary"  >
+                            <Button variant="outlined" color="primary" onClick={()=>handleOpenUpdateDialog(video)}  >
                               {t("edit")}
                             </Button>
                             <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteVideo(video.id)}>
                               {t("delete")}
                             </Button>
+                              {/* <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>{setStatus("comfirmed"),console.log(status)}}  >
+                              accept_status
+                            </Button> */}
 
                           </TableCell>
 

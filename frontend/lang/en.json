@@ -60,6 +60,7 @@
     "add_category": "To add a new category, please enter the category name below. We will update your list immediately after submission.",
     "description_text": "Description",
     "update_caterogy": "Update Category",
+    "update_video": "Update Video",
     "update_caterogy_text": "To add a new category, please enter the category name below. We will update your list immediately after submission.",
     "delete_category_success": "Category deleted successfully!",
     "delete_category_failed": "Failed to delete category",
