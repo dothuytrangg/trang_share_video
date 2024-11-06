@@ -1,5 +1,5 @@
 import { CreateUserDto } from './dto/create-user.dto';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/users.entity';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
@@ -8,12 +8,23 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { FilterUserDto } from 'src/users/dto/filter-user.dto';
 import { common_response } from 'src/ultils/common';
 import validator from 'validator';
+import { VerificationService } from 'src/verification/verification.service';
+import { EmailService } from 'src/otp-message/email.service';
 
 
 @Injectable()
 export class UsersService {
+    generateEmailVerification(id: number) {
+        throw new Error('Method not implemented.');
+    }
+    verifyEmail(id: number, otp: string) {
+        throw new Error('Method not implemented.');
+    }
 
-    constructor(@InjectRepository(User) private userRepository:Repository<User>){}
+    constructor(@InjectRepository(User) 
+      private userRepository:Repository<User>,
+      private verificationTokenService: VerificationService,
+      private emailService: EmailService,){}
 
     // async findAll():Promise<User[]>{
     //     let response = common_response;
@@ -157,4 +168,9 @@ export class UsersService {
     async uploadAvatar(id:number,avatar:string):Promise<UpdateResult>{
         return await this.userRepository.update(Number(id),{avatar});
     }
+    
+
 }
+
+
+

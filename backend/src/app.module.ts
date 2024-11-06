@@ -1,3 +1,4 @@
+import { MessageModule } from './otp-message/message.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'db/data-source';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -15,6 +17,9 @@ import { CategoriesModule } from './categories/categories.module';
     AuthModule,
     ConfigModule.forRoot(),
     CategoriesModule,
+    VerificationModule,
+    MessageModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

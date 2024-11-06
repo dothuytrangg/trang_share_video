@@ -131,11 +131,11 @@ const LoginView = () => {
       setEmailError(true);
       setEmailErrorMessage(t("email_invalid"));
       isValid = false;
-    } else{
+    } else {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-//----------------------------password-----------------------------------------
+    //----------------------------password-----------------------------------------
     if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -258,10 +258,7 @@ const LoginView = () => {
                     color={passwordError ? "error" : "primary"}
                   />
                 </FormControl>
-                <ForgotPassword open={open} handleClose={handleClose} />
-                {errorLogin != "" && (
-                  <p className="text-red-600 text-center">{errorLogin}</p>
-                )}
+               
                 <Button
                   type="submit"
                   fullWidth
@@ -269,7 +266,19 @@ const LoginView = () => {
                   onClick={() => handleLogin()}
                 >
                   {t("login")}
-                </Button>
+                </Button> 
+                <Typography sx={{ textAlign: "center" }}>
+                  {t('forgot_password')}
+                  <span>
+                    <Link
+                      className="text-blue-600 underline"
+                      href={`/${locale}/${_GLOBAL.ROUTER_FORGOT_PASSWORD}`}
+                    >
+                      {t('a_forgot_password')}
+                    </Link>
+                  </span>
+                </Typography>
+
                 <Typography sx={{ textAlign: "center" }}>
                   {t('signin_login_question')}
                   <span>

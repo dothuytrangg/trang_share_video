@@ -35,6 +35,7 @@ export default function requestApi(
           if (authStore.access_token) {
             config.headers["Authorization"] = "Bearer " + authStore.access_token;
           }
+          
         }
 
       return config;

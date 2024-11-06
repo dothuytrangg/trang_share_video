@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, Req, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -9,21 +9,25 @@ import { User } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { storageConfig } from 'helpers/config';
 
+
 @Controller('users')
 export class UsersController {
+    
 
-    constructor(private userService:UsersService){}
+    constructor(private userService: UsersService){}
     @UseGuards(AuthGuard)
     @Get()
     FindAllPage(@Query() query: FilterUserDto):Promise<User[]>{
         // console.log(query);
         return this.userService.findAllPage(query);
+
     }
     // @UseGuards(AuthGuard)
     // @Get()
     // FindAll():Promise<User[]>{
     //     return this.userService.findAll();
     // }
+
 
     @UseGuards(AuthGuard)
     @Get(':id')
@@ -91,5 +95,7 @@ export class UsersController {
 
         return this.userService.uploadAvatar(req.user_data.id,file.destination + '/' + file.filename);
     }
-
+    
 }
+
+

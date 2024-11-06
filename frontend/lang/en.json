@@ -72,7 +72,10 @@
     "create_user_occerred": "An error occurred while creating the user.",
     "update_user_success": "User created successfully!",
     "update_user_failed": "Failed to update user",
-    "update_user_occerred": "An error occurred while update the user"
+    "update_user_occerred": "An error occurred while update the user",
+    "email_already_registered": "You are already registered. Please log in.",
+    "forgot_password": "Forgot password?",
+    "a_forgot_password": "Reset password"
    
 
 

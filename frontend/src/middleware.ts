@@ -28,7 +28,10 @@ const authMiddleware = withAuth(
 );
 export default function middleware(req: NextRequest) {
   // console.log('data: ',   cookies().get('master'));
- 
+  const path = req.nextUrl.pathname;
+  if (path === '/sendotp') {
+    return NextResponse.next();
+  }
 
   return intlMiddleware(req);
   // const excludePattern = "^(/(" + locales.join("|") + "))?/admin/?.*?$";
@@ -64,8 +67,11 @@ export default function middleware(req: NextRequest) {
   //     return NextResponse.redirect(new URL("/errors/permission", req.url));
   //   }
   // }
+ 
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  //matcher: ["/((?!api|_next|.*\\..*).*)"],
+   matcher: ["/((?!api|_next|.*\\..*|sendotp).*)"],
+  
 };

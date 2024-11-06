@@ -4,8 +4,7 @@ import {IsEmail,  IsNotEmpty, IsString, MaxLength, MinLength} from "class-valida
 
 
 export class RegisterUserDto{
- 
- 
+  
     @IsNotEmpty()
     @IsString()
     @MinLength(3, {

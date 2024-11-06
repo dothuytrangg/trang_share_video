@@ -54,9 +54,9 @@ const Register = () => {
   const masterStore = useAppSelector((state) => state.master);
 
 
-  const validateInputs =  () => {
+  const validateInputs = () => {
     let isValid = true;
-
+  
     if (!full_name) {
       setNameError(true);
       setNameErrorMessage(t('name'));
@@ -78,12 +78,10 @@ const Register = () => {
       setEmailError(true);
       setEmailErrorMessage(t('email_invalid'));
       isValid = false;
-    }  else {
+    }else {
         setEmailError(false);
         setEmailErrorMessage('');
-      }
-    
-
+    } 
     if (!password) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -116,8 +114,12 @@ const Register = () => {
       requestApi('auth/register', 'POST', registerData)
         .then((res: any) => {
           if (res.success) {
-            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
-          } else {
+            localStorage.setItem('userId', res.userId); // Store userId
+            console.log('userId stored in localStorage:', res.userId);
+            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTE_SEND_OTP}`);
+          } if (res.errorCode === 'USER_EXISTS') {
+            setErrorRegister(t('email_already_registered'));
+          } else{
             setErrorRegister(res.message)
           }
         })

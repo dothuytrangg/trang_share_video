@@ -30,11 +30,11 @@
         "password_not_empty": "Mật khẩu không được để trống",
         "password_least_6": "Mật khẩu phải lớn hơn 6 kí tự .",
         "email_invalid": "Điền đúng định dạng email",
-        "name": "Tên không được để trống",
-        "name_least_3": "Tên phải lớn hơn 3 kí tự",
-        "name_more_20": "Tên phải nhỏ hơn 20 kí tự ",
+        "name": "Tên người dùng không được để trống",
+        "name_least_3": "Tên người dùng phải lớn hơn 3 kí tự",
+        "name_more_20": "Tên người dùng phải nhỏ hơn 20 kí tự ",
         "name_exist":"Tên đã tồn tại",
-        "input_name": "Nhập tên",
+        "input_name": "Tên người dùng",
         "description": "Mô tả không được để trống",
         "description_least_3": "Mô tả phải lớn hơn 3 kí tự",
         "description_more_20": "Mô tả phải nhỏ hơn 20 kí tự",
@@ -77,7 +77,10 @@
         "create_user_occerred": "Đã xảy ra lỗi khi thêm mới tài khoản.",
         "update_user_success": "Cập nhật tài khoản thành công!",
         "update_user_failed": "Cập nhật tài khoản không thành công!",
-        "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản"
+        "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",
+        "email_already_registered": "Bạn đã đăng ký. Vui lòng đăng nhập.",
+        "forgot_password": "Quên mật khẩu?",
+        "a_forgot_password": "Đặt lại"
 
 
 
