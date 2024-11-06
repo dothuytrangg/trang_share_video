@@ -8,6 +8,8 @@ import { dataSourceOptions } from 'db/data-source';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
 import { VideosModule } from './videos/videos.module';
+import { VideoDetailsController } from './video-details/video-details.controller';
+import { VideoDetailsModule } from './video-details/video-details.module';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { VideosModule } from './videos/videos.module';
     ConfigModule.forRoot(),
     CategoriesModule,
     VideosModule,
+    VideoDetailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -91,7 +91,17 @@
         "create_video_occerred": "Đã xảy ra lỗi khi thêm mới video.",
         "update_video_success": "Cập nhật video thành công!",
         "update_video_failed": "Cập nhật video không thành công!",
-        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video"
+        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
+
+        "Status":"Trạng thái",
+        "Confirming":"Chưa xác nhận",
+        "Confirmed":"Đã xác nhận",
+        "Choose_thumbnail":" Chọn ảnh",
+        "Name":"Tên",
+        "Thumbnail":"Ảnh",
+        "UserId":"Mã người dùng",
+        "ID":"Mã"
+
         
 
 
