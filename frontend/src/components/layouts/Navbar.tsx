@@ -10,11 +10,11 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
-import { AccountCircle, TextFields } from "@mui/icons-material";
+import { AccountCircle, TextFields, VideoCallOutlined } from "@mui/icons-material";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
@@ -53,6 +53,21 @@ export default function Navbar() {
   const [user, setUser] = useState()
   const [profileData,setProfileData] = useState<any>({});;
   var ranonce = false;
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  let [errorCreate, setErrorCreate] = useState("");
+  const [nameError, setNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState("");
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null >(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
+  
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
@@ -74,6 +89,15 @@ export default function Navbar() {
     //  }
     
     }, [masterStore])
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files && event.target.files[0]) {
+        const file = event.target.files[0];
+        setThumbnailFile(file);
+        setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+      }
+    };
+
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
@@ -110,6 +134,72 @@ export default function Navbar() {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  
+  function slugify(str: string): string {
+
+    str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    str = str.replace(/^\s+|\s+$/g, '');
+    str = str.toLowerCase();
+    str = str.replace(/[^a-z0-9 -]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+
+    return str;
+  }
+  const validateInputs = () => {
+    const name = document.getElementById("name") as HTMLInputElement;
+    const description = document.getElementById("description") as HTMLInputElement;
+  
+    let isValid = true;
+  
+  
+    if (!name.value) {
+      setNameError(true);
+      setNameErrorMessage(t("name_required"));
+      isValid = false;
+    } else if (name.value.length < 3) {
+      setNameError(true);
+      setNameErrorMessage(t("name_least_3"));
+      isValid = false;
+    } else if (name.value.length > 50) {
+      setNameError(true);
+      setNameErrorMessage(t("name_more_50"));
+      isValid = false;
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  
+
+    if (!description.value) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_required"));
+      isValid = false;
+    } else if (description.value.length < 10) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_least_10"));
+      isValid = false;
+    } else if (description.value.length > 200) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_more_200"));
+      isValid = false;
+    } else {
+      setDescriptionError(false);
+      setDescriptionErrorMessage("");
+    }
+  
+   
+    // if (!thumbnailFile) {
+    //   setSnackbarMessage(t("thumbnail_required"));
+    //   setSnackbarSeverity("error");
+    //   setOpenSnackbar(true);
+    //   isValid = false;
+    // }
+  
+    return isValid;
+  };
   const renderButtonThreeDot = () => {
     if (!isLogin) {
       return <IconButton
@@ -134,19 +224,76 @@ export default function Navbar() {
      handleClose();
   }
 
+
+  const handleCreateVideo = (): void => {
+    const valid: boolean = validateInputs();
+
+    if (valid && thumbnailFile) {
+        const slug = slugify(name);
+        const formData = new FormData();
+        
+        formData.append("thumbnail", thumbnailFile);
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("slug", slug);
+
+        requestApi("videos", "POST", formData)
+            .then((res: any) => {
+                if (res.success) {
+                  // setProfileData(res.video);
+                     
+                    setOpenAddDialog(false);
+                    setSnackbarMessage(t("create_video_success"));
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    // loadVideos(page);
+                } else {
+                    setErrorCreate(res.message || t("create_video_failed"));
+                    setSnackbarMessage(res.message || t("create_video_failed"));
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch((err: any) => {
+                console.error("Create video failed:", err);
+                setSnackbarMessage(t("create_video_occurred"));
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            });
+    } else {
+        console.log('No file selected for thumbnail.');
+    }
+};
+
   const renderButtonAcction = () => {
     if (!isLogin) {
       return <Button onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
         {t('login')}
       </Button>
     } else {
-      return  <Button onClick={handleClick} variant="outlined" startIcon={profileData.avatar 
+      return (
+        
+        <Box>
+          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
+          </Button>
+           <Button onClick={handleClick} variant="outlined" startIcon={profileData.avatar 
       ? (<Avatar src={profileData.avatar} sx={{ width: 20, height: 20}}/>) 
       :(<AccountCircle />)}>
         {masterStore.user.name}
       </Button>
+      
+        </Box>
+      )
+      
     }
+
+
   }
+
+
+
+
+
 
 
   return (
@@ -176,6 +323,8 @@ export default function Navbar() {
               placeholder={t('search') + "..."}
               
             />
+
+            
           <Box sx={{ flexGrow: 1 }} />
           <IconButton
             onClick={handleClick}
@@ -186,8 +335,8 @@ export default function Navbar() {
             aria-expanded={open ? 'true' : undefined}
           >
           </IconButton>
-
-          {renderButtonThreeDot()}
+{/* 
+          {renderButtonThreeDot()} */}
 
           <Menu
             anchorEl={anchorEl}
@@ -205,7 +354,92 @@ export default function Navbar() {
             <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
             <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
           </Menu>
+       
           {renderButtonAcction()}
+          <Dialog
+              open={openAddDialog}
+              onClose={() => setOpenAddDialog(false)}
+              PaperProps={{
+                component: 'form',
+                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                  event.preventDefault();
+                  handleCreateVideo();
+
+                },
+              }}
+            >
+              <DialogTitle>{t("addVideo")}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {/* {t("addText_category")} */}
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  error={nameError}
+                  helperText={nameErrorMessage}
+                  onChange={(val) => {
+                    setName(val.target.value);
+                  }}
+                  margin="dense"
+                  id="name"
+                  name="name"
+                  label={t("name_video")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  placeholder={t("name_video")}
+                />
+                <TextField
+                  autoFocus
+                  error={descriptionError}
+                  helperText={descriptionErrorMessage}
+                  onChange={(val) => setDescription(val.target.value)}
+                  margin="dense"
+                  id="description"
+                  name="description"
+                  label={t("description_text")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  multiline
+                  rows={3} 
+                  InputProps={{ style: { resize: 'vertical' } }}
+                />
+                    <Button variant="contained" component="label">
+                    {t('Choose_thumbnail')}
+                      <input
+                        type="file"
+                        hidden
+                        // accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+
+          {/* Hiển thị ảnh thumbnail đã chọn */}
+          {thumbnailPreview && (
+            <img 
+              src={thumbnailPreview} 
+              alt="Thumbnail preview" 
+              style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
+            />
+          )}
+
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                <Button type="submit" >{t("add")}</Button>
+              </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+               >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
+
 
         </Toolbar>
       </AppBar>

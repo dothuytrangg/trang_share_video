@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Video } from 'src/videos/entities/videos.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 
 @Entity()
@@ -40,6 +41,9 @@ export class User {
 
   @CreateDateColumn()
   updated_at: Date;
+  
+  @OneToMany(() => Video, (video) => video.user)
+    videos: Video[]
 
   
 }

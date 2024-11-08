@@ -21,6 +21,8 @@ export class VideosController {
         return this.videoService.findAllPage(query)
     }
 
+
+
     @UseGuards(AuthGuard)
     @Get(':id')
     findOne(@Param('id') id:string):Promise<Video>{

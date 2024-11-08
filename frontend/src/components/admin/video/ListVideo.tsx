@@ -357,7 +357,7 @@ const handleDeleteVideo = (videoId: string) => {
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                <Button type="submit" >{t("add_user")}</Button>
+                <Button type="submit" >{t("add")}</Button>
               </DialogActions>
             </Dialog>
 
