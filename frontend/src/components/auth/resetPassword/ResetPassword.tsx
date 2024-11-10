@@ -6,6 +6,8 @@ import MuiCard from '@mui/material/Card';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import requestApi from '../../../../helpers/api';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
+import CustomCard from '@/util/customCard';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -85,17 +87,20 @@ const ResetPassword = () => {
 
 
     return (
-        <ResetPasswordContainer direction="column" justifyContent="center">
-            <Stack sx={{ justifyContent: 'center', height: '100vh', p: 2 }}>
-                <Card variant="outlined">
+        <ReponsiveContainer direction="column" justifyContent="center">
+            <Stack
+                sx={{
+                    justifyContent: "center",
+                    height: "90dvh",
+                    p: 2,
+                }}
+            >
+                <CustomCard variant="outlined">
                     <Image src={logo} alt="Company logo" width={50} height={50} />
-                    <Typography component="h1" variant="h5" align="center" sx={{ mb: 2, fontSize: 'clamp(1.5rem, 5vw, 2.25rem)' }}>
+                    <Typography component="h1" variant="h5" sx={{ gap:1, fontSize: 'clamp(1.5rem, 5vw, 2.25rem)' }}>
                         Đổi mật khẩu
                     </Typography>
-                    <Typography variant="body2" align="center" sx={{ mb: 3, color: 'text.secondary' }}>
-                        Nhập mật khẩu mới của bạn
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
                         <FormControl>
                             <FormLabel htmlFor="new-password">Mật khẩu mới</FormLabel>
                             <input
@@ -123,9 +128,9 @@ const ResetPassword = () => {
                         </Button>
                     </Box>
                     {message && <Typography color={error ? "error" : "success"} align="center" sx={{ mt: 2 }}>{message}</Typography>}
-                </Card>
+                </CustomCard>
             </Stack>
-        </ResetPasswordContainer>
+        </ReponsiveContainer>
     );
 };
 

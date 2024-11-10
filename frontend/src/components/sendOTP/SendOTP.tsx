@@ -13,33 +13,35 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import requestApi from '../../../helpers/api';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
+import CustomCard from '@/util/customCard';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignSelf: 'center',
-    width: '100%',
-    height: '70%',
-    padding: theme.spacing(4),
-    gap: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
-        width: '450px',
-    },
-    boxShadow:
-        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-}));
+// const Card = styled(MuiCard)(({ theme }) => ({
+//     display: 'flex',
+//     flexDirection: 'column',
+//     alignSelf: 'center',
+//     width: '100%',
+//     height: '70%',
+//     padding: theme.spacing(4),
+//     gap: theme.spacing(2),
+//     [theme.breakpoints.up('sm')]: {
+//         width: '450px',
+//     },
+//     boxShadow:
+//         'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+// }));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
-    height: '100vh',
-    backgroundImage:
-        'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    justifyContent: 'center',
-    ...theme.applyStyles('dark', {
-        backgroundImage:
-            'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-}));
+// const SignInContainer = styled(Stack)(({ theme }) => ({
+//     height: '100vh',
+//     backgroundImage:
+//         'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+//     backgroundRepeat: 'no-repeat',
+//     justifyContent: 'center',
+//     ...theme.applyStyles('dark', {
+//         backgroundImage:
+//             'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+//     }),
+// }));
 
 const OtpInput = styled(InputBase)(({ theme }) => ({
     width: '3rem',
@@ -63,7 +65,6 @@ const SendOTP = () => {
     const [otpError, setOtpError] = useState(true);
     const [otpErrorMessage, setOtpErrorMessage] = useState('');
     const [isSendingOtp, setIsSendingOtp] = useState(false);
-    const userId = localStorage.getItem('userId');
 
 
     const handleOtpChange = (index: number, value: string) => {
@@ -152,15 +153,15 @@ const SendOTP = () => {
     };
 
     return (
-        <SignInContainer direction="column" justifyContent="space-between">
+        <ReponsiveContainer direction="column" justifyContent="center">
             <Stack
                 sx={{
                     justifyContent: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     p: 2,
                 }}
             >
-                <Card variant="outlined">
+                <CustomCard variant="outlined">
                     <Image src={logo} alt="Company logo" width={50} height={50} />
                     <Typography
                         component="h1"
@@ -236,9 +237,9 @@ const SendOTP = () => {
                             </Button>
                         </Stack>
                     </Box>
-                </Card>
+                </CustomCard>
             </Stack>
-        </SignInContainer>
+        </ReponsiveContainer>
     );
 };
 

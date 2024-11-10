@@ -9,12 +9,14 @@ import React from 'react';
 import requestApi from '../../../../helpers/api';
 import router from 'next/router';
 import { _GLOBAL } from '@/contstants';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
+import CustomCard from '@/util/customCard';
 
-const ForgotPasswordContainer = styled(Stack)(({ theme }) => ({
-  height: '100%',
-  padding: 4,
-  backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-}));
+// const ForgotPasswordContainer = styled(Stack)(({ theme }) => ({
+//   height: '100%',
+//   padding: 4,
+//   backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+// }));
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -34,19 +36,19 @@ const ForgotPassword = () => {
   const logo = '/image/logo.png';
   const [email, setEmail] = React.useState('');
   const [message, setMessage] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Email submitted:', email); // Debugging line
     requestApi('auth/forgot-password', 'POST', { email })
       .then((res: any) => {
-        console.log('Response from API:', res); // Debugging line
         if (res.success) {
           setMessage('Password reset link sent! Please check your email.');
         } else if (res.message && res.message.includes('No account associated')) {
-          setMessage('No account associated with this email address.');
+          setErrorMessage('No account associated with this email address.');
         } else {
-          setMessage(res.message || 'Failed to send reset link.');
+          setErrorMessage(res.message || 'Failed to send reset link.');
         }
       })
       .catch((err: any) => {
@@ -56,17 +58,23 @@ const ForgotPassword = () => {
   };
 
   return (
-    <ForgotPasswordContainer direction="column" justifyContent="center">
-      <Stack sx={{ justifyContent: 'center', height: '100vh', p: 2 }}>
-        <Card variant="outlined">
+    <ReponsiveContainer direction="column" justifyContent="center">
+      <Stack
+        sx={{
+          justifyContent: "center",
+          height: "80dvh",
+          p: 2,
+        }}
+      >
+        <CustomCard variant="outlined">
           <Image src={logo} alt="author" width={50} height={50} />
-          <Typography component="h1" variant="h5" align="center" sx={{ mb: 2, fontSize: 'clamp(1.5rem, 5vw, 2.25rem)' }}>
+          <Typography component="h1" variant="h5" sx={{ mb: 2, fontSize: 'clamp(1.5rem, 5vw, 2.25rem)' }}>
             Khôi phục mật khẩu
           </Typography>
-          <Typography variant="body2" align="center" sx={{ mb: 3, color: 'text.secondary' }}>
+          <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}>
             Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
@@ -83,9 +91,9 @@ const ForgotPassword = () => {
             </Button>
           </Box>
           {message && <Typography color="error">{message}</Typography>} {/* Display message */}
-        </Card>
+        </CustomCard>
       </Stack>
-    </ForgotPasswordContainer>
+    </ReponsiveContainer>
   );
 };
 export default ForgotPassword;

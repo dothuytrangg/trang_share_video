@@ -2,6 +2,7 @@
 import { Button } from "@mui/material";
 import requestApi from "../../../helpers/api";
 import { useEffect, useState } from "react";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 export default function Category() {
   const [categories, setCategories] = useState([]);
@@ -44,5 +45,5 @@ export default function Category() {
     ));
   };
 
-  return <div>{renderCategory()}</div>; // Hiển thị danh mục
+  return <ReponsiveContainer><div>{renderCategory()}</div> </ReponsiveContainer>; // Hiển thị danh mục
 }

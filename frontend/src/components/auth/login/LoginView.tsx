@@ -32,26 +32,11 @@ import {
   updateLocalStorage,
 } from "@/stores/features/masterSlice";
 import { useLocale, useTranslations } from "next-intl";
+import CustomCard from "@/util/customCard";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 // import NavBar from './NavBar';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignSelf: "center",
-  width: "100%",
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  [theme.breakpoints.up("sm")]: {
-    width: "450px",
-  },
-  boxShadow:
-    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
-  ...theme.applyStyles("dark", {
-    boxShadow:
-      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
-  }),
-}));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: "auto",
@@ -180,18 +165,17 @@ const LoginView = () => {
 
     } else {
       return (
-        <SignInContainer direction="column" justifyContent="space-between">
+        <ReponsiveContainer direction="column" justifyContent="space-between">
           <Stack
             sx={{
               justifyContent: "center",
-              height: "100dvh",
+              height: "90dvh",
               p: 2,
             }}
           >
-            <Card variant="outlined">
+            <CustomCard variant="outlined">
               <Image
                 src={logo}
-                className="m-auto"
                 alt="Picture of the author"
                 width={50}
                 height={50}
@@ -291,9 +275,9 @@ const LoginView = () => {
                   </span>
                 </Typography>
               </Box>
-            </Card>
+            </CustomCard>
           </Stack>
-        </SignInContainer>
+        </ReponsiveContainer>
       );
     }
   };

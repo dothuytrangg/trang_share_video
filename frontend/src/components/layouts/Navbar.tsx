@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ import { getMessages } from "next-intl/server";
 import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
 import { format } from "path";
 import { _GLOBAL } from "@/contstants";
-
+import requestApi from "../../../helpers/api";
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -29,10 +29,15 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
+  transition: theme.transitions.create(["width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  height: '70px'
+}));
+const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
+  minHeight: 56, // Giảm chiều cao của toolbar
+  // padding: theme.spacing(0, 2), // Điều chỉnh padding để giảm không gian
 }));
 
 export default function Navbar() {
@@ -50,11 +55,28 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
- 
+  const [profileData,setProfileData] = useState<any>({});;
+  var ranonce = false;
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-    setLoading(masterStore.loading)
+     setLoading(masterStore.loading)
+  
+    // if (!ranonce) {
+    //   requestApi('users/profile','GET').then((res:any)=>{
+    //      if(res.success){
+    //          setProfileData({...res.data,avatar:'http://localhost:2070/'+ res.data.avatar})
+    //      }
+ 
+    //   }
+ 
+    //   ).catch((err)=>{
+    //    console.log('err',err);
+    //   })
+      
+    //    ranonce = true;
+    //  }
+    
     }, [masterStore])
 
   const handleToggleDrawer = () => {
@@ -111,78 +133,98 @@ export default function Navbar() {
     dispatch(updateLocalStorage())
     router.push(`/${locale}`)
   }
+  const handleProfile = ()=>{
+     router.replace(`/${locale}/profile`);
+     handleClose();
+  }
 
   const renderButtonAcction = () => {
     if (!isLogin) {
-      return <Button onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
-        {t('login')}
-      </Button>
+      return (
+        <Button
+          onClick={handleRedirectAuthenPage}
+          variant="outlined"
+          startIcon={<AccountCircle />}
+        >
+          {t('login')}
+        </Button>
+      );
     } else {
-      return  <Button onClick={handleClick} variant="outlined" startIcon={<AccountCircle />}>
-        {masterStore.user.name}
-      </Button>
+      return (
+        <Button
+          onClick={handleClick}
+          variant="outlined"
+          startIcon={
+            profileData.avatar ? (
+              <Avatar src={profileData.avatar} sx={{ width: 20, height: 20 }} />
+            ) : (
+              <AccountCircle />
+            )
+          }
+          sx={{
+            maxWidth: 150, // Giới hạn độ rộng của nút
+            whiteSpace: 'nowrap', // Tránh xuống dòng
+            overflow: 'hidden',
+            textOverflow: 'ellipsis', // Thêm dấu "..."
+          }}
+        >
+          {masterStore.user.name}
+        </Button>
+      );
     }
-  }
+  };
+
+
   return (
     <Box >
-      <AppBar color="secondary" position="fixed">
-        <Toolbar>
-          <IconButton sx={{ mr: 2 }} color="inherit" aria-label="open drawer" onClick={handleToggleDrawer} edge="start">
-            <MenuIcon />
-          </IconButton>
-                <Typography variant="inherit" color="inherit" component="div" >
-              <Image onClick={()=>{
+        <AppBar color="secondary" position="fixed">
+          <ToolbarStyled>
+
+            <IconButton sx={{ mr: 2 }} color="inherit" aria-label="open drawer" onClick={handleToggleDrawer} edge="start">
+            {isLogin && <MenuIcon />} 
+            </IconButton>
+            <Typography variant="inherit" color="inherit" component="div">
+              <Image onClick={() => {
                 router.replace(`/${locale}`)
               }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
             </Typography>
             <Box sx={{ flexGrow: 0.5 }} />
-   
             <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
               size="small"
-              style = {{width: 500}}
+              style={{ width: 500 }}
               placeholder={t('search') + "..."}
-              
             />
-          <Box sx={{ flexGrow: 1 }} />
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
-          </IconButton>
+            <Box sx={{ flexGrow: 1 }} />
+            {renderButtonThreeDot()}
+            <Menu
+              anchorEl={anchorEl}
+              id="account-menu"
+              open={open}
+              onClose={handleClose}
+              onClick={handleClose}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <MenuItem className="px-5" onClick={handleProfile}>{t('profile')}</MenuItem>
+              <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
+              <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
+              <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
+              <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
+            </Menu>
 
-          {renderButtonThreeDot()}
+            {renderButtonAcction()}
+            </ToolbarStyled>
 
-          <Menu
-            anchorEl={anchorEl}
-            id="account-menu"
-            open={open}
-            onClose={handleClose}
-            onClick={handleClose}
+        </AppBar>
 
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <MenuItem className="px-5" onClick={handleClose}>{t('profile')}</MenuItem>
-            <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
-            <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
-            <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
-            <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
-          </Menu>
-          {renderButtonAcction()}
 
-        </Toolbar>
-      </AppBar>
     </Box>
   );
 }

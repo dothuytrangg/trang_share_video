@@ -23,6 +23,7 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField } from "@mui/material";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
 import requestApi from "../../../../helpers/api";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 // import Modal from "@mui/material/Modal";
 // import Box from "@mui/material/Box";
@@ -87,7 +88,7 @@ const ListCategory = () => {
       if (masterStore.isAdmin) {
         setLoading(false);
         router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`);
-        //tôi muốn thêm một api của user thay vì admin
+        
 
       }
       loadCategories(page);
@@ -268,7 +269,7 @@ const ListCategory = () => {
 
   const renderPage = () => {
     if (!loading) {
-      return (
+      return (          
         <div className="grid grid-cols-1 gap-4">
           <React.StrictMode>
             <Dialog

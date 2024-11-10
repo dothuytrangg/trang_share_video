@@ -61,7 +61,8 @@ export class UsersService {
         const lastPage = Math.ceil(total / items_per_page);
         const nextPage = page + 1 > lastPage ? null : page + 1;
         const prevPage = page - 1 < 1 ? null : page - 1;
-        if([res, total]){
+        let ok = [res, total]
+        if(ok){
           response.success = true;
           response.data = res;
           response.page = page;
@@ -80,7 +81,16 @@ export class UsersService {
 
 
     async findOne(id:number):Promise<User>{
-        return await this.userRepository.findOneBy({id});
+      let response = common_response;
+      let user = await this.userRepository.findOneBy({id});
+      if(user){
+        response.success = true;
+        response.data = user;
+        return response;
+      }else{
+        response.success = false;
+      }
+      return response;
     }
 
   async create(CreateUserDto: CreateUserDto): Promise<User> {
@@ -166,7 +176,16 @@ export class UsersService {
     }
 
     async uploadAvatar(id:number,avatar:string):Promise<UpdateResult>{
-        return await this.userRepository.update(Number(id),{avatar});
+      let response = common_response;
+      let upload = await this.userRepository.update(Number(id),{avatar});
+      if(upload){
+        response.success = true;
+        return response;
+      }else{
+        response.success = false;
+      }
+      return response;
+        
     }
     
 

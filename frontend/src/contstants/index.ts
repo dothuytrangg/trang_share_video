@@ -12,6 +12,7 @@ const _GLOBAL = {
   ROUTE_ADMIN_CATEGORY: "category",
   ROUTE_ADMIN_ADD: "add",
   ROUTE_ADMIN_ACCOUNT: "account",
+  ROUTE_ADMIN_VIDEO: "video",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,
   ROUTE_SEND_OTP: "send-otp",
@@ -21,6 +22,8 @@ const _GLOBAL = {
 const _ENV ={
     NEXT_URL_LOCAL: "http://localhost:2070",
     NEXT_URL_PRODUCTION: "https://trang-backend.congcucuatoi.com",
+    NEXT_URL_RESOURCE:"https://nasdev.congcucuatoi.com/webdav",
+    // NEXT_URL_RESOURCE: "http://localhost:2070/resource",
 }
 
 export { _GLOBAL, _ENV };

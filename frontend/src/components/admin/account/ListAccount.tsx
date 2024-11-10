@@ -19,6 +19,7 @@ import { _GLOBAL } from '@/contstants';
 import router from 'next/router';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from "next/navigation";
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
 
 function createData(
   name: string,
@@ -54,6 +55,11 @@ const ListAccount = () => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
   const dispatch = useAppDispatch();
+
+  const responsiveButtonStyles = () => ({
+    marginBottom: 2,
+    width: { xs: '100%', sm: 'auto' },
+  }); 
 
   useEffect(() => {
     if (!ranonce) {
@@ -269,21 +275,23 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
   const renderPage = () => {
     if (!loading) {
       return <div className="grid grid-cols-1 gap-4">
+
         <React.StrictMode>
 
       
-        <Dialog
-        open={openAddDialog}
-        onClose={() => setOpenAddDialog(false)}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault(); 
-            handleCreateUser()
-       
-          },
-        }}
-      >
+          <Dialog
+            open={openAddDialog}
+            onClose={() => setOpenAddDialog(false)}
+            fullWidth
+            maxWidth="sm" // Kích thước tối đa
+            PaperProps={{
+              sx: {
+                margin: { xs: 1, sm: 'auto' },
+                width: { xs: '90%', sm: 'auto' }, // Responsive trên di động
+              },
+            }}
+          >
+
         <DialogTitle>{t("add_user")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -341,8 +349,8 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("add_user")}</Button>
+          <Button onClick={()=>setOpenAddDialog(false)} sx = {responsiveButtonStyles}>{t("btnCancel")}</Button>
+              <Button type="submit" sx={responsiveButtonStyles}>{t("add_user")}</Button>
         </DialogActions>
       </Dialog>
      
@@ -384,8 +392,8 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
       
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("btnUpdate")}</Button>
+              <Button onClick={() => setOpenUpdateDialog(false)} sx={responsiveButtonStyles}>{t("btnCancel")}</Button>
+              <Button type="submit" sx={responsiveButtonStyles} >{t("btnUpdate")}</Button>
         </DialogActions>
       </Dialog>
             {/* Snackbar for notifications */}
@@ -400,7 +408,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         </Snackbar>
         <div className="m-5 mt-20">
           <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={()=>setOpenAddDialog(true)}>
+              <Button variant="outlined" startIcon={<AddIcon />} onClick={() => setOpenAddDialog(true)} sx={responsiveButtonStyles}>
                 {t("addAccount")}
             </Button>
 
@@ -429,16 +437,27 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
                           {user.created_at}
                         </TableCell>
                      
-                        <TableCell  >
-                          <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
-                            {t("edit")}
-                          </Button>
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteUser(user.id)} >
-                            {t("delete")}
-                          </Button>
-                          
+                        <TableCell>
+                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={() => handleOpenUpdateDialog(user)}
+                              sx={responsiveButtonStyles()} // Áp dụng styles
+                            >
+                              {t("edit")}
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={() => handleDeleteUser(user.id)}
+                              sx={responsiveButtonStyles()} // Áp dụng styles
+                            >
+                              {t("delete")}
+                            </Button>
+                          </Stack>
                         </TableCell>
-                      
+
                       </TableRow>
                     ))
                   
@@ -449,7 +468,18 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
   
           </TableContainer>
           <Stack spacing={2}>
-      <Pagination style={{margin:10}}  count={lastPage} page={page} onChange={handleChange}  variant="outlined" color="primary"  />
+              <Pagination
+                sx={{
+                  margin: { xs: '10px auto', sm: '20px auto' },
+                  width: { xs: '90%', sm: 'auto' },
+                }}
+                count={lastPage}
+                page={page}
+                onChange={handleChange}
+                variant="outlined"
+                color="primary"
+              />
+
   
     </Stack>
  

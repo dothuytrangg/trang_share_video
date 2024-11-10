@@ -16,25 +16,27 @@ import { useAppSelector } from '@/stores/hookStore';
 import { _GLOBAL } from '@/contstants';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
+import CustomCard from '@/util/customCard';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  margin: 'auto',
-  boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
-  [theme.breakpoints.up('sm')]: {
-    width: '450px',
-  },
-}));
+// const Card = styled(MuiCard)(({ theme }) => ({
+//   display: 'flex',
+//   flexDirection: 'column',
+//   alignSelf: 'center',
+//   width: '100%',
+//   padding: theme.spacing(4),
+//   margin: 'auto',
+//   boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
+//   [theme.breakpoints.up('sm')]: {
+//     width: '450px',
+//   },
+// }));
 
-const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: '100%',
-  padding: 4,
-  backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-}));
+// const SignUpContainer = styled(Stack)(({ theme }) => ({
+//   height: '100%',
+//   padding: 4,
+//   backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+// }));
 
 const Register = () => {
   const router = useRouter();
@@ -134,14 +136,20 @@ const Register = () => {
       router.replace(`/${locale}`);
     } else {
       return (
-        <SignUpContainer direction="column" justifyContent="space-between">
-          <Stack sx={{ justifyContent: 'center', height: '100dvh', p: 2 }}>
-            <Card variant="outlined">
+        <ReponsiveContainer direction="column" justifyContent="space-between">
+          <Stack
+            sx={{
+              justifyContent: "center",
+              height: "90dvh",
+              p: 1,
+            }}
+          >
+            <CustomCard variant="outlined">
               <Image src={logo} alt='author' width={50} height={50} />
               <Typography component="h1" variant="h4" sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
                 {t('register')}
               </Typography>
-              <Box component="form" onSubmit={handleRegister} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box component="form" onSubmit={handleRegister} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <FormControl>
                   <FormLabel htmlFor="full_name">{t('input_name')}</FormLabel>
                   <TextField
@@ -198,9 +206,9 @@ const Register = () => {
                   </Link>
                 </Typography>
               </Box>
-            </Card>
+            </CustomCard>
           </Stack>
-        </SignUpContainer>
+        </ReponsiveContainer>
       );
     }
   };

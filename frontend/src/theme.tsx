@@ -44,8 +44,6 @@ export default function Theme({ children }: { children: React.ReactNode }) {
         fontFamily: roboto.style.fontFamily,
       },
     });
-  
-
-
+      
   return <ThemeProvider theme={themeConfig}>{children}</ThemeProvider>;
 }

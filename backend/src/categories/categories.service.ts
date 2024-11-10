@@ -50,7 +50,8 @@ export class CategoriesService {
     const lastPage = Math.ceil(total / items_per_page);
     const nextPage = page + 1 > lastPage ? null : page + 1;
     const prevPage = page - 1 < 1 ? null : page - 1;
-    if([res, total]){
+    let ok = [res, total]
+    if(ok){
       response.success = true;
       response.data = res;
       response.page = page;

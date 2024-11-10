@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'db/data-source';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { VideosModule } from './videos/videos.module';
 import { VerificationModule } from './verification/verification.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { VerificationModule } from './verification/verification.module';
     AuthModule,
     ConfigModule.forRoot(),
     CategoriesModule,
+    VideosModule,
     VerificationModule,
     MessageModule,
     
