@@ -42,20 +42,20 @@ export class AuthController {
         console.log('refresh token api')
         return this.authService.refreshToken(refresh_token);
     }
-    @Post('resend-otp')
-    async resendOtp(@Body() resendOtpDto: ResendOtpDto) {
-        const { userId } = resendOtpDto;
+    // @Post('resend-otp')
+    // async resendOtp(@Body() resendOtpDto: ResendOtpDto) {
+    //     const { userId } = resendOtpDto;
 
-        try {
-            const result = await this.authService.resendOtp(userId);
-            return { success: true, message: 'OTP has been resent.', result };
-        } catch (error) {
-            throw new HttpException(
-                { success: false, message: error.message },
-                HttpStatus.BAD_REQUEST,
-            );
-        }
-    }
+    //     try {
+    //         const result = await this.authService.resendOtp(userId);
+    //         return { success: true, message: 'OTP has been resent.', result };
+    //     } catch (error) {
+    //         throw new HttpException(
+    //             { success: false, message: error.message },
+    //             HttpStatus.BAD_REQUEST,
+    //         );
+    //     }
+    // }
 
     @Post('verify-otp')
     @UsePipes(ValidationPipe)

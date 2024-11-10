@@ -19,11 +19,13 @@ import validator from 'validator';
 import { VerificationService } from 'src/verification/verification.service';
 import { EmailService } from 'src/otp-message/email.service';
 import { randomBytes } from 'crypto';
+import { Verification } from 'src/verification/entities/verification.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Verification) private tokenRepository: Repository<Verification>,
     private jwtService: JwtService,
     private configService: ConfigService,
     private verificationService: VerificationService,
@@ -96,54 +98,54 @@ export class AuthService {
     return this.jwtService.sign(payload, { expiresIn: '3d' });
   }
 
-  async resendOtp(userId: number) {
-    let response = common_response;
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+  // async resendOtp(userId: number) {
+  //   let response = common_response;
+  //   const user = await this.userRepository.findOne({ where: { id: userId } });
 
-    if (user) {
-      try {
-        // Kiểm tra thời gian gửi OTP gần nhất (có thể thêm thuộc tính lastOtpSent vào User entity)
-        const currentTime = new Date();
-        const timeSinceLastOtp = currentTime.getTime() - (user.lastOtpSent?.getTime() || 0);
+  //   if (user) {
+  //     try {
+  //       // Kiểm tra thời gian gửi OTP gần nhất (có thể thêm thuộc tính lastOtpSent vào User entity)
+  //       const currentTime = new Date();
+  //       const timeSinceLastOtp = currentTime.getTime() - (user.lastOtpSent?.getTime() || 0);
 
-        // Giới hạn tần suất gửi lại OTP (ví dụ: 2 phút)
-        const resendLimit = 2 * 60 * 1000; // 2 phút
-        if (timeSinceLastOtp < resendLimit) {
-          response.success = false;
-          response.message = 'You can only request a new OTP every 2 minutes.';
-          return response;
-        }
+  //       // Giới hạn tần suất gửi lại OTP (ví dụ: 2 phút)
+  //       const resendLimit = 2 * 60 * 1000; // 2 phút
+  //       if (timeSinceLastOtp < resendLimit) {
+  //         response.success = false;
+  //         response.message = 'You can only request a new OTP every 2 minutes.';
+  //         return response;
+  //       }
 
-        // Tạo OTP
-        const otp = await this.verificationService.generateOtp(user.id);
-        console.log('OTP:', otp);
-        console.log('user', user.id);
+  //       // Tạo OTP
+  //       const otp = await this.verificationService.generateOtp(user.id);
+  //       console.log('OTP:', otp);
+  //       console.log('user', user.id);
 
-        // Gửi OTP đến email của người dùng
-        await this.emailService.sendEmail({
-          subject: 'MyApp - Account Verification',
-          recipients: [{ name: user.full_name ?? '', address: user.email }],
-          html: `<p>Hi${user.full_name ? ' ' + user.full_name : ''},</p><p>You may verify your MyApp account using the following OTP: <br /><span style="font-size:24px; font-weight: 700;">${otp}</span></p><p>Regards,<br />MyApp</p>`,
-        });
+  //       // Gửi OTP đến email của người dùng
+  //       await this.emailService.sendEmail({
+  //         subject: 'MyApp - Account Verification',
+  //         recipients: [{ name: user.full_name ?? '', address: user.email }],
+  //         html: `<p>Hi${user.full_name ? ' ' + user.full_name : ''},</p><p>You may verify your MyApp account using the following OTP: <br /><span style="font-size:24px; font-weight: 700;">${otp}</span></p><p>Regards,<br />MyApp</p>`,
+  //       });
 
-        // Cập nhật thời gian gửi OTP gần nhất
-        user.lastOtpSent = currentTime;
-        await this.userRepository.save(user); // Lưu thông tin người dùng
+  //       // Cập nhật thời gian gửi OTP gần nhất
+  //       user.lastOtpSent = currentTime;
+  //       await this.userRepository.save(user); // Lưu thông tin người dùng
 
-        response.success = true;
-        response.message = 'OTP has been sent successfully. Please check your email.';
-        response.userId = user.id; // Bao gồm userId trong phản hồi
-      } catch (error) {
-        response.success = false;
-        response.message = 'Failed to send OTP, please try again later.';
-      }
-    } else {
-      response.success = false;
-      response.message = 'User not found.';
-    }
+  //       response.success = true;
+  //       response.message = 'OTP has been sent successfully. Please check your email.';
+  //       response.userId = user.id; // Bao gồm userId trong phản hồi
+  //     } catch (error) {
+  //       response.success = false;
+  //       response.message = 'Failed to send OTP, please try again later.';
+  //     }
+  //   } else {
+  //     response.success = false;
+  //     response.message = 'User not found.';
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
 
 
@@ -279,62 +281,85 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    let response = common_response
-    console.log("Received email:", email);  
+    let response = common_response;
+    console.log("Received email:", email);
     const user = await this.userRepository.findOne({ where: { email } });
     console.log('user', user);
 
     if (user) {
-      // Generate a random reset token
+      // Generate a random reset token using VerificationService
       const resetToken = randomBytes(32).toString('hex');
+      console.log('Reset Password Token:', resetToken);
 
 
       // Set an expiry time for 1 hour from now
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
+      console.log('Expires At:', expiryDate);
 
-      // Update the user with the reset token and expiry date
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordExpires = expiryDate;
-
-      await this.userRepository.save(user); // Save updated user information
+      // Create and save a verification entity with the reset token
+      await this.verificationService.createVerificationToken(user.id, resetToken, expiryDate);
 
       // Send the password reset email
       await this.emailService.sendPasswordResetEmail(user.email, resetToken);
-      console.log("forgotpassword",user)
+      console.log("forgotpassword", user);
 
       return { success: true, message: 'Password reset link sent!' };
-    } 
-      return { success: false, message: 'User not found' };
+    }
+    return { success: false, message: 'User not found' };
   }
+
 
   async resetPassword(resetPasswordToken: string, newPassword: string, newConfirmPassword: string) {
     let response = common_response;
-    console.log("New Password:", newPassword);
-    console.log("Confirm Password:", newConfirmPassword);
 
+    // Kiểm tra nếu mật khẩu mới và mật khẩu xác nhận không trùng khớp
     if (newPassword !== newConfirmPassword) {
       response.success = false;
       response.message = 'New password and confirmation password do not match.';
       return response;
     }
 
-    const user = await this.userRepository.findOne({ where: { resetPasswordToken } });
+    console.log("Reset Token: ", resetPasswordToken);  // Kiểm tra token đã nhận
 
-    if (!user) {
+    // Tìm mã xác minh trong bảng Verification
+    const verification = await this.tokenRepository.findOne({ where: { token: resetPasswordToken } });
+
+    console.log('Verification:', verification);
+    // Kiểm tra xem verification có tồn tại không
+    if (!verification) {
       response.success = false;
       response.message = 'Invalid or expired reset token.';
       return response;
     }
 
-    console.log("Reset Token: ", resetPasswordToken);  // Log the received token to check it
+    // Kiểm tra ngày hết hạn của token
+    if (verification.expiresAt < new Date()) {
+      response.success = false;
+      response.message = 'Reset token has expired.';
+      return response;
+    }
+    console.log('Expires At:', verification.expiresAt);
 
+    // Tìm người dùng dựa trên userId từ verification
+    const user = await this.userRepository.findOne({ where: { id: verification.userId } });
+    if (!user) {
+      response.success = false;
+      response.message = 'User not found.';
+      return response;
+    }
+
+    // Cập nhật mật khẩu cho người dùng
     user.password = await this.hashPassword(newPassword);
     await this.userRepository.save(user);
+
+    // Xóa mã xác minh sau khi sử dụng (nếu cần)
+    await this.verificationService.removeVerification(verification);
 
     response.success = true;
     response.message = 'Password changed successfully.';
     return response;
   }
+
 
 }

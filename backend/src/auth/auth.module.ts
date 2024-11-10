@@ -9,11 +9,12 @@ import * as dotenv from 'dotenv';
 import { VerificationModule } from 'src/verification/verification.module';
 import { MessageModule } from 'src/otp-message/message.module';
 import { AuthGuard } from './auth.guard';
+import { Verification } from 'src/verification/entities/verification.entity';
 dotenv.config();
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Verification]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

@@ -47,16 +47,6 @@ export class User {
   @Column({ default: 'inactive' })
   statusVerify: 'active' | 'inactive';
 
-  @Column({ nullable: true })
-  resetPasswordToken: string;
-
-  @Column({ nullable: true })
-  resetPasswordExpires: Date;
-
-  @Column({ nullable: true })
-  lastOtpSent: Date;
-
-
 
 
   
