@@ -7,6 +7,7 @@ import requestApi from '../../../helpers/api';
 import { _ENV } from '@/contstants';
 import { useLocale, useTranslations } from 'next-intl';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { updateLocalStorage } from '@/stores/features/masterSlice';
 
 const Profile= () => {
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -45,6 +46,7 @@ const Profile= () => {
       if(res.success){
          console.log('upload success !!')
         //  setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
+         dispatch(updateLocalStorage({...res}));
          loadUser();
          setSnackbarMessage("upload avatar successfully");
          setSnackbarSeverity("success");
@@ -158,7 +160,7 @@ const Profile= () => {
           image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
           title="green iguana"
         />
-       <CardContent  sx={{ height: 140 }}>
+        <CardContent  sx={{ height: 140 }}>
           <Typography gutterBottom variant="h6" component="div" sx={{ height: 30,paddingBottom:8 }}>
           {video.name.length > 50 ? (
                             <Tooltip title={video.name}>
@@ -228,6 +230,15 @@ const Profile= () => {
 
    
         </div>
+        <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+               >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
 
           </React.StrictMode>
         </div>

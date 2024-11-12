@@ -51,7 +51,7 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
-  const [profileData,setProfileData] = useState<any>({});;
+  const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
@@ -72,21 +72,22 @@ export default function Navbar() {
   useEffect(() => {
     setIsLogin(masterStore.is_login)
      setLoading(masterStore.loading)
+    //  setProfileAvatar(masterStore.user.avatar);
   
-    // if (!ranonce) {
-    //   requestApi('users/profile','GET').then((res:any)=>{
-    //      if(res.success){
-    //          setProfileData({...res.data,avatar:'http://localhost:2070/'+ res.data.avatar})
-    //      }
+    if (!ranonce) {
+      requestApi('users/profile','GET').then((res:any)=>{
+         if(res.success){
+             setProfileAvatar(res.data.avatar);
+         }
  
-    //   }
+      }
  
-    //   ).catch((err)=>{
-    //    console.log('err',err);
-    //   })
+      ).catch((err)=>{
+       console.log('err',err);
+      })
       
-    //    ranonce = true;
-    //  }
+       ranonce = true;
+     }
     
     console.log('masterStore: ', masterStore);
     }, [masterStore])
@@ -278,9 +279,9 @@ export default function Navbar() {
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
           <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
           </Button>
-           <Button onClick={handleClick} variant="outlined" startIcon={profileData.avatar 
-      ? (<Avatar src={profileData.avatar} sx={{ width: 20, height: 20}}/>) 
-      :(<AccountCircle />)}>
+           <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
+      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
+      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
         {masterStore.user.name}
       </Button>
       
