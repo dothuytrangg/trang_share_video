@@ -74,20 +74,21 @@ export default function Navbar() {
      setLoading(masterStore.loading)
     //  setProfileAvatar(masterStore.user.avatar);
   
-    if (!ranonce) {
-      requestApi('users/profile','GET').then((res:any)=>{
-         if(res.success){
-             setProfileAvatar(res.data.avatar);
-         }
+    // if (!ranonce) {
+    //   requestApi('users/profile','GET').then((res:any)=>{
+    //      if(res.success){
+    //          setProfileAvatar(res.data.avatar);
+    //          ranonce = true;
+    //      }
  
-      }
+    //   }
  
-      ).catch((err)=>{
-       console.log('err',err);
-      })
+    //   ).catch((err)=>{
+    //    console.log('err',err);
+    //   })
       
-       ranonce = true;
-     }
+    //    ranonce = true;
+    //  }
     
     console.log('masterStore: ', masterStore);
     }, [masterStore])
