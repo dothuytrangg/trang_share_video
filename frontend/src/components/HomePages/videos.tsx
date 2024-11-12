@@ -7,6 +7,7 @@ import {
   CardMedia,
   Pagination,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
@@ -19,6 +20,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { _ENV, _GLOBAL } from "@/contstants";
 
 export default function Videos() {
+ 
   var ranonce = false;
   const [loading, setLoading] = useState(true);
   const [videos, setVideos] = useState([]);
@@ -113,12 +115,18 @@ export default function Videos() {
           image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
           title="green iguana"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h6" component="div">
-           {video.name}
+        <CardContent  sx={{ height: 140 }}>
+          <Typography gutterBottom variant="h6" component="div" sx={{ height: 30,paddingBottom:8 }}>
+          {video.name.length > 50 ? (
+                            <Tooltip title={video.name}>
+                              <span>{`${video.name.substring(0, 50)}...`}</span>
+                            </Tooltip>
+                          ) : (
+                            video.name
+                          )}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-          {video.description}
+          <Typography variant="body2" color="text.secondary" >
+          {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
           </Typography>
         </CardContent>
          
@@ -140,7 +148,8 @@ export default function Videos() {
       ))
        
      }
-      <Stack spacing={2}>
+     <br/>
+      <Stack spacing={2} >
           <Pagination style={{ margin: 10 }} count={lastPage} page={page} onChange={handleChange} variant="outlined" color="primary" />
 
       </Stack>

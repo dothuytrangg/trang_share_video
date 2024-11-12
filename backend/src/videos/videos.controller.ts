@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { readFileSync } from 'fs';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { readFileSync, unlink } from 'fs';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -28,55 +28,172 @@ export class VideosController {
     findOne(@Param('id') id:string):Promise<Video>{
         return this.videoService.findOne(Number(id));
     }
+
+   
+
+    
         
     @UseGuards(AuthGuard)
     @UsePipes(ValidationPipe)
     @Post()
-    @UseInterceptors(FileInterceptor('thumbnail',{
-        storage:storageConfig('avatars'),
+
+
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'url', maxCount: 1 },
+      ],
+      {
+        storage:storageConfig('videos'),
         fileFilter:(req,file,cb)=>{
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
+            const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG','.webm','.mp4','.mov'];
             if(!allowedExtArr.includes(ext)){
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
             }else{
                 const fileSize = parseInt(req.headers['content-length']);
-                if(fileSize > 1024 * 1024 * 5 ){
+                if(fileSize > 1024 * 1024 * 100 ){
                     req.fileValidationError = 'File size is too large.Accepted size is less than';
                     cb(null,false);
-                }else{
-                    cb(null,true)
-                }
+                   
+                }else {
+                    //  console.log(ext)
+                    cb(null, true);
+                  }
             }
 
         }
+      }
 
-        }))
-    create(@Req() req:any,@Body() createVideoDto:CreateVideoDto,@UploadedFile() file:Express.Multer.File):Promise<Video>{
+    ))
+
+
+    // @UseInterceptors(
+        
+    //     FileInterceptor('thumbnail',{
+    //     storage:storageConfig('avatars'),
+    //     fileFilter:(req,file,cb)=>{
+    //         const ext = extname(file.originalname);
+    //         const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG','.webm'];
+    //         if(!allowedExtArr.includes(ext)){
+    //             req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+    //             cb(null,false);
+    //         }else{
+    //             const fileSize = parseInt(req.headers['content-length']);
+    //             if(fileSize > 1024 * 1024 * 5 ){
+    //                 req.fileValidationError = 'File size is too large.Accepted size is less than';
+    //                 cb(null,false);
+    //             }else{
+    //                 cb(null,true)
+    //                 // console.log(ext)
+    //             }
+    //         }
+
+    //     }
+
+    //     }))
+
+    // @UseInterceptors(FileInterceptor('url',{
+    //         storage:storageConfig('videos'),
+    //         fileFilter:(req,file,cb)=>{
+    //             const ext = extname(file.originalname);
+    //             const allowedExtArr = ['.mp4', '.avi', '.mov','.mkv','webm'];
+    //             if(!allowedExtArr.includes(ext)){
+    //                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+    //                 cb(null,false);
+    //             }else{
+    //                 const fileSize = parseInt(req.headers['content-length']);
+    //                 if(fileSize > 1024 * 1024 * 100 ){
+    //                     req.fileValidationError = 'File size is too large.Accepted size is less than';
+    //                     cb(null,false);
+    //                 }else{
+    //                     cb(null,true)
+
+    //                 }
+    //             }
+    
+    //         }
+    
+    //     }))
+
+    // move(oldPath, newPath, callback) {
+    //     const fs = require('fs');
+    //     fs.rename(oldPath, newPath, function (err) {
+    //         if (err) {
+    //             if (err.code === 'EXDEV') {
+    //                 copy();
+    //             } else {
+    //                 callback(err);
+    //             }
+    //             return;
+    //         }
+    //         callback();
+    //     });
+    
+    //     function copy() {
+    //         var readStream = fs.createReadStream(oldPath);
+    //         var writeStream = fs.createWriteStream(newPath);
+    
+    //         readStream.on('error', callback);
+    //         writeStream.on('error', callback);
+    
+    //         readStream.on('close', function () {
+    //             fs.unlink(oldPath, callback);
+    //         });
+    
+    //         readStream.pipe(writeStream);
+    //     }
+    // }
+    create(@Req() req:any,@Body() createVideoDto:CreateVideoDto, @UploadedFiles() files: { thumbnail?: Express.Multer.File[]; url?: Express.Multer.File[] }){
         const userId = req.user_data.id;
-        console.log('user data',req.user_data)
-        console.log(file)
+
+        // const fs = require('fs');
+        // console.log('user data',req.user_data)
+        const thumbnail = files.thumbnail ? files.thumbnail[0] : null;
+        const video = files.url ? files.url[0] : null;
+        console.log('files.thumbnail: ', files.thumbnail);
+
+        console.log('file',files);
+        // this.move()
+        // console.log('video',video);
+
         if(req.fileValidationError){
             throw new BadRequestException(req.fileValidationError )
         }
-        if(!file){
-            throw new BadRequestException('File is required');
+        if(!thumbnail ||  !video){
+            throw new BadRequestException('Thumbnail and video files are required');
         }
-        let fileName = file.filename;
-        let fileContent = readFileSync(file.path);
-        WebDav.put('avatars/'+fileName,fileContent).then(res=>{
+        //thumbnail;
+        let fileName_thumbnail = thumbnail.filename;
+        let fileContent_thumbnail = readFileSync(thumbnail.path);
+        WebDav.put('avatars/'+fileName_thumbnail,fileContent_thumbnail).then(res=>{
             if(res.status == 201){
-                //remove
-            //    unlink(file.path,(err)=>{
-            //     if (err) throw err;
+                // remove
+               unlink(thumbnail.path,(err)=>{
+                if (err) throw err;
                
-            //    });
+               });
             }
         }).catch((e=>{
 
         }))
-        return this.videoService.create(createVideoDto,userId,file.filename);
+
+         //thumbnail;
+         let fileName_video = video.filename;
+         let fileContent_video = readFileSync(video.path);
+         WebDav.put('videos/'+fileName_video,fileContent_video).then(res=>{
+             if(res.status == 201){
+                 //remove
+                unlink(video.path,(err)=>{
+                 if (err) throw err;
+                
+                });
+             }
+         }).catch((e=>{
+ 
+         }))
+         
+        return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename);
     }
 
     @UseGuards(AuthGuard)

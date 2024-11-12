@@ -1,6 +1,6 @@
 
 'use client'
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Grid, Typography, Avatar, Button, IconButton, TextField } from '@mui/material';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
@@ -10,7 +10,16 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import styles from './VideoDetail.module.css';
 import SortIcon from '@mui/icons-material/Sort';
 import ListItem from '@mui/material/ListItem';
+import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
+import { closeDrawer } from '@/stores/features/masterSlice';
+
+
 const VideoDetail = () => {
+  const dispatch = useAppDispatch();
+  const masterStore = useAppSelector((state: any) => state.master);
+  useEffect(() => {
+    dispatch(closeDrawer());
+}, [masterStore])
   return (
     <Box className={styles.container}>
       <Grid container spacing={3}>
