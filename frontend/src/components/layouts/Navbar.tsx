@@ -51,6 +51,7 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
+  const [profileData,setProfileData] = useState<any>({});;
   const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -74,21 +75,22 @@ export default function Navbar() {
      setLoading(masterStore.loading)
     //  setProfileAvatar(masterStore.user.avatar);
   
-    // if (!ranonce) {
-    //   requestApi('users/profile','GET').then((res:any)=>{
-    //      if(res.success){
-    //          setProfileAvatar(res.data.avatar);
-    //          ranonce = true;
-    //      }
+    if (!loading) {
+      requestApi('users/profile','GET').then((res:any)=>{
+        console.log('res profile',res);
+         if(res.success){
+             setProfileAvatar(res.data.avatar);
+             setLoading(true)
+         }
  
-    //   }
+      }
  
-    //   ).catch((err)=>{
-    //    console.log('err',err);
-    //   })
+      ).catch((err)=>{
+       console.log('err',err);
+      })
       
-    //    ranonce = true;
-    //  }
+       setLoading(true)
+     }
     
     console.log('masterStore: ', masterStore);
     }, [masterStore])
