@@ -3,6 +3,7 @@
 import { _GLOBAL } from "@/contstants";
 import { createSlice } from "@reduxjs/toolkit";
 import secureLocalStorage from "react-secure-storage";
+
 const initialState = {
   theme: "light",
   drawer: true,

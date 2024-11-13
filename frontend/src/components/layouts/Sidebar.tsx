@@ -12,7 +12,7 @@ import History from "@mui/icons-material/History";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import CategoryIcon from '@mui/icons-material/Category';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import React, { useState } from "react";
@@ -63,6 +63,7 @@ export default function Sidebar() {
   const t = useTranslations("HomePage");
   const router = useRouter();
   const locale = useLocale();
+  const query = useSearchParams();
   // const [widthSideBar, setWidthSideBar] = useState(300)
 
   const handleToggleTheme = () => {
@@ -72,7 +73,10 @@ export default function Sidebar() {
   };
 
   const redirectHome = () => {
+    const action = query.get("action");
+    console.log('action',action);
     router.replace(`/${locale}/`);
+    
   };
 
   const textTheme = () => {
@@ -93,7 +97,9 @@ export default function Sidebar() {
     return result;
   };
   const widthSideBar = () => {
-    if (masterStore.drawer) {
+    // console.log('open',masterStore)
+    if (masterStore.drawer) 
+      {
       if (locale == _GLOBAL.EN) {
         return 240
       } else {
@@ -106,7 +112,7 @@ export default function Sidebar() {
   const renderButtonAdmin = () =>{
     if(masterStore.isAdmin){
      return <React.Fragment>
-<ListItemButton onClick={() => {
+           <ListItemButton onClick={() => {
             router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
           }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("management_category")} placement="right-start">
@@ -136,6 +142,7 @@ export default function Sidebar() {
     }
   }
   return (
+ 
     <Drawer sx={{
       width: widthSideBar(),
       flexShrink: 0,

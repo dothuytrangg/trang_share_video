@@ -32,6 +32,7 @@ import {
   updateLocalStorage,
 } from "@/stores/features/masterSlice";
 import { useLocale, useTranslations } from "next-intl";
+import Videos from "@/components/HomePages/videos";
 
 // import NavBar from './NavBar';
 
@@ -89,6 +90,7 @@ const LoginView = () => {
     if (!oneTime) {
       console.log('locale: ', locale);
       const action = query.get("action");
+      // console.log('action',action);
       if (action == "logout") {
         dispatch(logout());
         dispatch(updateLocalStorage());
@@ -98,6 +100,7 @@ const LoginView = () => {
       } else {
         console.log('locale: ', locale);
         router.push(`/${locale}`)
+        // setApprove(false)
       }
 
       oneTime = true;
@@ -177,6 +180,8 @@ const LoginView = () => {
 
   const renderLogin = () => {
     if (!approve) {
+    
+    
 
     } else {
       return (

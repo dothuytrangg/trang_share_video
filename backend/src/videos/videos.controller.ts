@@ -15,7 +15,7 @@ import { VideosService } from 'src/videos/videos.service';
 export class VideosController {
     constructor(private videoService:VideosService){}
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query:FilterVideoDto):Promise<Video[]>{
         return this.videoService.findAllPage(query)

@@ -126,7 +126,13 @@ export default function Videos() {
                           )}
           </Typography>
           <Typography variant="body2" color="text.secondary" >
-          {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
+          {video.description.length > 100 ? (
+                            <Tooltip title={video.description}>
+                              <span>{`${video.description.substring(0, 100)}...`}</span>
+                            </Tooltip>
+                          ) : (
+                            video.description
+                          )}
           </Typography>
         </CardContent>
          
