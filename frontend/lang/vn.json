@@ -24,6 +24,7 @@
         "management_video":"Quản lí video",
         "addCategory":"Thêm danh mục",
         "addVideo":"Thêm video",
+        "add":"Thêm",
         "password":"Mật khẩu",
         "signin_login_question": "Bạn chưa có tài khoản?",
         "have_account":"Bạn đã có tài khoản?",
@@ -91,6 +92,18 @@
         "create_video_occerred": "Đã xảy ra lỗi khi thêm mới video.",
         "update_video_success": "Cập nhật video thành công!",
         "update_video_failed": "Cập nhật video không thành công!",
+        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
+
+        "Status":"Trạng thái",
+        "Confirming":"Chưa xác nhận",
+        "Confirmed":"Đã xác nhận",
+        "Choose_thumbnail":" Chọn ảnh",
+        "Name":"Tên",
+        "Thumbnail":"Ảnh",
+        "UserId":"Mã người dùng",
+        "ID":"Mã"
+        
+
         "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
         
         "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",

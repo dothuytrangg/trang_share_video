@@ -1,6 +1,6 @@
 import { _ENV, _GLOBAL } from "@/contstants";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -195,6 +195,7 @@ const handleOpenUpdateDialog = (video: any) => {
   setDescription(video.description); 
   setThumbnailFile(null);
   setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
+  setStatus(video.status);
   // console.log('console thumbnail',selectedVideo.thumbnail);
   
   // console.log('thumbnailFile',thumbnailFile);
@@ -356,7 +357,7 @@ const handleDeleteVideo = (videoId: string) => {
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                <Button type="submit" >{t("add_user")}</Button>
+                <Button type="submit" >{t("add")}</Button>
               </DialogActions>
             </Dialog>
 
@@ -412,7 +413,7 @@ const handleDeleteVideo = (videoId: string) => {
                 />
 
                 <Button variant="contained" component="label">
-                      Chọn ảnh cho video
+                      {t('Choose_thumbnail')}
                       <input
                         type="file"
                         hidden
@@ -424,12 +425,12 @@ const handleDeleteVideo = (videoId: string) => {
                 <img 
                   src={thumbnailPreview} 
                   alt="Thumbnail preview" 
-                  style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
+                  style={{ marginTop: 10, width: '60%', height: 'auto', maxHeight: '200px' }} 
                 />
                 )}
                        <TextField
                             select
-                            label="Status"
+                            label={t('Status')}
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
                             fullWidth
@@ -438,8 +439,8 @@ const handleDeleteVideo = (videoId: string) => {
                             }}
                             style={{marginTop:50}}
                              >
-                            <option value="confirming">Confirming</option>
-                            <option value="confirmed">Confirmed</option>
+                            <option value="confirming">{t('Confirming')}</option>
+                            <option value="confirmed">{t('Confirmed')}</option>
                       </TextField>
 
               </DialogContent>
@@ -468,13 +469,14 @@ const handleDeleteVideo = (videoId: string) => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      <TableCell >ID</TableCell>
-                      <TableCell >Name</TableCell>
-                      <TableCell >Thumbnail</TableCell>
-                      <TableCell >url</TableCell>
-                      <TableCell >userId</TableCell>
-                      <TableCell >status</TableCell>
-                      <TableCell >Action</TableCell>
+                      <TableCell >{t('ID')}</TableCell>
+                      <TableCell >{t('Name')}</TableCell>
+                      <TableCell >{t('description_text')}</TableCell>
+                      <TableCell >{t('Thumbnail')}</TableCell>
+                      <TableCell >URL</TableCell>
+                      <TableCell >{t('UserId')}</TableCell>
+                      <TableCell >{t('Status')}</TableCell>
+                      <TableCell >{t('action')}</TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -483,7 +485,24 @@ const handleDeleteVideo = (videoId: string) => {
                       videos.map((video: any) => (
                         <TableRow key={video.id}>
                           <TableCell>{video.id}</TableCell>
-                          <TableCell>{video.name}</TableCell>
+                          <TableCell>
+                          {video.name.length > 20 ? (
+                            <Tooltip title={video.name}>
+                              <span>{`${video.name.substring(0, 20)}...`}</span>
+                            </Tooltip>
+                          ) : (
+                            video.name
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {video.description.length > 20 ? (
+                            <Tooltip title={video.description}>
+                              <span>{`${video.description.substring(0, 20)}...`}</span>
+                            </Tooltip>
+                          ) : (   
+                            video.description
+                          )}
+                        </TableCell>
                           <TableCell>
                                 <img 
                                 src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
@@ -494,7 +513,7 @@ const handleDeleteVideo = (videoId: string) => {
                           <TableCell >{video.url}</TableCell>
                           <TableCell >{video.user.id}</TableCell>
                           <TableCell >
-                            {video.status}
+                            {video.status === "confirming" ? t('Confirming'): t('Confirmed')}
                           </TableCell>
 
                           <TableCell  >

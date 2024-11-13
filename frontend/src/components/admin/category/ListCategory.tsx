@@ -287,7 +287,7 @@ const ListCategory = () => {
               <DialogTitle>{t("addCategory")}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  {t("addText_category")}
+                  {/* {t("addText_category")} */}
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -324,7 +324,7 @@ const ListCategory = () => {
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                <Button type="submit" >{t("add_user")}</Button>
+                <Button type="submit" >{t("add")}</Button>
               </DialogActions>
             </Dialog>
             <Dialog
@@ -342,7 +342,7 @@ const ListCategory = () => {
               <DialogTitle>{t("update_caterogy")}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  {t("update_caterogy_text")}
+                  {/* {t("update_caterogy_text")} */}
                   </DialogContentText>
                 <TextField
                   autoFocus

@@ -14,13 +14,6 @@ import { EmailService } from 'src/otp-message/email.service';
 
 @Injectable()
 export class UsersService {
-    generateEmailVerification(id: number) {
-        throw new Error('Method not implemented.');
-    }
-    verifyEmail(id: number, otp: string) {
-        throw new Error('Method not implemented.');
-    }
-
     constructor(@InjectRepository(User) 
       private userRepository:Repository<User>,
       private verificationTokenService: VerificationService,
@@ -55,7 +48,7 @@ export class UsersService {
             order: {created_at:"DESC"},
             take:items_per_page,
             skip:skip,
-            select:['id','full_name','email','role','status','created_at','updated_at']
+            select:['id','full_name','email','role','avatar','status','created_at','updated_at']
 
         })
         const lastPage = Math.ceil(total / items_per_page);
@@ -82,7 +75,11 @@ export class UsersService {
 
     async findOne(id:number):Promise<User>{
       let response = common_response;
-      let user = await this.userRepository.findOneBy({id});
+      let user = await this.userRepository.findOne({
+            where:{id:id},
+            select:['id','full_name','email','role','avatar','status','created_at','updated_at'],
+            relations:['videos']
+      })
       if(user){
         response.success = true;
         response.data = user;

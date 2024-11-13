@@ -22,7 +22,7 @@
    "management_category": "Category Management",
     "management_account": "Account Magement",
     "management_video": "Video Magement",
-    
+    "add":"Add",
     "addCategory":"Add category",
     "addVideo":"Add video",
     "password": "Password",
@@ -88,6 +88,19 @@
     "create_video_occerred": "An error occurred while creating the video.",
     "update_video_success": "Video updated successfully!",
     "update_video_failed": "Failed to update user",
+    "update_video_occerred": "An error occurred while update the user",
+   
+    "Status":"Status",
+    "Confirming":"Confirming",
+    "Confirmed":"Confirmed",
+    "Choose_thumbnail":" Choose thumbnail",
+    "Name":"Name",
+    "Thumbnail":"Thumbnail",
+    "UserId":"User ID",
+    "ID":"ID"
+
+   
+
     "update_video_occerred": "An error occurred while update the user",
     "update_user_occerred": "An error occurred while update the user",
     "email_already_registered": "You are already registered. Please log in.",

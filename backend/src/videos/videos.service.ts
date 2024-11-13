@@ -78,6 +78,9 @@ export class VideosService {
     }
     return response;
   }
+
+
+
  
     async create(createVideoDto: CreateVideoDto,userId:number,thumbnail:string): Promise<Video> {
         let response = common_response;
@@ -88,11 +91,14 @@ export class VideosService {
           if (!user) {
               throw new Error('User not found');
           }
-
+          
+          
           let saveVideo = await this.videoRepository.save({...createVideoDto,user:user,thumbnail:thumbnail});
           if (saveVideo) {
+            response.success = true;
+
             response.video = saveVideo
-            response.video.userId = saveVideo.user.id;
+            
             return response;
           } else  {
             response.success = false;
