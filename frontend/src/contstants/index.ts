@@ -13,6 +13,7 @@ const _GLOBAL = {
   ROUTE_ADMIN_ADD: "add",
   ROUTE_ADMIN_ACCOUNT: "account",
   ROUTE_ADMIN_VIDEO: "video",
+  ROUTE_ADMIN_TAGS: "tags",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,
   ROUTE_SEND_OTP: "send-otp",

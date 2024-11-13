@@ -31,6 +31,7 @@ export const masterSlice = createSlice({
         state.isAdmin = true;
       }
       state.isAuth = true;
+      console.log('state master: ', state);
     },
     setIsAdmin : (state,action) =>{
       state.isAdmin = action.payload

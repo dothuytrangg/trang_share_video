@@ -88,7 +88,7 @@ export class UsersController {
 
         // console.log("upload avavar");
         // console.log('user data',req.user_data)
-        // console.log(file)
+        console.log(file)
 
         if(req.fileValidationError){
             throw new BadRequestException(req.fileValidationError )
@@ -100,11 +100,11 @@ export class UsersController {
         let fileContent = readFileSync(file.path);
         WebDav.put('avatars/'+fileName,fileContent).then(res=>{
             if(res.status == 201){
-                //remove
-            //    unlink(file.path,(err)=>{
-            //     if (err) throw err;
+                // remove
+               unlink(file.path,(err)=>{
+                if (err) throw err;
                
-            //    });
+               });
             }
         }).catch((e=>{
 

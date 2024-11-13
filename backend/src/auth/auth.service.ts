@@ -221,13 +221,14 @@ export class AuthService {
     const payload = { id: user.id, email: user.email, role:user.role };
     let token =  await this.generateToken(payload);
     let responseUser:any;
+    console.log('user: ', user);
     if(token.access_token){
         response.message = ''
         response.success = true;
         responseUser = {...response};
         responseUser.token = token.access_token;
         responseUser.user = {
-            id: user.id, email: user.email, name:user.full_name, role:user.role
+            id: user.id, email: user.email, name:user.full_name, role:user.role, avatar:user.avatar
         }
         return responseUser;
     }

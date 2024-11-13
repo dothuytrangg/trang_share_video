@@ -7,7 +7,7 @@ import { _GLOBAL } from "./contstants";
 import { cookies } from "next/headers";
 
 export const locales = ["en", "vn"] as const;
- 
+
 const intlMiddleware = createMiddleware({
   locales: locales,
   defaultLocale: "en",
@@ -28,10 +28,7 @@ const authMiddleware = withAuth(
 );
 export default function middleware(req: NextRequest) {
   // console.log('data: ',   cookies().get('master'));
-  const path = req.nextUrl.pathname;
-  if (path === '/sendotp') {
-    return NextResponse.next();
-  }
+
 
   return intlMiddleware(req);
   // const excludePattern = "^(/(" + locales.join("|") + "))?/admin/?.*?$";
@@ -51,7 +48,7 @@ export default function middleware(req: NextRequest) {
   // if (isPublicPage) {
   //   return intlMiddleware(req);
   // } else {
-   
+
   //   if (localAuthen) {
   //     // let parseLocalAuthen = JSON.parse(localAuthen) as string;
   //     // console.log('publicPathnameRegex.test(req.nextUrl.pathname): ', publicPathnameRegex.test(req.nextUrl.pathname));
@@ -67,11 +64,8 @@ export default function middleware(req: NextRequest) {
   //     return NextResponse.redirect(new URL("/errors/permission", req.url));
   //   }
   // }
- 
 }
 
 export const config = {
-  //matcher: ["/((?!api|_next|.*\\..*).*)"],
-   matcher: ["/((?!api|_next|.*\\..*|sendotp).*)"],
-  
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 };
