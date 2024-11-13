@@ -18,6 +18,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import React, { useState } from "react";
 import { VideoLibraryOutlined } from "@mui/icons-material";
 import { ReponsiveContainer } from "@/util/reponsiveUtil";
+import LabelImportantIcon from '@mui/icons-material/LabelImportant';
+
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -109,7 +111,7 @@ export default function Sidebar() {
   const renderButtonAdmin = () =>{
     if(masterStore.isAdmin){
      return <React.Fragment>
-<ListItemButton onClick={() => {
+        <ListItemButton onClick={() => {
             router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`)
           }} sx={{ minHeight: 40, maxWidth: 300, width: 400, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("management_category")} placement="right-start">
@@ -135,6 +137,18 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("management_video")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
+
+       <ListItemButton onClick={() => {
+         router.replace(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_TAGS}`)
+       }} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+         <Tooltip title={t("TagList")} placement="right-start">
+           <LabelImportantIcon></LabelImportantIcon>
+         </Tooltip>
+         <ListItemText className={open ? "mx-3" : ""} primary={t("TagList")} sx={{ opacity: open ? 1 : 0 }} />
+       </ListItemButton>
+
+
+       
      </React.Fragment>
     }
   }
@@ -187,9 +201,6 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
-
-          
-
           {renderButtonAdmin()}
         </ListItem>
       </List>

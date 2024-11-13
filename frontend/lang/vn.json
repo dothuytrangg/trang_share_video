@@ -84,16 +84,6 @@
         "update_user_failed": "Cập nhật tài khoản không thành công!",
         "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",
 
-        "delete_video_success": "Xóa video thành công!",
-        "delete_video_failed": "Xóa video không thành công",
-        "delete_video_occerred": "Đã xảy ra lỗi khi xóa video",
-        "create_video_success": "Thêm mới video thành công!",
-        "create_video_failed": "Thêm mới video không thành công!",
-        "create_video_occerred": "Đã xảy ra lỗi khi thêm mới video.",
-        "update_video_success": "Cập nhật video thành công!",
-        "update_video_failed": "Cập nhật video không thành công!",
-        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
-
         "Status":"Trạng thái",
         "Confirming":"Chưa xác nhận",
         "Confirmed":"Đã xác nhận",
@@ -101,15 +91,26 @@
         "Name":"Tên",
         "Thumbnail":"Ảnh",
         "UserId":"Mã người dùng",
-        "ID":"Mã"
-        
-
-        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
-        
-        "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",
+        "ID":"Mã",
         "email_already_registered": "Bạn đã đăng ký. Vui lòng đăng nhập.",
         "forgot_password": "Quên mật khẩu?",
-        "a_forgot_password": "Đặt lại"
+        "a_forgot_password": "Đặt lại",
+        "TagList": "Danh sách tags",
+        "active":"Hoạt động",
+        "inactive":"Không hoạt động",
+        "slug_text":"Slug",
+        "name_tag": "Tên thẻ",
+        "update_tag": "Cập nhật thẻ",
+        "delete_tag_success": "Xóa thẻ thành công!",
+        "delete_tag_failed": "Xóa thẻ không thành công!",
+        "delete_tag_occerred": "Đã xảy ra lỗi khi xóa thẻ",
+        "create_tag_success": "Thêm mới thẻ thành công!",
+        "create_tag_failed": "Thêm mới thẻ không thành công!",
+        "create_tag_occerred": "Đã xảy ra lỗi khi thêm mới thẻ",
+        "update_tag_occerred": "Đã xảy ra lỗi khi cập nhật thẻ",
+        "update_tag_success": "Cập nhật thẻ thành công!",
+        "update_tag_failed": "Cập nhật thẻ không thành công!",
+        "addTag":"Thêm thẻ"
 
 
 
