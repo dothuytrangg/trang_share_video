@@ -112,13 +112,7 @@
         "UserId":"Mã người dùng",
         "ID":"Mã",
 
-        "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh"
-
-
-        
-
-        
-        "ID":"Mã",
+        "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh",
         "email_already_registered": "Bạn đã đăng ký. Vui lòng đăng nhập.",
         "forgot_password": "Quên mật khẩu?",
         "a_forgot_password": "Đặt lại",
@@ -137,7 +131,8 @@
         "update_tag_occerred": "Đã xảy ra lỗi khi cập nhật thẻ",
         "update_tag_success": "Cập nhật thẻ thành công!",
         "update_tag_failed": "Cập nhật thẻ không thành công!",
-        "addTag":"Thêm thẻ"
+        "addTag":"Thêm thẻ",
+        "Upload Video": "Tải video lên"
 
 
 

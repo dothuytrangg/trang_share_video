@@ -44,15 +44,7 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number
-) {
-    return { name, calories, fat, carbs, protein };
-}
+
 const ListTag = () => {
     var ranonce = false;
     const [loading, setLoading] = useState(true);
@@ -85,6 +77,8 @@ const ListTag = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
+
 
     useEffect(() => {
         if (!ranonce) {
@@ -383,25 +377,28 @@ const ListTag = () => {
                                     fullWidth
                                     variant="standard"
                                 />
-                                <FormControl fullWidth variant="standard" margin="dense">
-
-                                <InputLabel id="status-label">{t("Status")}</InputLabel>
-                                <Select
+                                {thumbnailPreview && (
+                                    <img
+                                        src={thumbnailPreview}
+                                        alt="Thumbnail preview"
+                                    />
+                                )}
+                                <TextField
+                                    select
+                                    label={t('Status')}
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
                                     fullWidth
-                                    variant="standard"
-                                    margin="dense"
-                                    id="status"
-                                    name="status"
-                                    label={t("Status")}
-                
-                             
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    style={{ marginTop: 50 }}
                                 >
-                                    <MenuItem value="active">{t('active')}</MenuItem>
-                                    <MenuItem value="inactive">{t('inactive')}</MenuItem>
-                                </Select>
-                                </FormControl>
+                                    <option value="active">{t('active')}</option>
+                                    <option value="inactive">{t('inactive')} </option>
+                                </TextField>
+
+
 
                             </DialogContent>
                             <DialogActions>

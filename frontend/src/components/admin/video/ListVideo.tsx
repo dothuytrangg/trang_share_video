@@ -1,6 +1,6 @@
 import { _ENV, _GLOBAL } from "@/contstants";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -8,9 +8,15 @@ import requestApi from "../../../../helpers/api";
 import AddIcon from "@mui/icons-material/Add";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
 import Link from "next/link";
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import { Span } from "next/dist/trace";
+
+
 
 
 const ListVideo = ()=>{
+
     var ranonce = false;
     const [loading, setLoading] = useState(true);
     const [videos, setVideos] = useState([]);
@@ -315,106 +321,154 @@ const handleDeleteVideo = (videoId: string) => {
           return (
             <div className="grid grid-cols-1 gap-4">
               <React.StrictMode>
-              <Dialog
-              open={openAddDialog}
-              onClose={() => setOpenAddDialog(false)}
-              PaperProps={{
-                component: 'form',
-                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                  event.preventDefault();
-                  handleCreateVideo();
-
-                },
-              }}
-            >
-              <DialogTitle>{t("addVideo")}</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  {/* {t("addText_category")} */}
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  error={nameError}
-                  helperText={nameErrorMessage}
-                  onChange={(val) => {
-                    setName(val.target.value);
+                <Dialog
+                  open={openAddDialog}
+                  onClose={() => setOpenAddDialog(false)}
+                  PaperProps={{
+                    component: 'form',
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+                      handleCreateVideo();
+                    },
                   }}
-                  margin="dense"
-                  id="name"
-                  name="name"
-                  label={t("name_video")}
-                  type="text"
                   fullWidth
-                  variant="standard"
-                  placeholder={t("name_video")}
-                />
-                <TextField
-                  autoFocus
-                  error={descriptionError}
-                  helperText={descriptionErrorMessage}
-                  onChange={(val) => setDescription(val.target.value)}
-                  margin="dense"
-                  id="description"
-                  name="description"
-                  label={t("description_text")}
-                  type="text"
-                  fullWidth
-                  variant="standard"
-                  multiline
-                  rows={3} 
-                  InputProps={{ style: { resize: 'vertical' } }}
-                />
-                    <Button variant="contained" component="label">
-                    {t('Choose_thumbnail')}
-                      <input
-                        type="file"
-                        hidden
-                        
-                        // accept="image/*"
-                        onChange={handleFileChange}
-                      />
-                    </Button>
-                    <br/>
-                    <span  style={{color:'red'}}>{thumbnailError ? thumbnailErrorMessage : ""}</span>
+                  maxWidth="sm"
+                >
+                  <DialogTitle>{t("addVideo")}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      {/* {t("addText_category")} */}
+                    </DialogContentText>
+
+                    {/* Input for Video Name */}
+                    <TextField
+                      autoFocus
+                      error={nameError}
+                      helperText={nameErrorMessage}
+                      onChange={(val) => setName(val.target.value)}
+                      margin="dense"
+                      id="name"
+                      name="name"
+                      label={t("name_video")}
+                      type="text"
+                      fullWidth
+                      variant="outlined"
+                      placeholder={t("name_video")}
+                      style={{ marginBottom: 20 }}
+                    />
+
+                    {/* Input for Video Description */}
+                    <TextField
+                      error={descriptionError}
+                      helperText={descriptionErrorMessage}
+                      onChange={(val) => setDescription(val.target.value)}
+                      margin="dense"
+                      id="description"
+                      name="description"
+                      label={t("description_text")}
+                      type="text"
+                      fullWidth
+                      variant="outlined"
+                      multiline
+                      rows={3}
+                      InputProps={{ style: { resize: 'vertical' } }}
+                      style={{ marginBottom: 20 }}
+                    />
+                    <Stack direction="row" spacing={2} alignItems="center" style={{ marginTop: 20 }}>
+                      {videoFile && (
+                        <Link href="#" target="_blank" rel="noopener" style={{ textDecoration: 'underline', marginTop: 10, color: 'blue' }}>
+                          {videoFile.name}
+                        </Link>
+                      )}
+
+                    <Box
+                      sx={{
+                        width: '120px',
+                        height: '120px',
+                        border: '2px dashed #3f51b5',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        backgroundColor: '#f0f0f0',
+                        marginBottom: 3
+                      }}
+                    >
+                      {thumbnailPreview ? (
+                        <img
+                          src={thumbnailPreview}
+                          alt="Thumbnail preview"
+                          style={{ width: '100%', height: '100%' }}
+                        />
+                      ) : (
+                        <span style={{  }}>{}</span>
+                      )}
+                    </Box>
+                    <span style={{ color: 'red', display: 'block', marginTop: 5 }}>
+                      {thumbnailError ? thumbnailErrorMessage : ""}
+                    </span>
                     
 
-              {/* Hiển thị ảnh thumbnail đã chọn */}
-              {thumbnailPreview && (
-                <img 
-                  src={thumbnailPreview} 
-                  alt="Thumbnail preview" 
-                  style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
-                />
-              )}
-              <br/>
-               <Button variant="contained" component="label" style={{marginTop:50}}>
-                    Upload Video
-                      <input
-                        type="file"
-                        hidden
-                        // accept="image/*"
-                        onChange={handleFileVideoChange}
-                      />
-                </Button>
-                <br/>
-                    <span style={{color:'red'}}>{videoError ? videoErrorMessage : ""}</span>
-                <br/>
-                {videoFile && (
-                  <Link  href={"#"} target="_blank" rel="noopener" style={{ textDecoration:'underline',marginTop:50 ,marginLeft:10,color:'blue' }}>
-                  {/* {videoFile.length > 20 ? `${videoFile.substring(0, 20)}...` : videoFile} */}
-                  {videoFile.name}
-                </Link>
-                
-              )}
 
-               
+                      {/* Thumbnail Upload Button */}
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="label"
+                        startIcon={<PhotoCameraIcon />}
+                        style={{
+                          color: '#fff',
+                          fontWeight: 'bold',
+                          padding: '8px 16px',
+                        }}
+                      >
+                        {t('Choose_thumbnail')}
+                        <input
+                          type="file"
+                          hidden
+                          onChange={handleFileChange}
+                          aria-label={t('Choose_thumbnail')}
+                        />
+                      </Button>
 
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                <Button type="submit" >{t("add")}</Button>
-              </DialogActions>
-            </Dialog>
+                      {/* Video Upload Button */}
+                    {videoError && (
+                      <span style={{ color: 'red', display: 'block' }}>
+                        {videoErrorMessage}
+                      </span>
+                    )}
+                     
+                      {/* Display Video File Name */}
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        component="label"
+                        startIcon={<VideoLibraryIcon />}
+                        style={{
+    
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {t('Upload Video')}
+                        <input
+                          type="file"
+                          hidden
+                          onChange={handleFileVideoChange}
+                          aria-label={t('Upload Video')}
+                        />
+                        
+                      </Button>
+                     
+                    </Stack>
+                  </DialogContent>
+
+                  {/* Dialog Actions */}
+                  <DialogActions>
+                    <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                    <Button type="submit">{t("add")}</Button>
+                  </DialogActions>
+                </Dialog>
 
             <Dialog
               open={openUpdateDialog}
@@ -467,13 +521,15 @@ const handleDeleteVideo = (videoId: string) => {
                   variant="standard"
                 />
 
-                <Button variant="contained" component="label">
+                <Button variant="outlined" component="label">
                       {t('Choose_thumbnail')}
                       <input
                         type="file"
                         hidden
                         // accept="image/*"
                         onChange={handleFileChange}
+                      
+                        
                       />
                 </Button>
                 {thumbnailPreview && (
