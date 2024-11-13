@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import requestApi from "../../../../helpers/api";
 import AddIcon from "@mui/icons-material/Add";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
+import Link from "next/link";
 
 
 const ListVideo = ()=>{
@@ -68,15 +69,32 @@ const ListVideo = ()=>{
       const [nameErrorMessage, setNameErrorMessage] = useState("");
       const [descriptionError, setDescriptionError] = useState(false);
       const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+      const [thumbnailError, setThumbnailError] = useState(false);
+      const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState("");
+      const [videoError, setVideoError] = useState(false);
+      const [videoErrorMessage, setVideoErrorMessage] = useState("");
+      
       const [thumbnailFile, setThumbnailFile] = useState<File | null >(null);
       const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
       const [status, setStatus] = useState("confirming");
 
+      const [videoFile, setVideoFile] = useState<File | null >(null);
+      const [urlVideo, setUrlVideo] = useState<string | null>(null); 
+
       const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
+          console.log(event.target.files);
           const file = event.target.files[0];
           setThumbnailFile(file);
           setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+        }
+      };
+
+      const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+          const file = event.target.files[0];
+          setVideoFile(file);
+        
         }
       };
 
@@ -109,9 +127,9 @@ const ListVideo = ()=>{
       setNameError(true);
       setNameErrorMessage(t("name_least_3"));
       isValid = false;
-    } else if (name.value.length > 50) {
+    } else if (name.value.length > 70) {
       setNameError(true);
-      setNameErrorMessage(t("name_more_50"));
+      setNameErrorMessage(t("name_more_70"));
       isValid = false;
     } else {
       setNameError(false);
@@ -127,9 +145,9 @@ const ListVideo = ()=>{
       setDescriptionError(true);
       setDescriptionErrorMessage(t("description_least_10"));
       isValid = false;
-    } else if (description.value.length > 200) {
+    } else if (description.value.length > 300) {
       setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_more_200"));
+      setDescriptionErrorMessage(t("description_more_300"));
       isValid = false;
     } else {
       setDescriptionError(false);
@@ -137,12 +155,17 @@ const ListVideo = ()=>{
     }
   
    
-    // if (!thumbnailFile) {
-    //   setSnackbarMessage(t("thumbnail_required"));
-    //   setSnackbarSeverity("error");
-    //   setOpenSnackbar(true);
-    //   isValid = false;
-    // }
+    if (!thumbnailFile) {
+      setThumbnailError(true)
+      setThumbnailErrorMessage(t("thumbnail_required"))
+      isValid = false;
+    }
+
+    if (!videoFile) {
+      setVideoError(true)
+      setVideoErrorMessage(t("video_required"))
+      isValid = false;
+    }
   
     return isValid;
   };
@@ -151,14 +174,18 @@ const ListVideo = ()=>{
   const handleCreateVideo = (): void => {
     const valid: boolean = validateInputs();
 
-    if (valid && thumbnailFile) {
+    if (valid && thumbnailFile && videoFile) {
         const slug = slugify(name);
         const formData = new FormData();
+
         
         formData.append("thumbnail", thumbnailFile);
         formData.append("name", name);
         formData.append("description", description);
         formData.append("slug", slug);
+        formData.append("url", videoFile);
+        console.log(thumbnailFile)
+        console.log(videoFile)
 
         requestApi("videos", "POST", formData)
             .then((res: any) => {
@@ -182,9 +209,11 @@ const ListVideo = ()=>{
                 setOpenSnackbar(true);
             });
     } else {
-        console.log('No file selected for thumbnail.');
+        console.log('No file selected for thumbnail or video');
     }
 };
+
+
 
 const [selectedVideo, setSelectedVideo] = useState<any>(null);
 const handleOpenUpdateDialog = (video: any) => {
@@ -336,23 +365,49 @@ const handleDeleteVideo = (videoId: string) => {
                   InputProps={{ style: { resize: 'vertical' } }}
                 />
                     <Button variant="contained" component="label">
-                      Chọn ảnh cho video
+                    {t('Choose_thumbnail')}
                       <input
                         type="file"
                         hidden
+                        
                         // accept="image/*"
                         onChange={handleFileChange}
                       />
                     </Button>
+                    <br/>
+                    <span  style={{color:'red'}}>{thumbnailError ? thumbnailErrorMessage : ""}</span>
+                    
 
-          {/* Hiển thị ảnh thumbnail đã chọn */}
-          {thumbnailPreview && (
-            <img 
-              src={thumbnailPreview} 
-              alt="Thumbnail preview" 
-              style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
-            />
-          )}
+              {/* Hiển thị ảnh thumbnail đã chọn */}
+              {thumbnailPreview && (
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Thumbnail preview" 
+                  style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }} 
+                />
+              )}
+              <br/>
+               <Button variant="contained" component="label" style={{marginTop:50}}>
+                    Upload Video
+                      <input
+                        type="file"
+                        hidden
+                        // accept="image/*"
+                        onChange={handleFileVideoChange}
+                      />
+                </Button>
+                <br/>
+                    <span style={{color:'red'}}>{videoError ? videoErrorMessage : ""}</span>
+                <br/>
+                {videoFile && (
+                  <Link  href={"#"} target="_blank" rel="noopener" style={{ textDecoration:'underline',marginTop:50 ,marginLeft:10,color:'blue' }}>
+                  {/* {videoFile.length > 20 ? `${videoFile.substring(0, 20)}...` : videoFile} */}
+                  {videoFile.name}
+                </Link>
+                
+              )}
+
+               
 
               </DialogContent>
               <DialogActions>
@@ -443,6 +498,8 @@ const handleDeleteVideo = (videoId: string) => {
                             <option value="confirmed">{t('Confirmed')}</option>
                       </TextField>
 
+
+
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
@@ -474,7 +531,7 @@ const handleDeleteVideo = (videoId: string) => {
                       <TableCell >{t('description_text')}</TableCell>
                       <TableCell >{t('Thumbnail')}</TableCell>
                       <TableCell >URL</TableCell>
-                      <TableCell >{t('UserId')}</TableCell>
+                      <TableCell >{t('Poster')}</TableCell>
                       <TableCell >{t('Status')}</TableCell>
                       <TableCell >{t('action')}</TableCell>
                     </TableRow>
@@ -510,11 +567,27 @@ const handleDeleteVideo = (videoId: string) => {
                                 style={{ width: '100px', height: 'auto' }} // Adjust width and height as needed
                                 />
                          </TableCell>
-                          <TableCell >{video.url}</TableCell>
-                          <TableCell >{video.user.id}</TableCell>
-                          <TableCell >
-                            {video.status === "confirming" ? t('Confirming'): t('Confirmed')}
-                          </TableCell>
+                         <TableCell>
+                       
+                         {video.url ? (
+                          <Tooltip title={video.url}>
+                            <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
+                              {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
+                            </Link>
+                          </Tooltip>
+                        ) : (
+                          'N/A'
+                        )}
+                        </TableCell>
+
+                        <TableCell>
+                          {video.user.full_name}
+                        </TableCell>
+
+                        <TableCell>
+                          {video.status}
+                        </TableCell>
+
 
                           <TableCell  >
                             <Button variant="outlined" color="primary" onClick={()=>handleOpenUpdateDialog(video)}  >

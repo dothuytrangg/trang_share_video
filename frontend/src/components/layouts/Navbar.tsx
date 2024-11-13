@@ -19,7 +19,7 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { useRouter, usePathname, useParams, useSearchParams, redirect } from "next/navigation";
 import { format } from "path";
-import { _GLOBAL } from "@/contstants";
+import { _ENV, _GLOBAL } from "@/contstants";
 import requestApi from "../../../helpers/api";
 
 interface AppBarProps extends MuiAppBarProps {
@@ -51,7 +51,8 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
-  const [profileData, setProfileData] = useState<any>({});;
+  const [profileData,setProfileData] = useState<any>({});;
+  const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
@@ -71,24 +72,28 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-    setLoading(masterStore.loading)
-
-    // if (!ranonce) {
-    //   requestApi('users/profile','GET').then((res:any)=>{
-    //      if(res.success){
-    //          setProfileData({...res.data,avatar:'http://localhost:2070/'+ res.data.avatar})
-    //      }
-
-    //   }
-
-    //   ).catch((err)=>{
-    //    console.log('err',err);
-    //   })
-
-    //    ranonce = true;
-    //  }
-
-  }, [masterStore])
+     setLoading(masterStore.loading)
+    //  setProfileAvatar(masterStore.user.avatar);
+  
+    if (!loading) {
+      requestApi('users/profile','GET').then((res:any)=>{
+        console.log('res profile',res);
+         if(res.success){
+             setProfileAvatar(res.data.avatar);
+             setLoading(true)
+         }
+ 
+      }
+ 
+      ).catch((err)=>{
+       console.log('err',err);
+      })
+      
+       setLoading(true)
+     }
+    
+    console.log('masterStore: ', masterStore);
+    }, [masterStore])
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -163,9 +168,9 @@ export default function Navbar() {
       setNameError(true);
       setNameErrorMessage(t("name_least_3"));
       isValid = false;
-    } else if (name.value.length > 50) {
+    } else if (name.value.length > 70) {
       setNameError(true);
-      setNameErrorMessage(t("name_more_50"));
+      setNameErrorMessage(t("name_more_70"));
       isValid = false;
     } else {
       setNameError(false);
@@ -274,14 +279,15 @@ export default function Navbar() {
       return (
 
         <Box>
-          <Button onClick={() => setOpenAddDialog(true)} variant="outlined" style={{ width: 20, height: 35, margin: 10 }} startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}>
+          {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
+          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
           </Button>
-          <Button onClick={handleClick} variant="outlined" startIcon={profileData.avatar
-            ? (<Avatar src={profileData.avatar} sx={{ width: 20, height: 20 }} />)
-            : (<AccountCircle />)}>
-            {masterStore.user.name}
-          </Button>
-
+           <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
+      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
+      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
+        {masterStore.user.name}
+      </Button>
+      
         </Box>
       )
 
@@ -357,89 +363,16 @@ export default function Navbar() {
           </Menu>
 
           {renderButtonAcction()}
-          <Dialog
-            open={openAddDialog}
-            onClose={() => setOpenAddDialog(false)}
-            PaperProps={{
-              component: 'form',
-              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                event.preventDefault();
-                handleCreateVideo();
-
-              },
-            }}
-          >
-            <DialogTitle>{t("addVideo")}</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                {/* {t("addText_category")} */}
-              </DialogContentText>
-              <TextField
-                autoFocus
-                error={nameError}
-                helperText={nameErrorMessage}
-                onChange={(val) => {
-                  setName(val.target.value);
-                }}
-                margin="dense"
-                id="name"
-                name="name"
-                label={t("name_video")}
-                type="text"
-                fullWidth
-                variant="standard"
-                placeholder={t("name_video")}
-              />
-              <TextField
-                autoFocus
-                error={descriptionError}
-                helperText={descriptionErrorMessage}
-                onChange={(val) => setDescription(val.target.value)}
-                margin="dense"
-                id="description"
-                name="description"
-                label={t("description_text")}
-                type="text"
-                fullWidth
-                variant="standard"
-                multiline
-                rows={3}
-                InputProps={{ style: { resize: 'vertical' } }}
-              />
-              <Button variant="contained" component="label">
-                {t('Choose_thumbnail')}
-                <input
-                  type="file"
-                  hidden
-                  // accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </Button>
-
-              {/* Hiển thị ảnh thumbnail đã chọn */}
-              {thumbnailPreview && (
-                <img
-                  src={thumbnailPreview}
-                  alt="Thumbnail preview"
-                  style={{ marginTop: 10, width: '100%', height: 'auto', maxHeight: '200px' }}
-                />
-              )}
-
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-              <Button type="submit" >{t("add")}</Button>
-            </DialogActions>
-          </Dialog>
-          <Snackbar
-            open={openSnackbar}
-            autoHideDuration={4000}
-            onClose={() => setOpenSnackbar(false)}
-          >
-            <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
+          
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+               >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
 
 
         </Toolbar>

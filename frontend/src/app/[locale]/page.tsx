@@ -13,10 +13,10 @@ import { useDispatch } from "react-redux";
 import { cookies } from "next/headers";
 export default function HomePage() {
   const t = useTranslations("HomePage");
-  
+
   return (
     <div className="grid">
-    
+      {/* <h1>fdfdfd</h1> */}
       <Category></Category> 
        <div className="grid grid-cols-4 gap-3 mt-4"> 
           <Videos></Videos>

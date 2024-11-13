@@ -34,7 +34,9 @@
     "email_exist": "Email already exists",
     "name": "Name is not empty",
     "name_least_3": "Name must be at more 3 characters long.",
-    "name_more_20": "Name must be at least 20 characters long.",
+    "name_more_70": "Name must be at least 20 characters long.",
+    "description_least_10":"Description must be at more 10 characters long.",
+    "description_more_300":"Name must be at least 300 characters long.",
     "name_exist": "Name already exists",
     "description": "Discription not empty",
     "input_name": "Full name",
@@ -42,7 +44,7 @@
     "have_account": "Already have an account?",
     "edit":"Edit",
     "delete":"Delete",
-    "name_category":"Category name",
+    "update":"update",
     "name_video":"Video name",
     "create_date":"Create date",
     "action":"Action",
@@ -80,6 +82,20 @@
     "update_user_failed": "Failed to update user",
     "update_user_occerred": "An error occurred while update the user",
 
+      
+
+    "delete_video_success": "Video deleted successfully!",
+    "delete_video_failed": "Failed to delete video",
+    "delete_video_occerred": "An error occurred while deleting the video.",
+    "create_video_success": "Video created successfully!",
+    "create_video_failed": "Video created failed",
+    "create_video_occerred": "An error occurred while creating the video.",
+    "update_video_success": "Video updated successfully!",
+    "update_video_failed": "Failed to update user",
+    "update_video_occerred": "An error occurred while update the user",
+    
+     "Poster":"Poster",
+
    
     "Status":"Status",
     "Confirming":"Confirming",
@@ -87,8 +103,14 @@
     "Choose_thumbnail":" Choose thumbnail",
     "Name":"Name",
     "Thumbnail":"Thumbnail",
+    "thumbnail_required":"thumbnail required",
+    "name_required":"name required",
+    "description_required":"description required",
+    "video_required":"video required",
     "UserId":"User ID",
     "ID":"ID",
+
+    "click_the_camera_to_upload_a_new_avatar":"Click the camera to upload a new avatar"
 
    
 

@@ -7,6 +7,7 @@ import requestApi from '../../../helpers/api';
 import { _ENV } from '@/contstants';
 import { useLocale, useTranslations } from 'next-intl';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { updateLocalStorage } from '@/stores/features/masterSlice';
 
 const Profile= () => {
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -45,6 +46,7 @@ const Profile= () => {
       if(res.success){
          console.log('upload success !!')
         //  setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
+         dispatch(updateLocalStorage({...res}));
          loadUser();
          setSnackbarMessage("upload avatar successfully");
          setSnackbarSeverity("success");
@@ -116,7 +118,7 @@ const Profile= () => {
           <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 2 }}>
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Profile
+          {t('profile')}
         </Typography>
         <Avatar
           src={profileData.avatar ? profileData.avatar :""}
@@ -138,12 +140,12 @@ const Profile= () => {
           </IconButton>
         </label>
         <Typography variant="body2" color="textSecondary">
-          Click the camera to upload a new avatar
+          {t('click_the_camera_to_upload_a_new_avatar')}
         </Typography>
         {/* {console.log('profileData',videos)} */}
         {/* <img src="http://localhost:2070/avatars/1730118918830-o_cam_chia_5_an_toan_va_tien_loi.jpg"></img> */}
        {/* <img src="https://nextcloud.congcucuatoi.com/remote.php/dav/files/trang/avatars/1730048688091-z4550394229796_c3ccf594bdb60930a3e60bf95305f9ad.jpg"></img> */}
-        <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >update</Button>
+        <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >{t('update')}</Button>
       </CardContent>
       </Card>
 
@@ -158,12 +160,18 @@ const Profile= () => {
           image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
           title="green iguana"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h6" component="div" style={{fontSize:18}}>
-           {video.name}
+        <CardContent  sx={{ height: 140 }}>
+          <Typography gutterBottom variant="h6" component="div" sx={{ height: 30,paddingBottom:8 }}>
+          {video.name.length > 50 ? (
+                            <Tooltip title={video.name}>
+                              <span>{`${video.name.substring(0, 50)}...`}</span>
+                            </Tooltip>
+                          ) : (
+                            video.name
+                          )}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-          {video.description}
+          <Typography variant="body2" color="text.secondary" >
+          {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
           </Typography>
         </CardContent>
          
@@ -199,8 +207,8 @@ const Profile= () => {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem className="px-5">Edit</MenuItem>
-            <MenuItem onClick={handleClose}>Delete</MenuItem>
+            <MenuItem className="px-5">{t('edit')}</MenuItem>
+            <MenuItem onClick={handleClose}>{t('delete')}</MenuItem>
          
           </Menu>
           
@@ -222,6 +230,15 @@ const Profile= () => {
 
    
         </div>
+        <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+               >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
 
           </React.StrictMode>
         </div>

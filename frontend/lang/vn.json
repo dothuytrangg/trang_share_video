@@ -33,9 +33,11 @@
         "password_not_empty": "Mật khẩu không được để trống",
         "password_least_6": "Mật khẩu phải lớn hơn 6 kí tự .",
         "email_invalid": "Điền đúng định dạng email",
-        "name": "Tên người dùng không được để trống",
-        "name_least_3": "Tên người dùng phải lớn hơn 3 kí tự",
-        "name_more_20": "Tên người dùng phải nhỏ hơn 20 kí tự ",
+        "name": "Tên không được để trống",
+        "name_least_3": "Tên phải lớn hơn 3 kí tự",
+        "name_more_20": "Tên phải nhỏ hơn 20 kí tự ",
+        "description_least_10":"Mô tả phải lớn hơn 3 kí tự",
+        "description_more_300":"Tên phải nhỏ hơn 300 kí tự ",
         "name_exist":"Tên đã tồn tại",
         "input_name": "Tên người dùng",
         "description": "Mô tả không được để trống",
@@ -44,6 +46,7 @@
         "register_question": "Bạn đã có tài khoản?",
         "edit":"Chỉnh sửa",
         "delete":"Xóa",
+        "update":"Cập nhật",
         "name_category":"Tên danh mục",
         "name_video":"Tên video",
         "create_date":"Ngày tạo",
@@ -84,13 +87,37 @@
         "update_user_failed": "Cập nhật tài khoản không thành công!",
         "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",
 
+        "delete_video_success": "Xóa video thành công!",
+        "delete_video_failed": "Xóa video không thành công",
+        "delete_video_occerred": "Đã xảy ra lỗi khi xóa video",
+        "create_video_success": "Thêm mới video thành công!",
+        "create_video_failed": "Thêm mới video không thành công!",
+        "create_video_occerred": "Đã xảy ra lỗi khi thêm mới video.",
+        "update_video_success": "Cập nhật video thành công!",
+        "update_video_failed": "Cập nhật video không thành công!",
+        "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
+
+        "Poster":"Người đăng",
+
         "Status":"Trạng thái",
         "Confirming":"Chưa xác nhận",
         "Confirmed":"Đã xác nhận",
         "Choose_thumbnail":" Chọn ảnh",
         "Name":"Tên",
         "Thumbnail":"Ảnh",
+        "thumbnail_required":"Vui lòng chọn ảnh",
+        "name_required":"Tên không được để trống",
+        "description_required":"Mô tả không được để trống",
+        "video_required":"Vui lòng chọn video",
         "UserId":"Mã người dùng",
+        "ID":"Mã",
+
+        "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh"
+
+
+        
+
+        
         "ID":"Mã",
         "email_already_registered": "Bạn đã đăng ký. Vui lòng đăng nhập.",
         "forgot_password": "Quên mật khẩu?",
