@@ -64,7 +64,7 @@ export default function requestApi(
           secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
         );
         console.log('authStore: ', authStore);
-        window.location.href = `/${authStore.lang}/${_GLOBAL.ROUTER_LOGIN}?action=logout`;
+        // window.location.href = `/${authStore.lang}/${_GLOBAL.ROUTER_LOGIN}?action=logout`;
       }
       return { success: false };
     }

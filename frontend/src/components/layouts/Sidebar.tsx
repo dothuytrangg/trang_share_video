@@ -79,6 +79,12 @@ export default function Sidebar() {
     
   };
 
+  const handlePlayListHistory = () =>{
+    router.replace(`/${locale}/playlist-history`);
+    
+      
+  }
+
   const textTheme = () => {
     let result = "";
     if (masterStore.lang == _GLOBAL.EN) {
@@ -177,7 +183,7 @@ export default function Sidebar() {
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
-          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemButton onClick={handlePlayListHistory} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("playlist_history")} placement="right-start">
               <History></History>
             </Tooltip>
