@@ -48,8 +48,21 @@ export class VerificationService {
 
     // Validate OTP
     async validateOtp(userId: number, token: string): Promise<boolean> {
-        const validToken = await this.tokenRepository.findOne({ where: { userId, token } });
-        return !!validToken;
+        // Truy vấn token dựa trên userId
+        const storedToken = await this.tokenRepository.findOne({ where: { userId } });
+        console.log("Stored Token:", storedToken);
+
+        // Nếu không tìm thấy token, trả về false
+        if (!storedToken) {
+            console.log("No token found for user:", userId);
+            return false;
+        }
+
+        // So sánh token đã nhập với token trong cơ sở dữ liệu
+        const isTokenValid = await bcrypt.compare(token, storedToken.token);
+        console.log("Is Token Valid:", isTokenValid);
+
+        return isTokenValid;
     }
 
     // Create a verification token for email verification or reset password

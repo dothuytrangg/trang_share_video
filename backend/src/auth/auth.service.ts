@@ -64,7 +64,7 @@ export class AuthService {
         const otp = await this.verificationService.generateOtp(user.id);
         console.log('OTP:', otp);
         console.log("user", user.id);
-        user.statusVerify = "active"
+        user.statusVerify = "inactive";
 
         // Send OTP to user's email
         await this.emailService.sendEmail({
@@ -152,30 +152,24 @@ export class AuthService {
   async verifyEmail(userId: number, token: string) {
     const invalidMessage = 'Invalid or expired OTP';
 
-    const user = await this.userRepository.findOne({ where: { id:userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new UnprocessableEntityException(invalidMessage);
     }
-    console.log('user', user);
 
     if (user.emailVerifiedAt) {
-      user.statusVerify = 'active';
       throw new UnprocessableEntityException('Account already verified');
     }
 
-    const isValid = await this.verificationService.validateOtp(
-      user.id,
-      token,
-    );
-
+    const isValid = await this.verificationService.validateOtp(user.id, token);
     if (!isValid) {
       throw new UnprocessableEntityException(invalidMessage);
     }
 
+    // Cập nhật trạng thái sau khi xác minh thành công
     user.emailVerifiedAt = new Date();
-    user.statusVerify = 'active';
-
-    await this.userRepository.save(user);
+    user.statusVerify = 'active'; // Cập nhật `statusVerify` thành 'active'
+    await this.userRepository.save(user); // Chỉ lưu một lần sau khi cập nhật trạng thái
 
     return true;
   }
@@ -296,6 +290,7 @@ export class AuthService {
       // Set an expiry time for 1 hour from now
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
+      user.statusVerify = "active"
       console.log('Expires At:', expiryDate);
 
       // Create and save a verification entity with the reset token
