@@ -161,9 +161,6 @@ const LoginView = () => {
   };
 
   const renderLogin = () => {
-    if (!approve) {
-
-    } else {
       return (
         <ReponsiveContainer direction="column" justifyContent="space-between">
           <Stack
@@ -279,7 +276,6 @@ const LoginView = () => {
           </Stack>
         </ReponsiveContainer>
       );
-    }
   };
 
   return renderLogin();

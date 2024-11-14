@@ -51,8 +51,8 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
-  const [profileData,setProfileData] = useState<any>({});;
-  const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
+  const [profileData, setProfileData] = useState<any>({});;
+  const [profileAvatar, setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
@@ -72,28 +72,28 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-     setLoading(masterStore.loading)
+  //  setLoading(masterStore.loading)
     //  setProfileAvatar(masterStore.user.avatar);
-  
+
     if (!loading) {
-      requestApi('users/profile','GET').then((res:any)=>{
-        console.log('res profile',res);
-         if(res.success){
-             setProfileAvatar(res.data.avatar);
-             setLoading(true)
-         }
- 
+      requestApi('users/profile', 'GET').then((res: any) => {
+        console.log('res profile', res);
+        if (res.success) {
+          setProfileAvatar(res.data.avatar);
+          setLoading(true)
+        }
+
       }
- 
-      ).catch((err)=>{
-       console.log('err',err);
+
+      ).catch((err) => {
+        console.log('err', err);
       })
-      
-       setLoading(true)
-     }
-    
+
+      setLoading(true)
+    }
+
     console.log('masterStore: ', masterStore);
-    }, [masterStore])
+  }, [masterStore])
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -280,14 +280,14 @@ export default function Navbar() {
 
         <Box>
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
+          <Button onClick={() => setOpenAddDialog(true)} variant="outlined" style={{ width: 20, height: 35, margin: 10 }} startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}>
           </Button>
-           <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
-      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
-      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
-        {masterStore.user.name}
-      </Button>
-      
+          <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
+            ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25 }} />)
+            : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
+            {masterStore.user.name}
+          </Button>
+
         </Box>
       )
 
@@ -329,7 +329,6 @@ export default function Navbar() {
             placeholder={t('search') + "..."}
 
           />
-          <Box sx={{ flexGrow: 0.5 }} />
 
 
           <Box sx={{ flexGrow: 1 }} />
@@ -363,16 +362,16 @@ export default function Navbar() {
           </Menu>
 
           {renderButtonAcction()}
-          
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={4000}
-                onClose={() => setOpenSnackbar(false)}
-               >
-                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-                  {snackbarMessage}
-                </Alert>
-              </Snackbar>
+
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={4000}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
 
 
         </Toolbar>

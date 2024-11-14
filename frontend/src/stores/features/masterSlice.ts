@@ -15,6 +15,7 @@ const initialState = {
   isAdmin:false,
   isAuth:false,
   user: "",
+  visibleIcons: 2
 };
 
 export const masterSlice = createSlice({
@@ -26,6 +27,7 @@ export const masterSlice = createSlice({
       state.access_token = action.payload.token;
       state.user = action.payload.user;
       state.is_login = true;
+      state.visibleIcons = 5; 
   
       if(action.payload.user.role == _GLOBAL.ROLE_ADMIN){
         state.isAdmin = true;
@@ -40,6 +42,7 @@ export const masterSlice = createSlice({
       state.isAuth = action.payload
     },
     initialBootState: (state) => {
+
       if(typeof window !== 'undefined'){
         let masterLocalStorage = secureLocalStorage.getItem("master") as string;
         if (masterLocalStorage) {

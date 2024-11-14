@@ -1,6 +1,6 @@
 import { _ENV, _GLOBAL } from "@/contstants";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Pagination, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -100,6 +100,7 @@ const ListVideo = ()=>{
         if (event.target.files && event.target.files[0]) {
           const file = event.target.files[0];
           setVideoFile(file);
+          console.log(file); 
         
         }
       };
@@ -374,93 +375,123 @@ const handleDeleteVideo = (videoId: string) => {
                       InputProps={{ style: { resize: 'vertical' } }}
                       style={{ marginBottom: 20 }}
                     />
-                    <Stack direction="row" spacing={2} alignItems="center" style={{ marginTop: 20 }}>
-                      {videoFile && (
-                        <Link href="#" target="_blank" rel="noopener" style={{ textDecoration: 'underline', marginTop: 10, color: 'blue' }}>
-                          {videoFile.name}
-                        </Link>
-                      )}
+                    <Grid container spacing={2}>
+                      <Grid item xs={6} >
+                        {/* Khung chứa ảnh*/}
+                        <Box
+                          sx={{
+                            width: '120px',
+                            height: '120px',
+                            border: '2px dashed #3f51b5',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            backgroundColor: '#f0f0f0',
+                            marginTop: 2
+                          }}
+                        >
+                          {thumbnailPreview ? (
+                            <img
+                              src={thumbnailPreview}
+                              alt="Thumbnail Preview"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                          ) : (
+                            <span style={{ color: '#999' }}>{t('')}</span>
+                          )}
+                        </Box>
+                        {thumbnailError && (
+                          <span style={{ color: 'red', display: 'block', marginTop: 5 }}>
+                            {thumbnailErrorMessage}
+                          </span>
+                        )}
 
-                    <Box
-                      sx={{
-                        width: '120px',
-                        height: '120px',
-                        border: '2px dashed #3f51b5',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        backgroundColor: '#f0f0f0',
-                        marginBottom: 3
-                      }}
-                    >
-                      {thumbnailPreview ? (
-                        <img
-                          src={thumbnailPreview}
-                          alt="Thumbnail preview"
-                          style={{ width: '100%', height: '100%' }}
-                        />
-                      ) : (
-                        <span style={{  }}>{}</span>
-                      )}
-                    </Box>
-                    <span style={{ color: 'red', display: 'block', marginTop: 5 }}>
-                      {thumbnailError ? thumbnailErrorMessage : ""}
-                    </span>
-                    
+                      </Grid>
+                      <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Grid item style={{ display: 'flex', justifyContent: 'flex-start', marginTop: "16px" }}>
+                          <Select style={{marginRight :"50px"}}>
+                            <MenuItem value={10}>Option 1</MenuItem>
+                            <MenuItem value={20}>Option 2</MenuItem>
+                          </Select>
 
-
-                      {/* Thumbnail Upload Button */}
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        component="label"
-                        startIcon={<PhotoCameraIcon />}
-                        style={{
-                          color: '#fff',
-                          fontWeight: 'bold',
-                          padding: '8px 16px',
-                        }}
-                      >
-                        {t('Choose_thumbnail')}
-                        <input
-                          type="file"
-                          hidden
-                          onChange={handleFileChange}
-                          aria-label={t('Choose_thumbnail')}
-                        />
-                      </Button>
-
-                      {/* Video Upload Button */}
-                    {videoError && (
-                      <span style={{ color: 'red', display: 'block' }}>
-                        {videoErrorMessage}
-                      </span>
-                    )}
-                     
-                      {/* Display Video File Name */}
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        component="label"
-                        startIcon={<VideoLibraryIcon />}
-                        style={{
-    
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        {t('Upload Video')}
-                        <input
-                          type="file"
-                          hidden
-                          onChange={handleFileVideoChange}
-                          aria-label={t('Upload Video')}
-                        />
+                          <Select>
+                            <MenuItem value={30}>Option A</MenuItem>
+                            <MenuItem value={40}>Option B</MenuItem>
+                          </Select>
+                        </Grid>
                         
-                      </Button>
-                     
-                    </Stack>
+                        <Grid item style={{ marginTop: '75px' }}>
+                          {videoError ? (
+                            <span style={{ color: 'red', display: 'block' }}>
+                              {videoErrorMessage}
+                            </span>
+                          ) : (
+                            videoFile && (
+                              <span style={{ color: 'black', display: 'block' }}>
+                                {videoFile.name}
+                              </span>
+                            )
+                          )}
+                        </Grid>
+                      </Grid>
+
+                      {/* </Grid> */}
+
+
+                      {/* Cột nút chọn ảnh Thumbnail */}
+                      <Grid item xs={6}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          component="label"
+                          startIcon={<PhotoCameraIcon />}
+                          style={{
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            padding: '8px 16px',
+                          }}
+                        >
+                          {t('Choose_thumbnail')}
+                          <input
+                            type="file"
+                            hidden
+                            onChange={handleFileChange}
+                            accept="image/*"
+                          />
+                        </Button>
+                        
+                      </Grid>
+
+                      {/* Cột nút chọn video */}
+                      <Grid item xs={6}>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          component="label"
+                          startIcon={<VideoLibraryIcon />}
+                          style={{
+                            padding: '8px 16px',
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {t('Upload Video')}
+                          <input
+                            type="file"
+                            hidden
+                            onChange={handleFileVideoChange}
+                            accept="video/*"
+                          />
+                        </Button>
+                      </Grid>
+
+                    </Grid>
+
                   </DialogContent>
 
                   {/* Dialog Actions */}

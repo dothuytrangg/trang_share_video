@@ -1,14 +1,13 @@
 'use client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-import { InputBase } from '@mui/material';
+import { Button, InputBase } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -214,7 +213,7 @@ const SendOTP = () => {
                         </FormControl>
                         <FormControl>
                             <p style={{ textAlign: "center" }}>Haven't received it yet?</p>
-                            <Button
+                            {/* <Button
                                 variant="text"
                                 onClick={handleSubmit}
                                 sx={{
@@ -226,7 +225,7 @@ const SendOTP = () => {
                                 }}
                             >
                                 Receive again
-                            </Button>
+                            </Button> */}
                         </FormControl>
                         <Stack direction="row" spacing={2}>
                             <Button fullWidth variant="outlined" onClick={() => router.push('/')}>
