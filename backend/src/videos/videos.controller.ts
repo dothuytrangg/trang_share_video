@@ -77,6 +77,7 @@ export class VideosController {
         const thumbnail = files.thumbnail ? files.thumbnail[0] : null;
         const video = files.url ? files.url[0] : null;
         console.log('files.thumbnail: ', files.thumbnail);
+        console.log('files.video: ', files.url);
 
         console.log('file',files);
         // this.move()

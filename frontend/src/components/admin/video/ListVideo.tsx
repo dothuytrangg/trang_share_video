@@ -242,6 +242,7 @@ const ListVideo = ()=>{
         formData.append("name", name);
         formData.append("description", description);
         formData.append("slug", slug);
+        formData.append("url", videoFile);
      
 
         requestApi("videos", "POST", formData)
@@ -280,7 +281,7 @@ const handleOpenUpdateDialog = (video: any) => {
   setName(video.name);
   setDescription(video.description); 
   setThumbnailFile(null);
-  setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
+  setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
   setStatus(video.status);
   // console.log('console thumbnail',selectedVideo.thumbnail);
   
