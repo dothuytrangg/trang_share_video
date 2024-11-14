@@ -13,7 +13,7 @@ export class VideoDetailsController {
         // const userId = req.user_data.id;
         
      
-        return this.videoDetailService.create(Number(id));
+        return this.videoDetailService.create(Number(id),86);
     }
 
     

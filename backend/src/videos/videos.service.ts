@@ -116,6 +116,7 @@ export class VideosService {
         updateVideoDto: UpdateVideoDto,
         thumbnail?:string,
         
+        
       ): Promise<UpdateResult> {
         let response = common_response;
       
@@ -139,7 +140,7 @@ export class VideosService {
         // Perform the update with the determined thumbnail
       const updateResult = await this.videoRepository.update(id, {
         ...updateVideoDto,
-        thumbnail: thumbnailToSave,
+        thumbnail: thumbnailToSave
       });
 
         if(updateResult.affected==1){

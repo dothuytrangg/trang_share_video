@@ -68,82 +68,7 @@ export class VideosController {
     ))
 
 
-    // @UseInterceptors(
-        
-    //     FileInterceptor('thumbnail',{
-    //     storage:storageConfig('avatars'),
-    //     fileFilter:(req,file,cb)=>{
-    //         const ext = extname(file.originalname);
-    //         const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG','.webm'];
-    //         if(!allowedExtArr.includes(ext)){
-    //             req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
-    //             cb(null,false);
-    //         }else{
-    //             const fileSize = parseInt(req.headers['content-length']);
-    //             if(fileSize > 1024 * 1024 * 5 ){
-    //                 req.fileValidationError = 'File size is too large.Accepted size is less than';
-    //                 cb(null,false);
-    //             }else{
-    //                 cb(null,true)
-    //                 // console.log(ext)
-    //             }
-    //         }
 
-    //     }
-
-    //     }))
-
-    // @UseInterceptors(FileInterceptor('url',{
-    //         storage:storageConfig('videos'),
-    //         fileFilter:(req,file,cb)=>{
-    //             const ext = extname(file.originalname);
-    //             const allowedExtArr = ['.mp4', '.avi', '.mov','.mkv','webm'];
-    //             if(!allowedExtArr.includes(ext)){
-    //                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
-    //                 cb(null,false);
-    //             }else{
-    //                 const fileSize = parseInt(req.headers['content-length']);
-    //                 if(fileSize > 1024 * 1024 * 100 ){
-    //                     req.fileValidationError = 'File size is too large.Accepted size is less than';
-    //                     cb(null,false);
-    //                 }else{
-    //                     cb(null,true)
-
-    //                 }
-    //             }
-    
-    //         }
-    
-    //     }))
-
-    // move(oldPath, newPath, callback) {
-    //     const fs = require('fs');
-    //     fs.rename(oldPath, newPath, function (err) {
-    //         if (err) {
-    //             if (err.code === 'EXDEV') {
-    //                 copy();
-    //             } else {
-    //                 callback(err);
-    //             }
-    //             return;
-    //         }
-    //         callback();
-    //     });
-    
-    //     function copy() {
-    //         var readStream = fs.createReadStream(oldPath);
-    //         var writeStream = fs.createWriteStream(newPath);
-    
-    //         readStream.on('error', callback);
-    //         writeStream.on('error', callback);
-    
-    //         readStream.on('close', function () {
-    //             fs.unlink(oldPath, callback);
-    //         });
-    
-    //         readStream.pipe(writeStream);
-    //     }
-    // }
     create(@Req() req:any,@Body() createVideoDto:CreateVideoDto, @UploadedFiles() files: { thumbnail?: Express.Multer.File[]; url?: Express.Multer.File[] }){
         const userId = req.user_data.id;
 
@@ -230,7 +155,7 @@ export class VideosController {
             throw new BadRequestException(req.fileValidationError )
         }
         if(!file){
-            if(updateVideoDto.thumbnail != null){
+            if(updateVideoDto.thumbnail != null ){
                 return this.videoService.update(Number(id),updateVideoDto,updateVideoDto.thumbnail);
             }
             throw new BadRequestException('File is required');

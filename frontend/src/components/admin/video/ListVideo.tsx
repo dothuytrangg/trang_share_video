@@ -170,6 +170,65 @@ const ListVideo = ()=>{
     return isValid;
   };
 
+  const validateUpdateInputs = () => {
+    const name = document.getElementById("name") as HTMLInputElement;
+    const description = document.getElementById("description") as HTMLInputElement;
+  
+    let isValid = true;
+  
+  
+    if (!name.value) {
+      setNameError(true);
+      setNameErrorMessage(t("name_required"));
+      isValid = false;
+    } else if (name.value.length < 3) {
+      setNameError(true);
+      setNameErrorMessage(t("name_least_3"));
+      isValid = false;
+    } else if (name.value.length > 70) {
+      setNameError(true);
+      setNameErrorMessage(t("name_more_70"));
+      isValid = false;
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  
+
+    if (!description.value) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_required"));
+      isValid = false;
+    } else if (description.value.length < 10) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_least_10"));
+      isValid = false;
+    } else if (description.value.length > 300) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_more_300"));
+      isValid = false;
+    } else {
+      setDescriptionError(false);
+      setDescriptionErrorMessage("");
+    }
+  
+   
+    // if (!thumbnailFile) {
+    //   setThumbnailError(true)
+    //   setThumbnailErrorMessage(t("thumbnail_required"))
+    //   isValid = false;
+    // }
+
+    // if (!videoFile) {
+    //   setVideoError(true)
+    //   setVideoErrorMessage(t("video_required"))
+    //   isValid = false;
+    // }
+  
+    return isValid;
+  };
+
+
 
   const handleCreateVideo = (): void => {
     const valid: boolean = validateInputs();
@@ -183,9 +242,7 @@ const ListVideo = ()=>{
         formData.append("name", name);
         formData.append("description", description);
         formData.append("slug", slug);
-        formData.append("url", videoFile);
-        console.log(thumbnailFile)
-        console.log(videoFile)
+     
 
         requestApi("videos", "POST", formData)
             .then((res: any) => {
@@ -219,11 +276,11 @@ const [selectedVideo, setSelectedVideo] = useState<any>(null);
 const handleOpenUpdateDialog = (video: any) => {
   console.log('video',video);
   setSelectedVideo(video);
-  console.log(selectedVideo);
+  
   setName(video.name);
   setDescription(video.description); 
   setThumbnailFile(null);
-  setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
+  setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
   setStatus(video.status);
   // console.log('console thumbnail',selectedVideo.thumbnail);
   
@@ -237,10 +294,14 @@ const handleCloseUpdateDialog = () => {
 };
 
 const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
-  const valid: boolean = validateInputs();
+  const valid: boolean = validateUpdateInputs();
+  console.log(valid)
+  
 
-  if (valid) {
-   
+  if (valid && thumbnail) {
+    
+
+    console.log('hehhh');
 
     const slug = slugify(name);
     const formData = new FormData();
@@ -256,12 +317,18 @@ const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
     formData.append("name", name);
     formData.append("description", description);
     formData.append("slug", slug);
+    // formData.append("url", videoFile);
+    
+    console.log('form data',formData);
+   
+    // requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
 
     requestApi(`videos/${VideoId}`, "PUT", formData)
       .then((res: any) => {
+        // console.log('res update video',formData);
         if (res.success) {
           loadVideos(page)
-          console.log('res update video', res)
+          // console.log('res update video', res)
           dispatch(updateLocalStorage());
 
           setOpenUpdateDialog(false);
@@ -280,6 +347,9 @@ const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
       });
+  }else{
+    console.log('id',VideoId)
+    console.log('update error')
   }
 };
 
@@ -423,6 +493,8 @@ const handleDeleteVideo = (videoId: string) => {
                 component: 'form',
                 onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                   event.preventDefault();
+                  console.log('console',selectedVideo);
+                  // console.log('video id',selectedVideo.id);
                   handleUpdateVideo(selectedVideo.id,selectedVideo.thumbnail);
 
                 },
@@ -585,7 +657,7 @@ const handleDeleteVideo = (videoId: string) => {
                         </TableCell>
 
                         <TableCell>
-                          {video.status}
+                          {video.status == 'confirming' ? `${t('Confirming')}`: `${t('Confirmed')}`}
                         </TableCell>
 
 

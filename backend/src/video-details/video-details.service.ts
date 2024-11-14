@@ -15,7 +15,7 @@ export class VideoDetailsService {
                 // @InjectRepository(User) private userRepository: Repository<User>
             )
     {}
-    async create(videoId:number): Promise<Video> {
+    async create(videoId:number,categoryId:number): Promise<Video> {
         let response = common_response;
        
         try {
@@ -27,7 +27,7 @@ export class VideoDetailsService {
               throw new Error('Video not found');
           }
           console.log(video);
-          const category = await this.categoryRepository.findOne({ where: { id:86 } });
+          const category = await this.categoryRepository.findOne({ where: { id:categoryId } });
           if (!category) {
             throw new Error('Category not found');
         }
