@@ -22,6 +22,7 @@ export default function Theme({ children }: { children: React.ReactNode }) {
     let masterLocal:any;
     if (global?.window !== undefined) {
       masterLocal = secureLocalStorage.getItem("master");
+      // console.log('masterlocal',masterLocal)
     }
       
     if (masterLocal) {
@@ -31,6 +32,7 @@ export default function Theme({ children }: { children: React.ReactNode }) {
   
     useEffect(() => {
       setMode(masterStore.theme);
+      
     }, [masterStore]);
     const themeConfig = createTheme({
       palette: {

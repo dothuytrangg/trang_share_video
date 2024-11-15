@@ -7,6 +7,7 @@ import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { SearchVideoDto } from './dto/search-video.dto';
 
 @Injectable()
 export class VideosService {
@@ -165,6 +166,53 @@ export class VideosService {
     return response;
     // return await this.categoryRepository.delete(id);
   }
+
+  async searchVideos(filters: SearchVideoDto): Promise<any> {
+    const queryBuilder = this.videoRepository.createQueryBuilder('video');
+    let whereAdded = false;
+
+    // Kiểm tra filters trước khi dùng trong câu truy vấn
+    if (filters.name && typeof filters.name === 'string' && filters.name.trim() !== '') {
+      queryBuilder.where('video.name LIKE :name', { name: `%${filters.name}%` });
+      whereAdded = true;
+    }
+
+    if (filters.description && typeof filters.description === 'string' && filters.description.trim() !== '') {
+      if (whereAdded) {
+        queryBuilder.andWhere('video.description LIKE :description', { description: `%${filters.description}%` });
+      } else {
+        queryBuilder.where('video.description LIKE :description', { description: `%${filters.description}%` });
+        whereAdded = true;
+      }
+    }
+
+    if (filters.slug && typeof filters.slug === 'string' && filters.slug.trim() !== '') {
+      if (whereAdded) {
+        queryBuilder.andWhere('video.slug LIKE :slug', { slug: `%${filters.slug}%` });
+      } else {
+        queryBuilder.where('video.slug LIKE :slug', { slug: `%${filters.slug}%` });
+        whereAdded = true;
+      }
+    }
+
+    if (filters.url && typeof filters.url === 'string' && filters.url.trim() !== '') {
+      if (whereAdded) {
+        queryBuilder.andWhere('video.url LIKE :url', { url: `%${filters.url}%` });
+      } else {
+        queryBuilder.where('video.url LIKE :url', { url: `%${filters.url}%` });
+        whereAdded = true;
+      }
+    }
+
+    try {
+      return await queryBuilder.getMany();
+    } catch (error) {
+      console.error('Error executing query:', error);  // In ra lỗi để debug
+      throw new Error('Internal server error');
+    }
+  }
+
+
 
       
 }

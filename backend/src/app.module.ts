@@ -13,10 +13,9 @@ import { VideoDetailsController } from './video-details/video-details.controller
 import { VideoDetailsModule } from './video-details/video-details.module';
 import { VerificationModule } from './verification/verification.module';
 import { TagsModule } from './tags/tags.module';
-import { TagsDetailController } from './tags-detail/tags-detail.controller';
-import { TagsDetailService } from './tags-detail/tags-detail.service';
-import { TagsDetailModule } from './tags-detail/tags-detail.module';
-
+import { TagDetailModule } from './tags-detail/tags-detail.module';
+import { TagDetailService } from './tags-detail/tags-detail.service';
+import { TagDetailController } from './tags-detail/tags-detail.controller';
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceOptions),
@@ -26,9 +25,9 @@ import { TagsDetailModule } from './tags-detail/tags-detail.module';
     CategoriesModule,
     VideosModule,
     TagsModule,
-    TagsDetailModule,
+    TagDetailModule,  // Đảm bảo rằng TagDetailModule được thêm vào imports
   ],
-  controllers: [AppController, TagsDetailController],
-  providers: [AppService, TagsDetailService],
+  controllers: [AppController, TagDetailController],
+  providers: [AppService],  // Không cần thêm TagDetailService vào providers vì nó đã được khai báo trong TagDetailModule
 })
-export class AppModule {}
+export class AppModule { }

@@ -86,7 +86,7 @@ export default function Sidebar() {
       ...closedMixin(theme),
       "& .MuiDrawer-paper": closedMixin(theme),
     }),
-    
+
   }));
 
   const handlePlayListHistory = () => {
@@ -180,9 +180,7 @@ export default function Sidebar() {
             <ListItemText className={open ? "mx-3" : ""} primary={t("theme")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
-          {/* Kiểm tra trạng thái đăng nhập */}
-          {isLogin && (
-            <>
+         
               <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
                 <Tooltip title={t("playlist")} placement="right-start">
                   <PlaylistPlay></PlaylistPlay>
@@ -203,9 +201,6 @@ export default function Sidebar() {
                 </Tooltip>
                 <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_liked")} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
-
-            </>
-          )}
 
           {renderButtonAdmin()}
         </ListItem>

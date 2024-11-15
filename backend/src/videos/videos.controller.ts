@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { readFileSync, unlink } from 'fs';
 import { storageConfig } from 'helpers/config';
@@ -10,12 +10,13 @@ import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { VideosService } from 'src/videos/videos.service';
+import { SearchVideoDto } from './dto/search-video.dto';
 
 @Controller('videos')
 export class VideosController {
     constructor(private videoService:VideosService){}
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query:FilterVideoDto):Promise<Video[]>{
         return this.videoService.findAllPage(query)
@@ -256,5 +257,9 @@ export class VideosController {
         return this.videoService.delete(Number(id));
     }
 
+    @Get('search')
+    async searchVideos(@Query() filters: SearchVideoDto) {
+        return this.videoService.searchVideos(filters);
+    }
     
 }

@@ -161,6 +161,9 @@ const LoginView = () => {
   };
 
   const renderLogin = () => {
+    if (!approve) {
+
+    } else {
       return (
         <ReponsiveContainer direction="column" justifyContent="space-between">
           <Stack
@@ -239,7 +242,7 @@ const LoginView = () => {
                     color={passwordError ? "error" : "primary"}
                   />
                 </FormControl>
-               
+
                 <Button
                   type="submit"
                   fullWidth
@@ -247,7 +250,7 @@ const LoginView = () => {
                   onClick={() => handleLogin()}
                 >
                   {t("login")}
-                </Button> 
+                </Button>
                 <Typography sx={{ textAlign: "center" }}>
                   {t('forgot_password')}
                   <span>
@@ -276,6 +279,7 @@ const LoginView = () => {
           </Stack>
         </ReponsiveContainer>
       );
+    }
   };
 
   return renderLogin();
