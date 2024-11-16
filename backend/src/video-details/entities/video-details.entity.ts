@@ -13,15 +13,19 @@ export class VideoDetail {
 
 
 
-  @OneToOne(() => Video)
-  @JoinColumn()
+  @ManyToOne(() => Video, (video:any) => video.videoDetails)
   video: Video
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user:any) => user.videoDetails)
   user: User
+  
+  
 
-  @ManyToOne(() => Category, (category:any) => category.photos)
+  // @OneToOne(() => User)
+  // @JoinColumn()s
+  // user: User
+
+  @ManyToOne(() => Category, (category:any) => category.videoDetails)
   category: Category
   
 //   @Column({default:null,nullable:true  })

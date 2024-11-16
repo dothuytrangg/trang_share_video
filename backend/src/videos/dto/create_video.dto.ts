@@ -1,4 +1,4 @@
-import {IsEmail,  IsNotEmpty, IsString, MaxLength, MinLength} from "class-validator";
+import {ArrayNotEmpty, IsArray, IsEmail,  IsNotEmpty, IsString, MaxLength, MinLength} from "class-validator";
 import { User } from "src/users/entities/users.entity";
 import { Column, ManyToOne } from "typeorm";
 
@@ -51,6 +51,10 @@ export class CreateVideoDto{
     
     @Column({default:'confirming'  })
     status: string;
+
+    @IsArray()
+    @ArrayNotEmpty()
+    categories: number[];
   
     // @ManyToOne(() => User, (user: User) => user.videos)
     // user: User;

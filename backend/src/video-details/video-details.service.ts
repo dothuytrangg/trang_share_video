@@ -26,12 +26,12 @@ export class VideoDetailsService {
           if (!video) {
               throw new Error('Video not found');
           }
-          console.log(video);
+          // console.log(video);
           const category = await this.categoryRepository.findOne({ where: { id:categoryId } });
           if (!category) {
             throw new Error('Category not found');
         }
-          let saveVideoDetail = await this.videoDetailRepository.save({user:video.user,video:video,category:category});
+          let saveVideoDetail = await this.videoDetailRepository.save({video:video,category:category});
           console.log('save',saveVideoDetail);
           if (saveVideoDetail) {
           

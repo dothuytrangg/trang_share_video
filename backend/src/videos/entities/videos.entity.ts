@@ -2,6 +2,7 @@
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { User } from 'src/users/entities/users.entity';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -52,7 +53,7 @@ export class Video {
   @ManyToOne(() => User, (user:any) => user.photos)
   user: User
   
-  @Column({default:'confirming'  })
+  @Column({default:'confirming',nullable:false})
   status: string;
 
   @CreateDateColumn()
@@ -60,5 +61,8 @@ export class Video {
 
   @CreateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.video)
+  videoDetail: VideoDetail[]
   
 }

@@ -5,6 +5,8 @@ import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
 import { AuthGuard } from 'src/auth/auth.guard';
 import WebDav from 'src/ultils/WebDav';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
+import { VideoDetailsService } from 'src/video-details/video-details.service';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
 import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
@@ -13,13 +15,15 @@ import { VideosService } from 'src/videos/videos.service';
 
 @Controller('videos')
 export class VideosController {
-    constructor(private videoService:VideosService){}
+    constructor(private videoService:VideosService
+    ){}
 
     // @UseGuards(AuthGuard)
     @Get()
     findAll(@Query() query:FilterVideoDto):Promise<Video[]>{
         return this.videoService.findAllPage(query)
     }
+
 
 
 
@@ -119,7 +123,7 @@ export class VideosController {
  
          }))
          
-        return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename);
+        return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename,createVideoDto.categories);
     }
 
     @UseGuards(AuthGuard)

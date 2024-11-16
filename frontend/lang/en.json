@@ -60,6 +60,7 @@
     "add_user": "Add User",
     "add_text": "To add a user, please enter the user name below. We will add your list immediately after submission.",
     "add_category": "To add a new category, please enter the category name below. We will update your list immediately after submission.",
+    "name_category":"Name category",
     "description_text": "Description",
     "update_caterogy": "Update Category",
     "update_video": "Update Video",
@@ -109,6 +110,8 @@
     "video_required":"video required",
     "UserId":"User ID",
     "ID":"ID",
+    "no":"No",
+
 
     "click_the_camera_to_upload_a_new_avatar":"Click the camera to upload a new avatar"
 
