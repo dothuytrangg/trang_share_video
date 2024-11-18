@@ -17,9 +17,11 @@ export class AdminAuth implements CanActivate{
             const payload = await this.jwtService.verifyAsync(token,{
                 secret:this.configService.get<string>('SECRET')
             })
+            console.log('Payload:', payload); 
             if(payload.role != 3){
                 return false;
             }
+            request['user_data'] = payload;
         } catch (error) {
             throw new UnauthorizedException();
         }

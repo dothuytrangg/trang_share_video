@@ -10,6 +10,7 @@ import { common_response } from 'src/ultils/common';
 import validator from 'validator';
 import { VerificationService } from 'src/verification/verification.service';
 import { EmailService } from 'src/otp-message/email.service';
+import { formatEntityDates } from 'src/ultils/date-hepler';
 
 
 @Injectable()
@@ -56,8 +57,9 @@ export class UsersService {
         const prevPage = page - 1 < 1 ? null : page - 1;
         let ok = [res, total]
         if(ok){
+          const formattedRes = res.map((user) => formatEntityDates(user));
           response.success = true;
-          response.data = res;
+          response.data = formattedRes;
           response.page = page;
           response.lastPage = lastPage;
           response.nextPage = nextPage;
@@ -118,10 +120,9 @@ export class UsersService {
         refresh_token: 'refresh_token_string',
         password: hashPassword,
       });
-
       if (user) {
         response.success = true;  
-        response.user = user;
+        response.user = formatEntityDates(user);
       } else {
         response.success = false;
         response.message = 'User creation failed.';
@@ -136,11 +137,10 @@ export class UsersService {
 
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
       let response = common_response;
-      
-  
       let updateUser =  await this.userRepository.update(id,updateUserDto);
       if(updateUser){
         response.success = true;
+        response.user = formatEntityDates(updateUser);
         return response;
       } else if (!updateUserDto.full_name){
         response.success = false;

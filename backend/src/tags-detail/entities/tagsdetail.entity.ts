@@ -1,4 +1,5 @@
 import { Tag } from 'src/tags/entities/tags.entity';
+import { Video } from 'src/videos/entities/videos.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('tagDetails')
@@ -17,14 +18,18 @@ export class TagDetail {
 
     @Column({ type: 'varchar', length: 20 })
     status: string;
-
+ 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;
 
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
 
-    @ManyToOne(() => Tag, (tag) => tag.tagDetails)
-    @JoinColumn({ name: 'tag_id' })
-    tag: Tag;
+    // @ManyToOne(() => Tag, (tag) => tag.tagDetails)
+    // @JoinColumn({ name: 'tag_id' })
+    // tag: Tag;
+    
+    // @ManyToOne(() => Video, video => video.tagDetails)
+    // @JoinColumn({ name: 'video_id' })
+    // video: Video; // Ánh xạ đến Video Entity
 }

@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { User } from './../users/entities/users.entity';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tags.entity';
@@ -16,9 +17,13 @@ export class TagsController {
     @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)
     @Post()
-    createTag(@Body() createTagDto: CreateTagDto): Promise<Tag> {
-        const tag = this.tagService.createTag(createTagDto);
-        return tag;
+    createTag(@Req() req: any, @Body() createTagDto: CreateTagDto): Promise<any> {
+        console.log('User Data from Request:', req.user_data);  // In ra user_data để kiểm tra
+        const userId = req.user_data?.id;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is required to create a tag');
+        }
+        return this.tagService.createTag(createTagDto, userId);
     }
 
     @Get(':id')
@@ -42,6 +47,14 @@ export class TagsController {
     @UseGuards(AuthGuard)
     @Delete(':id')
     delete(@Param('id') id: string) {
+        
         return this.tagService.delete(Number(id));
     }
+
+    @Get("/all")
+    findAllTags(): Promise<Tag[]> {
+        return this.tagService.findAllTags();
+        
+
+}
 }

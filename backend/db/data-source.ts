@@ -10,8 +10,8 @@ export const dataSourceOptions :DataSourceOptions = {
     database:process.env.DATABASE_NAME,
     entities: ['dist/**/*.entity.js'],
     migrations: ['dist/db/migrations/*.js'],
-    synchronize:false,
-    timezone: '+07:00', // Set to UTC+7 for Ho Chi Minh City
+    synchronize: true,
+    timezone: 'Z',
 } 
 
 const dataSource = new DataSource(dataSourceOptions);

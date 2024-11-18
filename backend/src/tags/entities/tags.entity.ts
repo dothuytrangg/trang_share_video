@@ -1,6 +1,14 @@
-import { IsOptional } from 'class-validator';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+    OneToMany,
+    BeforeInsert,
+    BeforeUpdate,
+} from 'typeorm';
 import { TagDetail } from 'src/tags-detail/entities/tagsdetail.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 @Entity('tags')
 export class Tag {
@@ -13,7 +21,7 @@ export class Tag {
     @Column({ type: 'varchar', length: 255, unique: true })
     slug: string;
 
-    @IsOptional()
+    @Column({ type: 'int', nullable: true })
     user_id: number;
 
     @Column({ default: 'inactive' })
@@ -25,6 +33,7 @@ export class Tag {
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
 
-    @OneToMany(() => TagDetail, (tagDetail) => tagDetail.tag)
-    tagDetails: TagDetail[];
+    // @OneToMany(() => TagDetail, (tagDetail) => tagDetail.tag)
+    // tagDetails: TagDetail[];
+
 }

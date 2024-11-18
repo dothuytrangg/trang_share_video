@@ -7,6 +7,7 @@ import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
 import { Category } from 'src/categories/entities/categories.entity';
 import { common_response } from 'src/ultils/common';
 import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { formatEntityDates } from 'src/ultils/date-hepler';
 
 @Injectable()
 export class CategoriesService {
@@ -52,8 +53,9 @@ export class CategoriesService {
     const prevPage = page - 1 < 1 ? null : page - 1;
     let ok = [res, total]
     if(ok){
+      const formattedRes = res.map((category) => formatEntityDates(category));
       response.success = true;
-      response.data = res;
+      response.data = formattedRes;
       response.page = page;
       response.lastPage = lastPage;
       response.nextPage = nextPage;

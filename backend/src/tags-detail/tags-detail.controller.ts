@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { TagDetailService } from './tags-detail.service';
 import { create } from 'domain';
 import { CreateTagToVideoDto } from './dto/create-tag-to-video.dto';
@@ -8,9 +8,12 @@ import { TagDetail } from './entities/tagsdetail.entity';
 export class TagDetailController {
     constructor(private readonly tagsDetailService: TagDetailService) {}
 
-    @Post('add-to-video')
-    async addTagToVideo(@Body() createTagToVideo: CreateTagToVideoDto):Promise<TagDetail>  {
-        return this.tagsDetailService.addTagToVideo(createTagToVideo);
+    @Post(':id/assign-tags')
+    async assignTags(
+        @Param('id') videoId: number,  // ID video cần gán tag
+        @Body('tagIds') tagIds: number[],  // Mảng ID tag cần gán
+        @Body('userId') userId: number,  // ID người dùng
+    ) {
+        return await this.tagsDetailService.assignTagsToVideo(videoId, tagIds, userId);
     }
-
 }

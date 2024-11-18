@@ -14,24 +14,25 @@ export class TagDetailService {
         private readonly videoRepository: Repository<Video>,
     ) { }
 
-    async addTagToVideo(createTagToVideo: CreateTagToVideoDto): Promise<TagDetail> {
-        // Sử dụng cú pháp đúng khi tìm video
-        const video = await this.videoRepository.findOne({ where: { id: createTagToVideo.videoId } });
+    async assignTagsToVideo(videoId: number, tagIds: number[], userId: number): Promise<any> {
+        const video = await this.videoRepository.findOne({ where: { id: videoId } });
+
         if (!video) {
             throw new Error('Video not found');
         }
 
-        // Khởi tạo tagDetail với thông tin từ DTO
-        const tagDetail = new TagDetail();
-        tagDetail.video_id = createTagToVideo.videoId;
-        tagDetail.tag_id = createTagToVideo.tagId;
-        tagDetail.user_id = createTagToVideo.userId;
-        tagDetail.status = 'active';  // Trạng thái có thể thay đổi tùy nhu cầu
+        const tagDetails = tagIds.map(tagId => ({
+            video_id: videoId,
+            tag_id: tagId,
+            user_id: userId,
+            status: 'active',  // Hoặc trạng thái khác mà bạn muốn
+        }));
 
-        // Lưu tagDetail vào cơ sở dữ liệu
-        return this.tagDetailRepository.save(tagDetail);
+        // Thêm thông tin tag vào bảng tag_details
+        await this.tagDetailRepository.save(tagDetails);
+
+        return { message: 'Tags assigned successfully' };
     }
-
     async removeTagFromVideo(createTagToVideo: CreateTagToVideoDto): Promise<void> {
         // Tìm bản ghi TagDetail với video_id và tag_id tương ứng
         const tagDetail = await this.tagDetailRepository.findOne({

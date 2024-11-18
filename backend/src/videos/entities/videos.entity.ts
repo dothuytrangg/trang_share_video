@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { TagDetail } from 'src/tags-detail/entities/tagsdetail.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 
@@ -60,5 +61,7 @@ export class Video {
 
   @CreateDateColumn()
   updated_at: Date;
+  // @OneToMany(() => TagDetail, tagDetail => tagDetail.video)
+  // tagDetails: TagDetail[]; // Ánh xạ đến nhiều TagDetail
   
 }
