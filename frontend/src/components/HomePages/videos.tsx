@@ -154,7 +154,7 @@ export default function Videos() {
       ))
        
      }
-     <br/>
+   
       <Stack spacing={2} >
           <Pagination style={{ margin: 10 }} count={lastPage} page={page} onChange={handleChange} variant="outlined" color="primary" />
 

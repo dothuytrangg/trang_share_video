@@ -75,6 +75,9 @@ export class VideosController {
 
     create(@Req() req:any,@Body() createVideoDto:CreateVideoDto, @UploadedFiles() files: { thumbnail?: Express.Multer.File[]; url?: Express.Multer.File[] }){
         const userId = req.user_data.id;
+        if (!Array.isArray(createVideoDto.categories)) {
+            createVideoDto.categories = [createVideoDto.categories];
+          }
 
         // const fs = require('fs');
         // console.log('user data',req.user_data)
@@ -122,6 +125,7 @@ export class VideosController {
          }).catch((e=>{
  
          }))
+     
          
         return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename,createVideoDto.categories);
     }

@@ -20,9 +20,12 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { _GLOBAL } from "@/contstants";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Pagination, Snackbar, Stack, TextField, Tooltip } from "@mui/material";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
 import requestApi from "../../../../helpers/api";
+import { resolveSoa } from "dns";
+import { format } from 'date-fns';
+
 
 // import Modal from "@mui/material/Modal";
 // import Box from "@mui/material/Box";
@@ -175,13 +178,26 @@ const ListCategory = () => {
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
           } else {
-            setErrorCreate(res.message);
-            setSnackbarMessage(res.message || t("create_category_failed"));
-            setSnackbarSeverity("error");
-            setOpenSnackbar(true);
+            // console.log('loi')
+            if(res.statusCode == 400){
+              setNameError(true);
+              setNameErrorMessage(t('category_with_name_already_exists'))
+              setErrorCreate(res.message);
+              setSnackbarMessage(t("create_category_failed"));
+              setSnackbarSeverity("error");
+              setOpenSnackbar(true);
+
+            }else{
+              setErrorCreate(res.message);
+              setSnackbarMessage(t("create_category_failed"));
+              setSnackbarSeverity("error");
+              setOpenSnackbar(true);
+
+            }
           }
         })
         .catch((err: any) => {
+          console.log('loi ha',err);
           console.error("Create category failed:", err.response?.data || err.message);
           setSnackbarMessage(t("create_category_occerred"));
           setSnackbarSeverity("error");
@@ -212,13 +228,14 @@ const ListCategory = () => {
             loadCategories(page)
             console.log('res update', res)
             dispatch(updateLocalStorage());
-
             setOpenUpdateDialog(false);
             setSnackbarMessage(t("update_caterogy_success"));
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
           } else {
-            setSnackbarMessage(res.message || t("update_caterogy_failed"));
+            setNameError(true);
+            setNameErrorMessage(t('category_with_name_already_exists'))
+            setSnackbarMessage(t("update_caterogy_failed"));
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
           }
@@ -261,6 +278,17 @@ const ListCategory = () => {
     setPage(value);
     loadCategories(value);
   };
+  const formatDateTime = (isoString: string): string => {
+    try {
+      return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
+    } catch (error) {
+      console.error("Invalid date format:", isoString, error);
+      return t('invalid_date'); // Hiển thị một thông báo lỗi được dịch
+    }
+  };
+  // console.log(formatDateTime("2024-11-14T16:11:52.379Z"));
+
+  
 
 
   const renderPage = () => {
@@ -411,10 +439,22 @@ const ListCategory = () => {
                         <TableRow key={category.id}>
                           <TableCell>{category.id}</TableCell>
                           <TableCell >{category.name}</TableCell>
-                          <TableCell >{category.description === null || category.description === ""  ?`${t('no')}`:category.description }</TableCell>
+                          <TableCell>
+                            {category.description 
+                              ? (category.description.length > 20 
+                                  ? (
+                                    <Tooltip title={category.description}>
+                                      <span>{`${category.description.substring(0, 20)}...`}</span>
+                                    </Tooltip>
+                                  ) 
+                                  : category.description
+                                ) 
+                              : t('no')
+                            }
+                          </TableCell>
                           <TableCell >{category.slug}</TableCell>
                           <TableCell >
-                            {category.created_at}
+                            {formatDateTime(category.created_at)}
                           </TableCell>
 
                           <TableCell  >

@@ -19,6 +19,7 @@ import { _GLOBAL } from '@/contstants';
 import router from 'next/router';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from "next/navigation";
+import { format } from 'date-fns';
 
 function createData(
   name: string,
@@ -264,6 +265,14 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
   setPage(value);
   loadUsers(value);
 };
+const formatDateTime = (isoString: string): string => {
+  try {
+    return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
+  } catch (error) {
+    console.error("Invalid date format:", isoString, error);
+    return t('invalid_date'); // Hiển thị một thông báo lỗi được dịch
+  }
+};
   
 
   const renderPage = () => {
@@ -426,7 +435,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
                            user.role == 3 ? (t("admin")) :(t('user'))
                           }</TableCell>
                         <TableCell >
-                          {user.created_at}
+                          {formatDateTime(user.created_at)}
                         </TableCell>
                      
                         <TableCell  >

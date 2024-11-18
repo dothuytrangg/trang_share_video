@@ -6,16 +6,19 @@ import { useEffect, useState } from "react";
 export default function Category() {
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1);
+  const [index, setIndex] = useState("");
   useEffect(() => {
     loadCategories(page);
   }, []);
   const loadCategories = async (pageSelected: number) => {
     await requestApi(`categories?page=${pageSelected}&items_per_page=10&search`, "GET").then((res: any) => {
-      console.log('res category', res);
+      console.log('res category homePage', res);
       if (res.success) {
         setCategories(res.data);
         setLastPage(res.lastPage);
+        setIndex(res.pinnedCategory.name)
+        // setIndex(res.pinnedCategory);
       }
 
     }).catch((err: any) => {
@@ -26,14 +29,54 @@ export default function Category() {
     // console.log('category hhh',categories);
   };
 
-  const renderCategory = () => {
+//   const setPositionCategory = (categoryId: string) => {
+//     requestApi(`categories/${categoryId}`, "GET")
+//       .then((res: any) => {
+//         console.log(res);
+          
+//       })
+// }
+
+  
+
+
+  const renderPinnedCategory = () => {
+
     // if (categories.length === 0) {
     //   return <p>No categories found.</p>;
     // }
+    if(index){
+      console.log(index)
+      return (
+        <Button
+     
+        sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+        color="inherit"
+        variant="contained"
+        size="small"
+      >
+        {index }
+      </Button>
+      
+     
+        
 
-    return categories.map((category: any, index: number) => (
-      <Button
-        key={index}
+      )
+
+    }
+ 
+
+  };
+
+  return( 
+    
+       <div>
+        {renderPinnedCategory()}
+        {categories.map((category: any, id: number) => (
+      
+        category.status !==2 && 
+        <Button
+        key={id}
         sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
         color="inherit"
         variant="contained"
@@ -41,8 +84,7 @@ export default function Category() {
       >
         {category.name}
       </Button>
-    ));
-  };
-
-  return <div>{renderCategory()}</div>; // Hiển thị danh mục
+      ))}
+       </div>
+       ); 
 }

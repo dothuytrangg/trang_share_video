@@ -1,4 +1,5 @@
-import {ArrayNotEmpty, IsArray, IsEmail,  IsNotEmpty, IsString, MaxLength, MinLength} from "class-validator";
+import { Transform } from "class-transformer";
+import {ArrayNotEmpty, IsArray, IsEmail,  IsNotEmpty, IsOptional, IsString, MaxLength, MinLength} from "class-validator";
 import { User } from "src/users/entities/users.entity";
 import { Column, ManyToOne } from "typeorm";
 
@@ -52,9 +53,11 @@ export class CreateVideoDto{
     @Column({default:'confirming'  })
     status: string;
 
-    @IsArray()
-    @ArrayNotEmpty()
-    categories: number[];
+    @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+    @IsArray({ message: "categories must be an array" })
+    @ArrayNotEmpty({ message: "categories should not be empty" })
+    @IsOptional() // Cho phép không gửi
+  categories: number[];
   
     // @ManyToOne(() => User, (user: User) => user.videos)
     // user: User;

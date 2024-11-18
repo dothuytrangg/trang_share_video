@@ -41,6 +41,7 @@ export class VideosService {
       const page = Number(query.page) || 1;
       const skip = (page - 1)* items_per_page;
       const keyword = query.search || '';
+     
       const [res, total] = await this.videoRepository.findAndCount({
           where:[
               {name: Like('%' + keyword + '%')},
@@ -88,42 +89,13 @@ export class VideosService {
 
 
  
-    // async create(createVideoDto: CreateVideoDto,userId:number,thumbnail:string,video:string): Promise<Video> {
-    //     let response = common_response;
-    //     try {
 
-    //       const user = await this.userRepository.findOne({ where: { id: userId } });
-
-    //       if (!user) {
-    //           throw new Error('User not found');
-    //       }
-          
-          
-    //       let saveVideo = await this.videoRepository.save({...createVideoDto,user:user,thumbnail:thumbnail,url:video});
-    //       if (saveVideo) {
-    //         response.success = true;
-
-    //         response.video = saveVideo
-    //         let saveVideoDetail = await this.videoDetailRepository.save({video:video,category:category})
-            
-    //         return response;
-    //       } else  {
-    //         response.success = false;
-    //       }
-    
-    //       return response;
-    //     } catch (error) {
-    //       response.success = false;
-    //       response.message = error;
-    //       return response;
-    //     }
-    //   }
     async create(
       createVideoDto: CreateVideoDto,
       userId: number,
       thumbnail: string,
       video: string,
-      categories: number[] , // Danh sách category ID được truyền vào
+      categories: number[] , 
   ): Promise<any> {
       let response = common_response;
       try {
@@ -133,8 +105,15 @@ export class VideosService {
           if (!user) {
               throw new Error('User not found');
           }
+          const pinnedCategory = await this.categoryRepository.findOne({
+            where: { status: 2 },
+            select: ['id', 'name', 'description', 'slug', 'status', 'created_at'],
+          });
+   
+
+          
   
-          // Lưu video vào cơ sở dữ liệu
+     
           const saveVideo = await this.videoRepository.save({
               ...createVideoDto,
               user: user,
@@ -150,18 +129,18 @@ export class VideosService {
           
         
        
-         
+          categories.push(pinnedCategory.id)
           
-          // Lưu danh sách VideoDetail cho các category được chọn
+       
           const videoDetails = categories.map((categoryId) => {
               return this.videoDetailRepository.create({
-                  video: saveVideo, // Liên kết video
-                  category: { id: categoryId }, // Tạo liên kết đến bảng category
+                  video: saveVideo,
+                  category: { id: categoryId },
                   user:user
               });
           });
   
-          // Lưu tất cả VideoDetail vào cơ sở dữ liệu
+       
           await this.videoDetailRepository.save(videoDetails);
   
           response.success = true;

@@ -8,6 +8,7 @@ import requestApi from "../../../../helpers/api";
 import AddIcon from "@mui/icons-material/Add";
 import { updateLocalStorage } from "@/stores/features/masterSlice";
 import Link from "next/link";
+import { format } from 'date-fns';
 
 
 const ListVideo = ()=>{
@@ -381,6 +382,15 @@ const handleDeleteVideo = (videoId: string) => {
             setOpenSnackbar(true);
           });
       };
+
+    const formatDateTime = (isoString: string): string => {
+        try {
+          return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
+        } catch (error) {
+          console.error("Invalid date format:", isoString, error);
+          return t('invalid_date'); // Hiển thị một thông báo lỗi được dịch
+        }
+    };
     const renderPage = () => {
         if (!loading) {
           return (
@@ -606,6 +616,7 @@ const handleDeleteVideo = (videoId: string) => {
                       <TableCell >URL</TableCell>
                       <TableCell >{t('Poster')}</TableCell>
                       <TableCell >{t('Status')}</TableCell>
+                      <TableCell>{t('create_date')}</TableCell>
                       <TableCell >{t('action')}</TableCell>
                     </TableRow>
                   </TableHead>
@@ -659,6 +670,9 @@ const handleDeleteVideo = (videoId: string) => {
 
                         <TableCell>
                           {video.status == 'confirming' ? `${t('Confirming')}`: `${t('Confirmed')}`}
+                        </TableCell>
+                        <TableCell>
+                          {formatDateTime(video.created_at)}
                         </TableCell>
 
 

@@ -3,9 +3,10 @@
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import moment from 'moment-timezone';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn, BeforeInsert, BeforeUpdate, Unique } from 'typeorm';
 
 @Entity()
+@Unique(['name'])
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
