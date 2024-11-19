@@ -12,6 +12,11 @@ import { Category } from 'src/categories/entities/categories.entity';
 export class CategoriesController {
     constructor(private categoryService:CategoriesService){}
 
+    @Get('all')
+    findAlls():Promise<Category[]>{
+        // console.log(query);
+        return this.categoryService.findAlls();
+    }
 
     // @UseGuards(AuthGuard)
     @Get()

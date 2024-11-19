@@ -15,20 +15,20 @@ export class CategoriesService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  // async findAll(): Promise<Category[]> {
-  //   let response = common_response;
-  //   let catgegories = await this.categoryRepository.find({
-  //     select: ['id', 'name', 'description', 'created_at'],
-  //   });
-  //   if(catgegories.length > 0){
-  //     // console.log(catgegories.length)
-  //     response.data = catgegories;
-  //     response.success = true;
-  //     return response;
-  //   }
+  async findAlls(): Promise<Category[]> {
+    let response = common_response;
+    let catgegories = await this.categoryRepository.find({
+      select: ['id', 'name', 'description', 'created_at'],
+    });
+    if(catgegories.length > 0){
+      // console.log(catgegories.length)
+      response.data = catgegories;
+      response.success = true;
+      return response;
+    }
 
-  //   return response;
-  // }
+    return response;
+  }
   async findAll(query:FilterCategoryDto):Promise<any>{
     let response = common_response;
     const items_per_page = Number(query.items_per_page) || 10;
