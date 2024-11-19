@@ -62,8 +62,6 @@ const ListCategory = () => {
   let [errorCreate, setErrorCreate] = useState("");
   const [nameError, setNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState("");
-  const [descriptionError, setDescriptionError] = useState(false);
-  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const locale = useLocale();
@@ -118,7 +116,6 @@ const ListCategory = () => {
 
   const validateInputs = () => {
     const name = document.getElementById("name") as HTMLInputElement;
-    const description = document.getElementById("description") as HTMLInputElement;
 
     let isValid = true;
 
@@ -307,8 +304,6 @@ const ListCategory = () => {
                 />
                 <TextField
                   autoFocus
-                  error={descriptionError}
-                  helperText={descriptionErrorMessage}
                   onChange={(val) => {
                     setDescription(val.target.value);
                   }}
@@ -363,8 +358,6 @@ const ListCategory = () => {
                 />
                 <TextField
                   autoFocus
-                  error={descriptionError}
-                  helperText={descriptionErrorMessage}
                   onChange={(val) => {
                     setDescription(val.target.value);
                   }}
@@ -406,6 +399,8 @@ const ListCategory = () => {
                     <TableRow>
                       <TableCell >ID</TableCell>
                       <TableCell >{t("name_category")}</TableCell>
+                      <TableCell >{t("description_text")}</TableCell>
+                      <TableCell >slug</TableCell>
                       <TableCell >{t("create_date")}</TableCell>
                       <TableCell >{t("action")}</TableCell>
                     </TableRow>
@@ -417,6 +412,8 @@ const ListCategory = () => {
                         <TableRow key={category.id}>
                           <TableCell>{category.id}</TableCell>
                           <TableCell >{category.name}</TableCell>
+                          <TableCell >{category.description === null || category.description === ""  ?`${t('no')}`:category.description }</TableCell>
+                          <TableCell >{category.slug}</TableCell>
                           <TableCell >
                             {category.created_at}
                           </TableCell>

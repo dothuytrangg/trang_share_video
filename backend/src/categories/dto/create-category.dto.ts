@@ -17,7 +17,7 @@ export class CreateCategoryDto{
     name: string;
     
 
-    @IsString()
+
     description: string;
     
 

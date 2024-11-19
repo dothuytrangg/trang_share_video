@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import { storageConfig } from 'helpers/config';
 import fs, { readFileSync, unlink } from 'fs'
 import WebDav from 'src/ultils/WebDav';
+import { AdminAuth } from 'src/auth/admin.guard';
 @Controller('users')
 export class UsersController {
     
@@ -48,6 +49,7 @@ export class UsersController {
    
 
     @UseGuards(AuthGuard)
+    // @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)
     @Put(':id')
     update(@Param('id') id:string,@Body() updateUserDto:UpdateUserDto){

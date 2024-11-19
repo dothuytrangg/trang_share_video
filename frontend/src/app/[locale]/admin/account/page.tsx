@@ -6,7 +6,8 @@ import { NextPage } from 'next';
 interface Props { }
 
 const Page: NextPage<Props> = ({ }) => {
-      return <ListAccount/>
+      // const trang = "hello"
+      return <ListAccount />
 };
 
 export default Page;

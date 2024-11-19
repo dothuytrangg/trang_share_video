@@ -2,6 +2,7 @@
 
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import moment from 'moment-timezone';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 
 @Entity()
@@ -35,6 +36,9 @@ export class Category {
 
   @UpdateDateColumn({ })
   updated_at: Date;
+
+  @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.category)
+  videoDetail: VideoDetail[]
 
 
   

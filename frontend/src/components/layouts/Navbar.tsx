@@ -70,6 +70,9 @@ export default function Navbar() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
+  const [value, setQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Lưu trữ giá trị tìm kiếm
+  const [searchResults, setSearchResults] = useState([]); // Lưu trữ kết quả tìm kiếm
   useEffect(() => {
     setIsLogin(masterStore.is_login)
   //  setLoading(masterStore.loading)
@@ -228,7 +231,15 @@ export default function Navbar() {
     router.replace(`/${locale}/profile`);
     handleClose();
   }
+  const [searchTerm, setSearchTerm] = useState('');
 
+  // Hàm gọi API tìm kiếm
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchTerm.length >= 3) {
+      // Chuyển hướng đến trang tìm kiếm với từ khóa
+      router.push(`/search?query=${searchTerm}`);
+    }
+  };
 
   const handleCreateVideo = (): void => {
     const valid: boolean = validateInputs();
@@ -314,9 +325,12 @@ export default function Navbar() {
               router.replace(`/${locale}`)
             }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
           </Typography>
-          <Box sx={{ flexGrow: 0.5 }} />
 
+          <Box sx={{ flexGrow: 0.5 }} />
           <TextField
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch} // Lắng nghe phím Ente
             InputProps={{
               startAdornment: (
                 <InputAdornment position="end">
@@ -325,11 +339,10 @@ export default function Navbar() {
               ),
             }}
             size="small"
+            placeholder="Tìm kiếm..."
             style={{ width: 500 }}
-            placeholder={t('search') + "..."}
-
+            fullWidth
           />
-
 
           <Box sx={{ flexGrow: 1 }} />
           <IconButton

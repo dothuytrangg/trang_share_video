@@ -45,7 +45,7 @@ export class CategoriesService {
         order: {created_at:"DESC"},
         take:items_per_page,
         skip:skip,
-        select: ['id', 'name', 'description', 'created_at'],
+        select: ['id', 'name', 'description','slug', 'created_at'],
 
     })
     const lastPage = Math.ceil(total / items_per_page);

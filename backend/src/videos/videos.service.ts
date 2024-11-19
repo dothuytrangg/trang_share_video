@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Category } from 'src/categories/entities/categories.entity';
 import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
 import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
@@ -12,7 +14,11 @@ import { SearchVideoDto } from './dto/search-video.dto';
 @Injectable()
 export class VideosService {
     constructor(@InjectRepository(Video) private videoRepository:Repository<Video>,
-                @InjectRepository(User) private userRepository: Repository<User>)
+                @InjectRepository(User) private userRepository: Repository<User>,
+                @InjectRepository(VideoDetail) private videoDetailRepository: Repository<VideoDetail>,
+                @InjectRepository(Category) private categoryRepository: Repository<Category>
+                
+              )
     {}
 
     // async findAll():Promise<Video[]>{
@@ -83,39 +89,101 @@ export class VideosService {
 
 
  
-    async create(createVideoDto: CreateVideoDto,userId:number,thumbnail:string,video:string): Promise<Video> {
-        let response = common_response;
-        try {
+    // async create(createVideoDto: CreateVideoDto,userId:number,thumbnail:string,video:string): Promise<Video> {
+    //     let response = common_response;
+    //     try {
 
+    //       const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    //       if (!user) {
+    //           throw new Error('User not found');
+    //       }
+          
+          
+    //       let saveVideo = await this.videoRepository.save({...createVideoDto,user:user,thumbnail:thumbnail,url:video});
+    //       if (saveVideo) {
+    //         response.success = true;
+
+    //         response.video = saveVideo
+    //         let saveVideoDetail = await this.videoDetailRepository.save({video:video,category:category})
+            
+    //         return response;
+    //       } else  {
+    //         response.success = false;
+    //       }
+    
+    //       return response;
+    //     } catch (error) {
+    //       response.success = false;
+    //       response.message = error;
+    //       return response;
+    //     }
+    //   }
+    async create(
+      createVideoDto: CreateVideoDto,
+      userId: number,
+      thumbnail: string,
+      video: string,
+      categories: number[] , // Danh sách category ID được truyền vào
+  ): Promise<any> {
+      let response = common_response;
+      try {
+         
           const user = await this.userRepository.findOne({ where: { id: userId } });
-
+  
           if (!user) {
               throw new Error('User not found');
           }
-          
-          
-          let saveVideo = await this.videoRepository.save({...createVideoDto,user:user,thumbnail:thumbnail,url:video});
-          if (saveVideo) {
-            response.success = true;
-
-            response.video = saveVideo
-            
-            return response;
-          } else  {
-            response.success = false;
+  
+          // Lưu video vào cơ sở dữ liệu
+          const saveVideo = await this.videoRepository.save({
+              ...createVideoDto,
+              user: user,
+              thumbnail: thumbnail,
+              url: video,
+          });
+  
+          if (!saveVideo) {
+              response.success = false;
+              response.message = 'Failed to save video';
+              return response;
           }
-    
+          
+        
+       
+         
+          
+          // Lưu danh sách VideoDetail cho các category được chọn
+          const videoDetails = categories.map((categoryId) => {
+              return this.videoDetailRepository.create({
+                  video: saveVideo, // Liên kết video
+                  category: { id: categoryId }, // Tạo liên kết đến bảng category
+                  user:user
+              });
+          });
+  
+          // Lưu tất cả VideoDetail vào cơ sở dữ liệu
+          await this.videoDetailRepository.save(videoDetails);
+  
+          response.success = true;
+          response.video = saveVideo;
+          response.videoDetails = videoDetails;
           return response;
-        } catch (error) {
+  
+      } catch (error) {
+      
           response.success = false;
-          response.message = error;
-          return response;
-        }
+          response.message = error.message || 'An error occurred';
+          return  response;
+        
+     
       }
+  }
   async update(
         id: number,
         updateVideoDto: UpdateVideoDto,
         thumbnail?:string,
+        
         
       ): Promise<UpdateResult> {
         let response = common_response;
@@ -140,7 +208,7 @@ export class VideosService {
         // Perform the update with the determined thumbnail
       const updateResult = await this.videoRepository.update(id, {
         ...updateVideoDto,
-        thumbnail: thumbnailToSave,
+        thumbnail: thumbnailToSave
       });
 
         if(updateResult.affected==1){
