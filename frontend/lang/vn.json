@@ -112,7 +112,9 @@
         "UserId":"Mã người dùng",
         "ID":"Mã",
         "no":"Không",
-
+        "upload_video":"Tải video",
+        "add_to_category":"Thêm vào danh mục",
+        "confirm_delete":"Xác nhận xóa",
 
         "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh",
         "category_with_name_already_exists":"Tên danh mục đã tồn tại"

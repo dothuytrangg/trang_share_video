@@ -36,7 +36,7 @@ export class CategoriesService {
     const skip = (page - 1)* items_per_page;
     const keyword = query.search || '';
     const pinnedCategory = await this.categoryRepository.findOne({
-      where: { id: 97 },
+      where: { status: 2 },
       select: ['id', 'name', 'description', 'slug', 'status', 'created_at'],
     });
     const [res, total] = await this.categoryRepository.findAndCount({

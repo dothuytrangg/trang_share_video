@@ -112,7 +112,8 @@ export default function Videos() {
         <Card key={video.id} sx={{ maxWidth: 345,my:1 }}>
         <CardMedia
           sx={{ height: 140 }}
-          image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
+          // image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
+          image={`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`} 
           title="green iguana"
         />
         <CardContent  sx={{ height: 140 }}>

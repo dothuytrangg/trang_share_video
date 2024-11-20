@@ -101,10 +101,10 @@ export class UsersController {
         WebDav.put('avatars/'+fileName,fileContent).then(res=>{
             if(res.status == 201){
                 // remove
-               unlink(file.path,(err)=>{
-                if (err) throw err;
+            //    unlink(file.path,(err)=>{
+            //     if (err) throw err;
                
-               });
+            //    });
             }
         }).catch((e=>{
 

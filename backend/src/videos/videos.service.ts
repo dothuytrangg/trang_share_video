@@ -37,7 +37,7 @@ export class VideosService {
     // }
     async findAllPage(query:FilterVideoDto):Promise<any>{
       let response = common_response;
-      const items_per_page = Number(query.items_per_page) || 3;
+      const items_per_page = Number(query.items_per_page) || 10;
       const page = Number(query.page) || 1;
       const skip = (page - 1)* items_per_page;
       const keyword = query.search || '';
@@ -199,19 +199,31 @@ export class VideosService {
       
         return response;
       }
- async delete(id: number): Promise<DeleteResult> {
-    let response = common_response;
-    let categories =  await this.videoRepository.delete(id);
-    if(categories){
-       response.success = true;
-       return response;
-    }else{
-      response.success = false;
-      
+  async delete(id: number): Promise<DeleteResult> {
+        let response = common_response;
+    
+        try {
+           
+            await this.videoDetailRepository.delete({ video: { id } });
+    
+            const deleteResult = await this.videoRepository.delete(id);
+    
+            if (deleteResult.affected === 1) {
+                response.success = true;
+                response.message = 'Video and related details deleted successfully';
+            } else {
+                response.success = false;
+                response.message = 'Failed to delete video';
+            }
+    
+            return response;
+        } catch (error) {
+            response.success = false;
+            response.message = error.message || 'An error occurred while deleting the video';
+            return response;
+        }
     }
-    return response;
-    // return await this.categoryRepository.delete(id);
-  }
+    
 
       
 }

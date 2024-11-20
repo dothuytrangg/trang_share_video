@@ -111,11 +111,13 @@
     "UserId":"User ID",
     "ID":"ID",
     "no":"No",
-
-
+    "upload_video":"Upload video",
+    "add_to_category":"Add to category",
+    "select_at_least_1_category":"Select at least 1 category",
+    "confirm_delete":"Confirm delete",
     "click_the_camera_to_upload_a_new_avatar":"Click the camera to upload a new avatar",
     "category_with_name_already_exists":"Category with name already exists"
-   
+ 
 
 
 

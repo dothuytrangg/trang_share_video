@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -21,6 +21,8 @@ import { useRouter, usePathname, useParams, useSearchParams, redirect } from "ne
 import { format } from "path";
 import { _ENV, _GLOBAL } from "@/contstants";
 import requestApi from "../../../helpers/api";
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -50,8 +52,8 @@ export default function Navbar() {
   const masterStore = useAppSelector((state: any) => state.master);
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState()
-  const [profileData,setProfileData] = useState<any>({});;
+  // const [user, setUser] = useState()
+  const [profileData,setProfileData] = useState([]);
   const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -65,14 +67,25 @@ export default function Navbar() {
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null >(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
+  const [optionError, setOptionError] = useState(false);
+  const [optionErrorMessage, setOptionErrorMessage] = useState("");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbnailError, setThumbnailError] = useState(false);
+  const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState("");
+  const [videoError, setVideoError] = useState(false);
+  const [videoErrorMessage, setVideoErrorMessage] = useState("");
   
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  // const dispatch = useAppDispatch();
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
      setLoading(masterStore.loading)
+     loadAllCategory();
+
     //  setProfileAvatar(masterStore.user.avatar);
   
     if (!loading) {
@@ -95,14 +108,21 @@ export default function Navbar() {
     console.log('masterStore: ', masterStore);
     }, [masterStore])
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        setThumbnailFile(file);
-        setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
-      }
-    };
+    const loadAllCategory = async () => {
+      await requestApi(`categories/all`, "GET").then((res: any) => {
+          console.log('res category all', res);
+          if (res.success) {
+            setCategories(res.data)
+          }
 
+      }).catch((err: any) => {
+          console.error(err);
+      })
+
+  };
+;
+
+  
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
@@ -186,22 +206,35 @@ export default function Navbar() {
       setDescriptionError(true);
       setDescriptionErrorMessage(t("description_least_10"));
       isValid = false;
-    } else if (description.value.length > 200) {
+    } else if (description.value.length > 300) {
       setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_more_200"));
+      setDescriptionErrorMessage(t("description_more_300"));
       isValid = false;
     } else {
       setDescriptionError(false);
       setDescriptionErrorMessage("");
     }
+
+    if(categoryOptions.length < 1 )
+    {
+        setOptionError(true);
+        setOptionErrorMessage(t('select_at_least_1_category'))
+        isValid = false;
+
+    }
   
    
-    // if (!thumbnailFile) {
-    //   setSnackbarMessage(t("thumbnail_required"));
-    //   setSnackbarSeverity("error");
-    //   setOpenSnackbar(true);
-    //   isValid = false;
-    // }
+    if (!thumbnailFile) {
+      setThumbnailError(true)
+      setThumbnailErrorMessage(t("thumbnail_required"))
+      isValid = false;
+    }
+
+    if (!videoFile) {
+      setVideoError(true)
+      setVideoErrorMessage(t("video_required"))
+      isValid = false;
+    }
   
     return isValid;
   };
@@ -230,27 +263,60 @@ export default function Navbar() {
   }
 
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+        console.log(event.target.files);
+        const file = event.target.files[0];
+        setThumbnailFile(file);
+        setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+    }
+};
+
+const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+        const file = event.target.files[0];
+        setVideoFile(file);
+        console.log(file);
+
+    }
+};
+
+
+
+  
   const handleCreateVideo = (): void => {
     const valid: boolean = validateInputs();
 
-    if (valid && thumbnailFile) {
+    if (valid && thumbnailFile && videoFile) {
         const slug = slugify(name);
         const formData = new FormData();
-        
+
+
         formData.append("thumbnail", thumbnailFile);
         formData.append("name", name);
         formData.append("description", description);
         formData.append("slug", slug);
+        formData.append("url", videoFile);
+        categoryOptions.forEach((category:any) => {
+            formData.append("categories[]", category.id);
+        });
+        
+        // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
+        console.log(thumbnailFile)
+        console.log(videoFile)
 
         requestApi("videos", "POST", formData)
             .then((res: any) => {
                 if (res.success) {
-                  // setProfileData(res.video);
-                     
                     setOpenAddDialog(false);
+                    // setThumbnailFile(null);
+                    setThumbnailPreview(null);
+                    setVideoFile(null);     
+                    setCategoryOptions([]); 
                     setSnackbarMessage(t("create_video_success"));
                     setSnackbarSeverity("success");
                     setOpenSnackbar(true);
+
                     // loadVideos(page);
                 } else {
                     setErrorCreate(res.message || t("create_video_failed"));
@@ -266,9 +332,13 @@ export default function Navbar() {
                 setOpenSnackbar(true);
             });
     } else {
-        console.log('No file selected for thumbnail.');
+        console.log('No file selected for thumbnail or video');
     }
 };
+
+
+
+
 
   const renderButtonAcction = () => {
     if (!isLogin) {
@@ -287,6 +357,8 @@ export default function Navbar() {
       :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
         {masterStore.user.name}
       </Button>
+
+      
       
         </Box>
       )
@@ -295,6 +367,13 @@ export default function Navbar() {
 
 
   }
+  const [categories, setCategories] = useState([]);
+  const categoryData = categories
+  .filter((category: any) => category.name !=='All')
+  .map((category: any) => ({
+      label: `${category.name}`,
+      id: `${category.id}`
+  }));
 
 
 
@@ -362,6 +441,202 @@ export default function Navbar() {
           </Menu>
        
           {renderButtonAcction()}
+
+          <Dialog
+                open={openAddDialog}
+                onClose={() => setOpenAddDialog(false)}
+                PaperProps={{
+                    component: 'form',
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                        event.preventDefault();
+                        handleCreateVideo();
+                    },
+                }}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>{t("addVideo")}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {/* {t("addText_category")} */}
+                    </DialogContentText>
+
+                    {/* Input for Video Name */}
+                    <TextField
+                        autoFocus
+                        error={nameError}
+                        helperText={nameErrorMessage}
+                        onChange={(val) => setName(val.target.value)}
+                        margin="dense"
+                        id="name"
+                        name="name"
+                        label={t("name_video")}
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        placeholder={t("name_video")}
+                        style={{ marginBottom: 20 }}
+                    />
+
+                    {/* Input for Video Description */}
+                    <TextField
+                        error={descriptionError}
+                        helperText={descriptionErrorMessage}
+                        onChange={(val) => setDescription(val.target.value)}
+                        margin="dense"
+                        id="description"
+                        name="description"
+                        label={t("description_text")}
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        InputProps={{ style: { resize: 'vertical' } }}
+                        style={{ marginBottom: 20 }}
+                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} >
+                            {/* Khung chứa ảnh*/}
+                            <Box
+                                sx={{
+                                    width: '250px',
+                                    height: '150px',
+                                    border: '2px dashed #3f51b5',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    overflow: 'hidden',
+                                    backgroundColor: '#f0f0f0',
+                                    marginTop: 2
+                                }}
+                            >
+                                {thumbnailPreview ? (
+                                    <img
+                                        src={thumbnailPreview}
+                                        alt="Thumbnail Preview"
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover'
+                                        }}
+                                    />
+                                ) : (
+                                    <span style={{ color: '#999' }}>{t('Thumbnail')}</span>
+                                )}
+                            </Box>
+                            {thumbnailError && (
+                                <span style={{ color: 'red', display: 'block'}}>
+                                    {thumbnailErrorMessage}
+                                </span>
+                            )}
+
+                        </Grid>
+                        <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                            <Grid item style={{
+
+                              display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
+                                    <Autocomplete
+                                        multiple
+                                        options={categoryData}
+                                        getOptionLabel={(option) => option.label}
+                                        value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                                        onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
+                                        renderInput={(params) => (
+                                            <TextField {...params}
+                                            label={t('add_to_category')}
+                                            error={optionError}
+                                            helperText={optionErrorMessage} />
+                                        )}
+                                        filterOptions={(options, state) =>
+                                            options.filter(option =>
+                                                option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                                            )
+                                        }
+                                        style={{ width: 300 }}
+                                        
+
+                                    />
+                                
+                                    
+                            </Grid>
+
+                            <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
+                                {videoError ? (
+                                    <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                                        {videoErrorMessage}
+                                    </span>
+                                ) : (
+                                    videoFile && (
+                                        <span style={{ color: 'black', display: 'block' }}>
+                                            {videoFile.name}
+                                        </span>
+                                    )
+                                )}
+                            </Grid>
+                        </Grid>
+
+                        {/* </Grid> */}
+
+
+                        {/* Cột nút chọn ảnh Thumbnail */}
+                        <Grid item xs={6}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                component="label"
+                                startIcon={<PhotoCameraIcon />}
+                                style={{
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '8px 16px',
+                                }}
+                            >
+                                {t('Choose_thumbnail')}
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                />
+                            </Button>
+
+                        </Grid>
+
+                        {/* Cột nút chọn video */}
+                        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                component="label"
+                                startIcon={<VideoLibraryIcon />}
+                                style={{
+                                    padding: '8px 16px',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {t('upload_video')}
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleFileVideoChange}
+                                    accept="video/*"
+                                />
+                            </Button>
+                        </Grid>
+
+
+                    </Grid>
+
+                </DialogContent>
+
+                {/* Dialog Actions */}
+                <DialogActions>
+                    <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                    <Button type="submit">{t("add")}</Button>
+                </DialogActions>
+  </Dialog>
           
             <Snackbar
                 open={openSnackbar}

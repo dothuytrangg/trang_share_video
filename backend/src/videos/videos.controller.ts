@@ -102,10 +102,10 @@ export class VideosController {
         WebDav.put('avatars/'+fileName_thumbnail,fileContent_thumbnail).then(res=>{
             if(res.status == 201){
                 // remove
-               unlink(thumbnail.path,(err)=>{
-                if (err) throw err;
+            //    unlink(thumbnail.path,(err)=>{
+            //     if (err) throw err;
                
-               });
+            //    });
             }
         }).catch((e=>{
 
@@ -117,10 +117,10 @@ export class VideosController {
          WebDav.put('videos/'+fileName_video,fileContent_video).then(res=>{
              if(res.status == 201){
                  //remove
-                unlink(video.path,(err)=>{
-                 if (err) throw err;
+                // unlink(video.path,(err)=>{
+                //  if (err) throw err;
                 
-                });
+                // });
              }
          }).catch((e=>{
  
@@ -134,7 +134,8 @@ export class VideosController {
     @UsePipes(ValidationPipe)
     @Put(':id')
     @UseInterceptors(FileInterceptor('thumbnail',{
-        storage:storageConfig('avatars'),
+        // storage:storageConfig('avatars'),
+        storage:storageConfig('videos'),
         fileFilter:(req,file,cb)=>{
             const ext = extname(file.originalname);
             const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
