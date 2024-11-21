@@ -1,6 +1,9 @@
+'use client';
 
-'use client'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+
+import requestApi from "../../../helpers/api";
+import { useParams, useRouter } from "next/navigation";
 import { Box, Grid, Typography, Avatar, Button, IconButton, TextField } from '@mui/material';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
@@ -12,14 +15,43 @@ import SortIcon from '@mui/icons-material/Sort';
 import ListItem from '@mui/material/ListItem';
 import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import { closeDrawer } from '@/stores/features/masterSlice';
+import { _ENV } from "@/contstants";
+
 
 
 const VideoDetail = () => {
-  const dispatch = useAppDispatch();
-  const masterStore = useAppSelector((state: any) => state.master);
+  const router = useRouter();
+  const { videoId } = useParams(); 
+  const [videoData, setVideoData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    dispatch(closeDrawer());
-}, [masterStore])
+    if (videoId) {
+
+      fetchVideoDetail();
+    }
+  }, [videoId]);
+
+  const fetchVideoDetail = async () => {
+    
+    await requestApi(`videos/${videoId}`,'GET').then((res: any) => {
+      // console.log('res one', res);
+      if (res.success) {
+        setVideoData(res.data)      
+
+      }
+
+    }).catch((err: any) => {
+      console.error(err);
+    })
+  
+     
+  };
+
+
+  if (!videoData) {
+    return <div>Video not found</div>;
+  }
+
   return (
     <Box className={styles.container}>
       <Grid container spacing={3}>
@@ -28,11 +60,11 @@ const VideoDetail = () => {
             <iframe
               className={styles.videoIframe}
               title="Material UI Tutorial #1 - Intro &amp; Setup"
-              src="https://www.youtube.com/embed/0KEpWHtG10M?list=PL4cUxeGkcC9gjxLvV4VEkZ6H6H4yWuS58"
+              src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`} 
               allowFullScreen
             ></iframe>
           </div>
-          <h1 className={styles.videoTitle}>Material UI Tutorial #1 - Intro & Setup</h1>
+          <h1 className={styles.videoTitle}>{videoData.name}</h1>
           <Box className={styles.channelInfo}>
             <Avatar src= '/public/image/logo.png' alt = 'akelo'/>
             <Box className={styles.channelText}>
@@ -52,7 +84,8 @@ const VideoDetail = () => {
           <Box className={styles.videoInfo}>
             <Typography variant="body2">63,897,730 views • 3 weeks ago • #16 on Trending for music</Typography>
             <Typography variant="body2">
-              Listen to "Die With A Smile", song and video out now: <a href="http://GagaMars.lnk.to/DieWithASmile">http://GagaMars.lnk.to/DieWithASmile</a>
+              {videoData.description}
+              {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}
             </Typography>
             <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
           </Box>
@@ -72,7 +105,7 @@ const VideoDetail = () => {
         </Grid>
 
         <Grid item xs={5}>
-          
+{/*           
           {[...Array(10)].map((_, index) => (
             <Grid rowSpacing={1} columnSpacing={2}>
               <Grid item xs={4} className={styles.test}>
@@ -87,12 +120,13 @@ const VideoDetail = () => {
                   </Grid>
             </Grid>
              
-          ))}
+          ))} */}
         </Grid>
       </Grid>
       
     </Box>
   );
 };
+
 
 export default VideoDetail;

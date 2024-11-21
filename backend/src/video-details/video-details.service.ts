@@ -49,4 +49,31 @@ export class VideoDetailsService {
           return response;
         }
       }
+
+
+
+
+
+      async findAllByCategoryId(id:number):Promise<VideoDetail>{
+        let response = common_response;
+        // const items_per_page = Number(query.items_per_page) || 3;
+        // const page = Number(query.page) || 1;
+        // const skip = (page - 1)* items_per_page;
+        // const keyword = query.search || '';
+        let video_detail = await this.videoDetailRepository.find({
+              where:{category:{id}},
+              select:['id','video','user','category','created_at','updated_at'],
+              relations:['video','user','category']
+        })
+        if(video_detail){
+          response.success = true;
+          response.data = video_detail;
+          // response.videos = video_details.map((detail) => detail.video);
+          // response.video = video_detail.video;
+          return response;
+        }else{
+          response.success = false;
+        }
+        return response;
+      }
 }

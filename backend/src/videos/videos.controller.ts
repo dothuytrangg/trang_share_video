@@ -27,7 +27,7 @@ export class VideosController {
 
 
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Get(':id')
     findOne(@Param('id') id:string):Promise<Video>{
         return this.videoService.findOne(Number(id));

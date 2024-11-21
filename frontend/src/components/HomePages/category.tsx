@@ -3,11 +3,13 @@ import { Button } from "@mui/material";
 import requestApi from "../../../helpers/api";
 import { useEffect, useState } from "react";
 
-export default function Category() {
+export default function Category({ onCategorySelect }: { onCategorySelect: (id: string) => void }) {
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1);
   const [index, setIndex] = useState("");
+  const [indexId, setIndexId] = useState("");
+  
   useEffect(() => {
     loadCategories(page);
   }, []);
@@ -18,6 +20,7 @@ export default function Category() {
         setCategories(res.data);
         setLastPage(res.lastPage);
         setIndex(res.pinnedCategory.name)
+        setIndexId(res.pinnedCategory.id)
         // setIndex(res.pinnedCategory);
       }
 
@@ -54,6 +57,7 @@ export default function Category() {
         color="inherit"
         variant="contained"
         size="small"
+        onClick={()=>onCategorySelect(indexId)}
       >
         {index }
       </Button>
@@ -81,6 +85,7 @@ export default function Category() {
         color="inherit"
         variant="contained"
         size="small"
+        onClick={()=>onCategorySelect(category.id)}
       >
         {category.name}
       </Button>

@@ -27,14 +27,14 @@ export class Video {
   url: string;
 
   
-  @Column({nullable:true, default: null})
+  @Column({nullable:false, default: 0})
   likes: number;
 
 
-  @Column({nullable:true, default:null })
+  @Column({nullable:false, default:0 })
   dislike: number;
 
-  @Column({nullable:true, default:null })
+  @Column({nullable:false, default:0 })
   viewed: number;
 
   @Column({ nullable:true,default:null })
