@@ -194,10 +194,21 @@ const handleCreateUser = (): void => {
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
         } else {
-          setErrorCreate('');
-          setSnackbarMessage(t("create_user_failed"));
-          setSnackbarSeverity("error");
-          setOpenSnackbar(true);
+           if(res.statusCode == 400){
+            setEmailError(true);
+            setEmailErrorMessage(t('user_with_email_already_exists'))
+            setErrorCreate(res.message);
+            setSnackbarMessage(t("create_user_failed"));
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+
+          }else{
+            setErrorCreate(res.message);
+            setSnackbarMessage(t("create_user_failed"));
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+
+          }
         }
       })
       .catch((err: any) => {
@@ -280,6 +291,7 @@ const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
   setPage(value);
   loadUsers(value);
 };
+
 const formatDateTime = (isoString: string): string => {
   try {
     return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
@@ -287,6 +299,17 @@ const formatDateTime = (isoString: string): string => {
     console.error("Invalid date format:", isoString, error);
     return t('invalid_date'); // Hiển thị một thông báo lỗi được dịch
   }
+};
+
+const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+
+
+
+
+const handleOpenDeleteDialog = (user: any) => {
+  console.log("user selected:", user); // Log để kiểm tra giá trị
+  setSelectedUser(user);
+  setOpenDeleteDialog(true);
 };
   
 
@@ -474,7 +497,7 @@ const formatDateTime = (isoString: string): string => {
                           <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
                             {t("edit")}
                           </Button>
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteUser(user.id)} >
+                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)} >
                             {t("delete")}
                           </Button>
                           
@@ -487,6 +510,34 @@ const formatDateTime = (isoString: string): string => {
                 
                 </TableBody>
             </Table>
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+              >
+                <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {t("are_you_sure_delete_user", { user: selectedUser?.name })}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
+                  <Button
+                    onClick={() => {
+                      console.log("Selected user ID:", selectedUser?.id); // Log để kiểm tra
+                      if (selectedUser?.id) {
+                        handleDeleteUser(selectedUser.id);
+                      }
+                      setOpenDeleteDialog(false);
+                    }}
+                    color="error"
+                  >
+                    {t("btnDelete")}
+                  </Button>
+
+                </DialogActions>
+              </Dialog>
+
   
           </TableContainer>
           <Stack spacing={2}>

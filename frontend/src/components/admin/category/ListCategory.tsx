@@ -25,6 +25,7 @@ import { updateLocalStorage } from "@/stores/features/masterSlice";
 import requestApi from "../../../../helpers/api";
 import { resolveSoa } from "dns";
 import { format } from 'date-fns';
+import Category from "@/components/HomePages/category";
 
 
 // import Modal from "@mui/material/Modal";
@@ -113,6 +114,8 @@ const ListCategory = () => {
     // setCategories(check.data);
     // console.log('category hhh',categories);
   };
+
+  
 
 
 
@@ -248,6 +251,16 @@ const ListCategory = () => {
         });
     }
   };
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = React.useState<string | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+
+
+  const handleOpenDeleteDialog = (category: any) => {
+    console.log("Category selected:", category); // Log để kiểm tra giá trị
+    setSelectedCategory(category);
+    setOpenDeleteDialog(true);
+  };
 
   const handleDeleteCategory = (categoryId: string) => {
     requestApi(`categories/${categoryId}`, "DELETE")
@@ -273,6 +286,8 @@ const ListCategory = () => {
         setOpenSnackbar(true);
       });
   };
+
+
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -396,6 +411,7 @@ const ListCategory = () => {
                   type="text"
                   fullWidth
                   variant="standard"
+                  placeholder={t("description_text")}
                 />
 
               </DialogContent>
@@ -461,21 +477,52 @@ const ListCategory = () => {
                             <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(category)} >
                               {t("edit")}
                             </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleDeleteCategory(category.id)}>
+                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(category)}>
                               {t("delete")}
+                              
                             </Button>
-
                           </TableCell>
 
                         </TableRow>
                       ))
+                      
 
                     }
 
                   </TableBody>
                 </Table>
+                <Dialog
+                  open={openDeleteDialog}
+                  onClose={() => setOpenDeleteDialog(false)}
+                >
+                  <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      {t("are_you_sure_delete_category", { category: selectedCategory?.name })}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
+                    <Button
+                      onClick={() => {
+                        console.log("Selected Category ID:", selectedCategory?.id); // Log để kiểm tra
+                        if (selectedCategory?.id) {
+                          handleDeleteCategory(selectedCategory.id);
+                        }
+                        setOpenDeleteDialog(false);
+                      }}
+                      color="error"
+                    >
+                      {t("btnDelete")}
+                    </Button>
 
+                  </DialogActions>
+                </Dialog>
+
+                
+            
               </TableContainer>
+              
               <Stack spacing={2}>
                 <Pagination style={{ margin: 10 }} count={lastPage} page={page} onChange={handleChange} variant="outlined" color="primary" />
 

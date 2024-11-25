@@ -2,9 +2,10 @@
 
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Video } from 'src/videos/entities/videos.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Unique } from 'typeorm';
 
 @Entity()
+@Unique(['email'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

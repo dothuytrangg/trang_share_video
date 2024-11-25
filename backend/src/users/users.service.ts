@@ -2,7 +2,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/users.entity';
-import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, QueryFailedError, Repository, UpdateResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { FilterUserDto } from 'src/users/dto/filter-user.dto';
@@ -92,49 +92,48 @@ export class UsersService {
       return response;
     }
 
-  async create(CreateUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
-
     try {
-      // Validate email existence and format
-      if (!validator.isEmail(CreateUserDto.email)) {
-        response.success = false;
-        response.message = 'Email must be a valid email.';
-        return response;  
+      
+
+      const  user = await this.userRepository.save(createUserDto);
+      if(user){
+        response.success = true
+        response.user = user
+  
+
+      }else{
+        response.success = false
       }
+      
 
-      // const emailExist = await this.userRepository.findOne({
-      //   where: {email: CreateUserDto.email },
-      // });
-      // if(emailExist){
-      //   response.success = false;
-      //   response.message = 'Email already exists.';
-      //   return response;
-      // }
-      // Hash the password
-      const hashPassword = await this.hashPassword(CreateUserDto.password);
-
-      // Create the user
-      let user = await this.userRepository.save({
-        ...CreateUserDto,
-        refresh_token: 'refresh_token_string',
-        password: hashPassword,
-      });
-
-      if (user) {
-        response.success = true;  
-        response.user = user;
-      } else {
-        response.success = false;
-        response.message = 'User creation failed.';
+  
+      // Trả về thành công
+      return response;
+    }catch (error) {
+      
+      console.error('Error:', error); 
+      if (error instanceof QueryFailedError) {
+        if (error.driverError.code === 'ER_DUP_ENTRY') { 
+          response.success = false;
+          response.message = `User with email  ${createUserDto.email} already exists.`
+          response.statusCode =400
+          return response;
+          // throw new BadRequestException(`Category with name  ${createCategoryDto.name} already exists.`);
+          
+        }
       }
-    } catch (error) {
       response.success = false;
-      response.message = error.message || 'An unexpected error occurred.';
+      response.message = "An unexpected error occurred."
+      response.statusCode=500
+     
+      // throw new InternalServerErrorException("An unexpected error occurred.");
+      
     }
-
     return response;
   }
+  
 
   async changePassword(id:number,changePasswordDto:ChangePasswordDto):Promise<UpdateResult>{
     let response = common_response;
