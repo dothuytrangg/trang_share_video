@@ -79,6 +79,9 @@ export default function Navbar() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   // const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -262,6 +265,8 @@ export default function Navbar() {
      handleClose();
   }
 
+  
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -367,6 +372,64 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
 
   }
+
+  const updatePasswordValidateInputs = () => {
+    const password = document.getElementById("password") as HTMLInputElement;
+    let isValid = true;
+
+  
+    if (!password.value) {
+      setPasswordError(true);
+      setPasswordErrorMessage(t('password_not_empty'));
+      isValid = false;
+    } else if (password.value.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage(t('password_least_6'));
+      isValid = false;
+    } else {
+      setPasswordError(false);
+      setPasswordErrorMessage('');
+    }
+  
+    return isValid;
+  };
+  
+
+  const handleUpdatePassword = (userId: number) => {
+    const valid: boolean = updatePasswordValidateInputs();
+  
+    if (valid) {
+ 
+      const userData_update = {password};
+   
+  
+      requestApi(`users/change-password/${userId}`, "PUT",userData_update)
+        .then((res: any) => {
+          console.log('res update password',res)
+          if (res.success) {
+            //  loadUsers(page);
+            //  console.log('res update password',res)
+             dispatch(updateLocalStorage());
+         
+            setOpenUpdateDialog(false);
+            setSnackbarMessage(t("update_user_success"));
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
+          } else {
+            setSnackbarMessage(res.message || t(("update_user_failed")));
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+          }
+        })
+        .catch((err: any) => {
+          console.error("Update user failed:", err.response?.data || err.message);
+          setSnackbarMessage(t("update_user_occerred"));
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
+        });
+    }
+  };
+
   const [categories, setCategories] = useState([]);
   const categoryData = categories
   .filter((category: any) => category.name !=='All')
@@ -434,7 +497,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
             <MenuItem className="px-5" onClick={handleProfile}>{t('profile')}</MenuItem>
-            <MenuItem onClick={handleClose}>{t('account')}</MenuItem>
+            <MenuItem onClick={()=>setOpenUpdateDialog(true)}>{t('change_password')}</MenuItem>
             <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
             <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
             <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
@@ -636,7 +699,51 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                     <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
                     <Button type="submit">{t("add")}</Button>
                 </DialogActions>
-  </Dialog>
+          </Dialog>
+          <Dialog
+        open={openUpdateDialog}
+        onClose={() => setOpenUpdateDialog(false)}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault(); 
+            // console.log('user id',masterStore.user.id);
+            handleUpdatePassword(masterStore.user.id);
+       
+          },
+        }}
+      >
+        <DialogTitle>{t("change_password")}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+          {t("update_text")}
+          </DialogContentText>
+      
+          <TextField
+            autoFocus
+            error={passwordError}
+            helperText={passwordErrorMessage}
+            onChange={(val) => {
+              setPassword(val.target.value);
+            }}
+            value={password}
+            margin="dense"
+            id="password"
+            name="password"
+            label= {t("password")}
+            type="password"
+            fullWidth
+            variant="standard"
+            
+          />
+    
+      
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+          <Button type="submit" >{t("btnUpdate")}</Button>
+        </DialogActions>
+      </Dialog>
           
             <Snackbar
                 open={openSnackbar}

@@ -11,6 +11,8 @@ import { storageConfig } from 'helpers/config';
 import fs, { readFileSync, unlink } from 'fs'
 import WebDav from 'src/ultils/WebDav';
 import { AdminAuth } from 'src/auth/admin.guard';
+import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
+
 @Controller('users')
 export class UsersController {
 
@@ -46,6 +48,14 @@ export class UsersController {
 
    
 
+    @UseGuards(AuthGuard)
+    // @UseGuards(AdminAuth)
+    @UsePipes(ValidationPipe)
+    @Put('change-password/:id')
+    changePassword(@Param('id') id:string,@Body() changePasswordDto:ChangePasswordDto){
+        console.log('hhhh')
+        return this.userService.changePassword(Number(id),changePasswordDto);
+    }
     @UseGuards(AuthGuard)
     // @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)

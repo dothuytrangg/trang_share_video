@@ -209,26 +209,15 @@ const handleCreateUser = (): void => {
   }
 };
 
+
 const [selectedUser, setSelectedUser] = useState<any>(null);
-const handleOpenUpdateDialog = async (userId: number) => {
-  await requestApi(`users/${userId}`, "GET").then((res:any)=>{
-    console.log('res',res);
-    if(res.success){
-      setName(res.data.full_name);
-      setPassword(res.data.password); 
-      setSelectedUser(res.data);
-      setOpenUpdateDialog(true);
-    }
-
-  }).catch((err:any)=>{
-      console.error(err);
-  })
-    
-
-    
- 
+const handleOpenUpdateDialog = (user:any) => {
+  console.log('user',user);
+  setSelectedUser(user);
+  setName(user.full_name);
+  // setPassword(user.password)
+  setOpenUpdateDialog(true);
 };
-
 
 const handleUpdateUser = (userId: string) => {
   const valid: boolean = updateValidateInputs();
