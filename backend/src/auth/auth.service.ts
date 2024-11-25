@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from 'src/users/entities/users.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -27,13 +27,8 @@ export class AuthService {
   async register(registerUserDto: RegisterUserDto) {
     let response = common_response;
 
-    // const emailExist  = await this.userRepository.findOne({
-    //   where: { email: registerUserDto.email },
-    // });
-    // if (emailExist) {
-    //   response.success = false;
-    //   throw new ConflictException('Email already exists');
-    // }
+
+   try {
     if (!validator.isEmail(registerUserDto.email)){
       response.success = false;
       response.message = 'Email must be a valid email...';
@@ -46,9 +41,6 @@ export class AuthService {
       response.message = 'Password cannot be empty';
       return response;
     }
-
-
-
     const hashPassword = await this.hashPassword(registerUserDto.password);
     let user = await this.userRepository.save({
       ...registerUserDto,
@@ -64,6 +56,28 @@ export class AuthService {
     }
 
     return response;
+    
+   } catch (error) {
+    console.error('Error:', error); 
+    if (error instanceof QueryFailedError) {
+      if (error.driverError.code === 'ER_DUP_ENTRY') { 
+        response.success = false;
+        response.message = `User with email  ${registerUserDto.email} already exists.`
+        response.statusCode =400
+        return response;
+        // throw new BadRequestException(`Category with name  ${createCategoryDto.name} already exists.`);
+        
+      }
+    }
+      response.success = false;
+      response.message = "An unexpected error occurred."
+      response.statusCode=500
+    
+   }
+
+   return response;
+
+
   }
 
   async findUserById(id:any){
