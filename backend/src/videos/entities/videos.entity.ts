@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Playlist } from 'src/playlist/entities/playlist.entity';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
@@ -64,5 +65,9 @@ export class Video {
 
   @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.video)
   videoDetail: VideoDetail[]
+
+  @ManyToOne(() => Playlist, (playlist) => playlist.video_id, { onDelete: 'CASCADE' })
+  playlist: Playlist;
+
   
 }

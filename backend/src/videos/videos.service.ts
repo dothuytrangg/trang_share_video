@@ -73,6 +73,73 @@ export class VideosService {
       return response;
 
   }
+
+  async findByKey(query: FilterVideoDto): Promise<any> {
+    let response = common_response;
+    const items_per_page = Number(query.items_per_page) || 3;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1) * items_per_page;
+    const keyword = query.search || ''; // Lấy từ khóa tìm kiếm
+
+    // Điều kiện tìm kiếm: nếu có từ khóa thì tìm theo name, description và slug
+    const whereCondition = keyword
+      ? [
+        { name: Like(`%${keyword}%`) },
+        { description: Like(`%${keyword}%`) },
+        { slug: Like(`%${keyword}%`) },
+      ]
+      : []; // Nếu không có từ khóa, không sử dụng điều kiện lọc
+
+    try {
+      const [res, total] = await this.videoRepository.findAndCount({
+        where: whereCondition.length ? whereCondition : undefined, // Nếu không có từ khóa thì bỏ điều kiện
+        order: { created_at: 'DESC' },
+        take: items_per_page,
+        skip: skip,
+        select: [
+          'id',
+          'name',
+          'description',
+          'slug',
+          'user',
+          'timeout',
+          'url',
+          'likes',
+          'dislike',
+          'viewed',
+          'thumbnail',
+          'position',
+          'is_hot',
+          'status',
+          'created_at',
+          'updated_at',
+        ],
+        relations: ['user'], // Bao gồm thông tin liên kết user
+      });
+
+      // Tính toán phân trang
+      const lastPage = Math.ceil(total / items_per_page);
+      const nextPage = page + 1 > lastPage ? null : page + 1;
+      const prevPage = page - 1 < 1 ? null : page - 1;
+
+      // Gán dữ liệu vào response
+      response.success = true;
+      response.data = res;
+      response.page = page;
+      response.lastPage = lastPage;
+      response.nextPage = nextPage;
+      response.prevPage = prevPage;
+      response.total = total;
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+      response.success = false;
+      response.message = error.message || 'An error occurred';
+      return response;
+    }
+  }
+
   async findOne(id:number):Promise<Video>{
     let response = common_response;
     let video = await this.videoRepository.findOneBy({id});

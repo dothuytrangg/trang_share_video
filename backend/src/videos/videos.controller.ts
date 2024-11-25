@@ -24,8 +24,10 @@ export class VideosController {
         return this.videoService.findAllPage(query)
     }
 
-
-
+    @Get('search')
+    findByKey(@Query() query:FilterVideoDto):Promise<Video[]>{
+        return this.videoService.findByKey(query)
+    }
 
     @UseGuards(AuthGuard)
     @Get(':id')

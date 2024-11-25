@@ -10,6 +10,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { VideosModule } from './videos/videos.module';
 import { VideoDetailsController } from './video-details/video-details.controller';
 import { VideoDetailsModule } from './video-details/video-details.module';
+import { PlaylistModule } from './playlist/playlist.module';
+import { HistoryPlaylistModule } from './history-playlist/history-playlist.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { VideoDetailsModule } from './video-details/video-details.module';
     CategoriesModule,
     VideosModule,
     VideoDetailsModule,
+    PlaylistModule,
+    HistoryPlaylistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

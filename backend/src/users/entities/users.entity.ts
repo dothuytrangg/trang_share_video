@@ -1,8 +1,6 @@
-
-
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { Video } from 'src/videos/entities/videos.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity()
 export class User {
@@ -10,6 +8,10 @@ export class User {
   id: number;
 
   @Column()
+  @IsString()
+  @Matches(/^[a-zA-ZÀ-ỹ\s]+$/, {
+    message: 'Full name must only contain letters and spaces.',
+  })
   full_name: string;
 
 
@@ -44,6 +46,11 @@ export class User {
   
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
+  @Column({ nullable: true })
+  emailVerifiedAt: Date;
+
+  @Column({ default: 'inactive' })
+  statusVerify: 'active' | 'inactive';
 
   
 }
