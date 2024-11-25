@@ -27,13 +27,15 @@ export default function Videos({ categoryId }: { categoryId: string }) {
 
   
   const handleOnClick = (videoId: string) => {
-    router.push(`/en/detail/${videoId}`); 
+    router.push(`/en/detail/${videoId}?categoryId=${categoryId}`);
   };
   useEffect(() => {
    
     const loadVideos = async () => {
+      
       try {
         const res: any = await requestApi(`video-details/${categoryId}`, "GET");
+        console.log('res lis video',res.data.category);
         if (res.success) {
           setVideoDetails(res.data);
           const extractedVideos = res.data.map((detail: any) => detail.video); 

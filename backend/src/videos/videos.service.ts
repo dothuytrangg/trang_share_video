@@ -75,7 +75,11 @@ export class VideosService {
   }
   async findOne(id:number):Promise<Video>{
     let response = common_response;
-    let video = await this.videoRepository.findOneBy({id});
+    const video = await this.videoRepository.findOne({
+        where: { id },
+        relations: ['user'], 
+    });
+
     if(video){
       response.success = true;
       response.data = video;

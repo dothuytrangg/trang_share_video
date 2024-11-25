@@ -137,7 +137,7 @@ const validateInputs = () => {
 
 const updateValidateInputs = () => {
   const full_name = document.getElementById("full_name") as HTMLInputElement;
-
+  const password = document.getElementById("password") as HTMLInputElement;
   let isValid = true;
 
   if (!full_name.value) {
@@ -155,6 +155,19 @@ const updateValidateInputs = () => {
   } else {
     setNameError(false);
     setNameErrorMessage("");
+  }
+
+  if (!password.value) {
+    setPasswordError(true);
+    setPasswordErrorMessage(t('password_not_empty'));
+    isValid = false;
+  } else if (password.value.length < 6) {
+    setPasswordError(true);
+    setPasswordErrorMessage(t('password_least_6'));
+    isValid = false;
+  } else {
+    setPasswordError(false);
+    setPasswordErrorMessage('');
   }
 
   return isValid;
@@ -197,18 +210,31 @@ const handleCreateUser = (): void => {
 };
 
 const [selectedUser, setSelectedUser] = useState<any>(null);
-const handleOpenUpdateDialog = (user:any) => {
-  console.log('user',user);
-  setSelectedUser(user);
-  setName(user.full_name);
-  setOpenUpdateDialog(true);
+const handleOpenUpdateDialog = async (userId: number) => {
+  await requestApi(`users/${userId}`, "GET").then((res:any)=>{
+    console.log('res',res);
+    if(res.success){
+      setName(res.data.full_name);
+      setPassword(res.data.password); 
+      setSelectedUser(res.data);
+      setOpenUpdateDialog(true);
+    }
+
+  }).catch((err:any)=>{
+      console.error(err);
+  })
+    
+
+    
+ 
 };
+
 
 const handleUpdateUser = (userId: string) => {
   const valid: boolean = updateValidateInputs();
 
   if (valid) {
-    const userData_update = { full_name };
+    const userData_update = { full_name ,password};
     
 
     requestApi(`users/${userId}`, "PUT", userData_update)
@@ -388,6 +414,23 @@ const formatDateTime = (isoString: string): string => {
             fullWidth
             variant="standard"
             placeholder= {t("input_name")}
+          />
+          <TextField
+            autoFocus
+            error={passwordError}
+            helperText={passwordErrorMessage}
+            onChange={(val) => {
+              setPassword(val.target.value);
+            }}
+            value={password}
+            margin="dense"
+            id="password"
+            name="password"
+            label= {t("password")}
+            type="password"
+            fullWidth
+            variant="standard"
+            
           />
     
       

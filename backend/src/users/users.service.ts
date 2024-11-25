@@ -69,23 +69,45 @@ export class UsersService {
     }
 
 
-    async findOne(id:number):Promise<User>{
+    // async findOne(id:number):Promise<User>{
+    //   let response = common_response;
+    //   let user = await this.userRepository.findOne({
+    //         where:{id:id},
+    //         select:['id','full_name','email','role','avatar','status','created_at','updated_at'],
+    //         relations:['videos']
+    //   })
+    //   if(user){
+    //     response.success = true;
+    //     response.data = user;
+    //     return response;
+    //   }else{
+    //     response.success = false;
+    //   }
+    //   return response;
+    // }
+    async findOne(id: number): Promise<any> {
       let response = common_response;
-      let user = await this.userRepository.findOne({
-            where:{id:id},
-            select:['id','full_name','email','role','avatar','status','created_at','updated_at'],
-            relations:['videos']
-      })
-      if(user){
-        response.success = true;
-        response.data = user;
-        return response;
-      }else{
-        response.success = false;
+  
+      try {
+          const user = await this.userRepository.findOne({
+              where: { id: id },
+              select: ['id', 'full_name', 'email', 'password', 'role', 'avatar', 'status', 'created_at', 'updated_at'],
+          });
+  
+          if (user) {
+              response.success = true;
+              response.data = user;
+          } else {
+              response.success = false;
+              response.message = 'User not found';
+          }
+      } catch (error) {
+          response.success = false;
+          response.message = error.message || 'An unexpected error occurred';
       }
+  
       return response;
-    }
-
+  }
   async create(CreateUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
 
@@ -133,7 +155,11 @@ export class UsersService {
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
       let response = common_response;
       
-  
+      if (updateUserDto.password) {
+     
+        const hashPassword = await this.hashPassword(updateUserDto.password);
+        updateUserDto.password = hashPassword;
+    }
       let updateUser =  await this.userRepository.update(id,updateUserDto);
       if(updateUser){
         response.success = true;

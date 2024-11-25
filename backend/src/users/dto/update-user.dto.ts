@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 
+
 export class UpdateUserDto{
  
  
@@ -12,6 +13,8 @@ export class UpdateUserDto{
         message: 'name is too long',
     })
     full_name: string;
+    @IsNotEmpty()
+    password: string;
     
    
 
