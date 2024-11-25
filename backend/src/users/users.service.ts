@@ -9,12 +9,17 @@ import { FilterUserDto } from 'src/users/dto/filter-user.dto';
 import { common_response } from 'src/ultils/common';
 import validator from 'validator';
 import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
+import { Video } from 'src/videos/entities/videos.entity';
 
 
 @Injectable()
 export class UsersService {
 
-    constructor(@InjectRepository(User) private userRepository:Repository<User>){}
+    constructor(@InjectRepository(User) private userRepository:Repository<User>,
+               @InjectRepository(VideoDetail) private videoDetailRepository:Repository<VideoDetail>,
+               @InjectRepository(Video) private videoRepository:Repository<Video>
+    ){}
 
     // async findAll():Promise<User[]>{
     //     let response = common_response;
@@ -177,7 +182,10 @@ export class UsersService {
 
     async delete(id:number):Promise<DeleteResult>{
       let response = common_response;
+     try {
 
+      await this.videoDetailRepository.delete({ user: { id } });
+      await this.videoRepository.delete({ user: { id } });
       let deleteUser  = await this.userRepository.delete(id);
       if(deleteUser){
         response.success = true;
@@ -187,7 +195,40 @@ export class UsersService {
         response.success = false
       }
         return response;
+      
+     } catch (error) {
+
+      response.success = false;
+          response.message = error.message || 'An error occurred while deleting the user';
+          return response;
+      
+     }
     }
+
+  //   async delete(id: number): Promise<DeleteResult> {
+  //     let response = common_response;
+  
+  //     try {
+         
+  //         await this.videoDetailRepository.delete({ user: { id } });
+  
+  //         const deleteResult = await this.userRepository.delete(id);
+  
+  //         if (deleteResult.affected === 1) {
+  //             response.success = true;
+  //             response.message = 'User and related details deleted successfully';
+  //         } else {
+  //             response.success = false;
+  //             response.message = 'Failed to delete user';
+  //         }
+  
+  //         return response;
+  //     } catch (error) {
+  //         response.success = false;
+  //         response.message = error.message || 'An error occurred while deleting the user';
+  //         return response;
+  //     }
+  // }
     private async hashPassword(password: string): Promise<string> {
       const saltRound = 10;
       const salt = await bcrypt.genSalt(saltRound);
