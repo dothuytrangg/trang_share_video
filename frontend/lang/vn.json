@@ -117,14 +117,32 @@
         "confirm_delete":"Xác nhận xóa",
 
         "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh",
-        "category_with_name_already_exists":"Tên danh mục đã tồn tại"
-
-
-        
-
-        
-
-
+        "category_with_name_already_exists":"Tên danh mục đã tồn tại",
+        "are_you_sure_delete_category":"Bạn có chắc chắn muốn xóa danh mục này không?",
+       
+       
+       "are_you_sure_delete_video":"Bạn có chắc chắn muốn xóa video này không?",
+       "are_you_sure_delete_user":"Bạn có chắc chắn muốn xóa người dùng này không?",
+        "btnDelete":"Xóa",
+        "reset":"Đặt lại",
+        "forgot_password": "Bạn quên mật khẩu?",
+        "email_already_registered": "Email của bạn đã được đăng ký",
+        "register_success": "Đăng ký thành công",
+        "otp_not_empty": "Mã OTP không được để trống",
+        "otp_not_enough": "Vui lòng nhập OTP đủ",
+        "otp_notification_email": "Mã OTP đã được gửi đến email của bạn",
+        "account_verified":"Xác thực tài khoản",
+        "otp":"Mã OTP",
+        "not_received_the_code":"Chưa nhận được mã OTP?",
+        "btnSubmitOtp":"Xác nhận",
+        "resend_otp":"Gửi lại",
+        "reset_notification_email":"Đã có 1 thông báo gửi về mail, vui lòng kiểm tra email để đặt lại mật khẩu",
+        "reset_password":"Đặt lại mật khẩu",
+        "input_your_email":"Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu",
+        "send_request":"Gửi yêu cầu",
+        "user_not_found":"Không tìm thấy người dùng",
+        "register_before_login":"Vui lòng đăng ký trước khi đăng nhập",
+        "password_incorrect":"Mật khẩu không chính xác"
 
     } 
 }

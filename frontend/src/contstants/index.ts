@@ -15,6 +15,8 @@ const _GLOBAL = {
   ROUTE_ADMIN_VIDEO: "video",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,
+  ROUTE_SEND_OTP: "send-otp",
+  ROUTER_FORGOT_PASSWORD: "forgotpassword"
 };
 
 const _ENV ={

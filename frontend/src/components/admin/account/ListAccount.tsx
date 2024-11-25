@@ -60,7 +60,7 @@ const ListAccount = () => {
     if (!ranonce) {
       if (masterStore.isAdmin) {
         setLoading(false);
-      //  router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_CATEGORY}`);
+      //  router.push(`/${locale}/${_GLOBAL.ROUTE_ADMIN}/${_GLOBAL.ROUTE_ADMIN_user}`);
       }
       loadUsers(page);
       ranonce = true;
@@ -237,6 +237,17 @@ const handleUpdateUser = (userId: string) => {
   }
 };
 
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+
+
+
+
+  const handleOpenDeleteDialog = (user: any) => {
+    console.log("user selected:", user); // Log để kiểm tra giá trị
+    setSelectedUser(user);
+    setOpenDeleteDialog(true);
+  };
 
 const handleDeleteUser = (userId: string) => {
   requestApi(`users/${userId}`, "DELETE")
@@ -442,7 +453,7 @@ const formatDateTime = (isoString: string): string => {
                           <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
                             {t("edit")}
                           </Button>
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteUser(user.id)} >
+                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)} >
                             {t("delete")}
                           </Button>
                           
@@ -455,6 +466,35 @@ const formatDateTime = (isoString: string): string => {
                 
                 </TableBody>
             </Table>
+              <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+              >
+                <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {t("are_you_sure_delete_user", { user: selectedUser?.name })}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
+                  <Button
+                    onClick={() => {
+                      console.log("Selected user ID:", selectedUser?.id); // Log để kiểm tra
+                      if (selectedUser?.id) {
+                        handleDeleteUser(selectedUser.id);
+                      }
+                      setOpenDeleteDialog(false);
+                    }}
+                    color="error"
+                  >
+                    {t("btnDelete")}
+                  </Button>
+
+                </DialogActions>
+              </Dialog>
+
+
   
           </TableContainer>
           <Stack spacing={2}>
