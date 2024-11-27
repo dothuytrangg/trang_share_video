@@ -9,7 +9,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from 'src/users/entities/users.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -30,10 +30,11 @@ export class AuthService {
     private configService: ConfigService,
     private verificationService: VerificationService,
     private emailService: EmailService
-  ) {}
+  ) { }
 
   async register(registerUserDto: RegisterUserDto) {
     let response = common_response;
+
     if (!validator.isEmail(registerUserDto.email)) {
       response.success = false;
       response.message = 'Email must be a valid email...';
@@ -45,6 +46,7 @@ export class AuthService {
       response.message = 'Password cannot be empty';
       return response;
     }
+
     const existingUser = await this.userRepository.findOne({ where: { email: registerUserDto.email } });
     if (existingUser) {
       response.success = false;
@@ -52,12 +54,14 @@ export class AuthService {
       response.errorCode = 'USER_EXISTS';
       return response;
     }
+
     const hashPassword = await this.hashPassword(registerUserDto.password);
     let user = await this.userRepository.save({
       ...registerUserDto,
       password: hashPassword,
       statusVerify: 'inactive',
     });
+
     if (user) {
       try {
         // Generate OTP
@@ -78,7 +82,6 @@ export class AuthService {
 
         response.success = true;
         response.message = 'Registration successful. Please verify your email with the OTP sent.';
-
         response.token = token; // Include the token in the response
         response.userId = user.id; // Include userId in the response
       } catch (error) {
@@ -93,61 +96,65 @@ export class AuthService {
     return response;
   }
 
-  async findUserById(id:any){
-    let user = await this.userRepository.findOne({where:{
-      id:id
-    }})
+  async findUserById(id: any) {
+    let user = await this.userRepository.findOne({ where: { id: id } });
     return user;
   }
 
-
   async login(loginUserDto: LoginUserDto) {
-    let response = common_response
+    let response = common_response;
     const user = await this.userRepository.findOne({
       where: { email: loginUserDto.email },
     });
+
     if (!user) {
       response.success = false;
       response.errorCode = 'USER_NOT_FOUND';
       return response;
     }
+
     if (!validator.isEmail(loginUserDto.email)) {
       response.success = false;
       response.message = 'Email must be a valid email...';
       return response;
     }
+
     const checkPass = await bcrypt.compareSync(
       loginUserDto.password,
       user.password,
     );
+
     if (user.statusVerify == 'inactive') {
       response.success = false;
       response.message = "Please verify your email before logging in.";
       return response;
     }
+
     if (!checkPass) {
       response.success = false;
-      response.message = "Password incorrect."
+      response.message = "Password incorrect.";
       return response;
     }
-    //generate access token and refresh token
+
+    // Generate access token and refresh token
     const payload = { id: user.id, email: user.email, role: user.role };
     let token = await this.generateToken(payload);
     let responseUser: any;
     console.log('user: ', user);
+
     if (token.access_token) {
-      response.message = ''
+      response.message = '';
       response.success = true;
       responseUser = { ...response };
       responseUser.token = token.access_token;
       responseUser.user = {
         id: user.id, email: user.email, name: user.full_name, role: user.role, avatar: user.avatar
-      }
+      };
       return responseUser;
     }
+
     return response;
   }
-
 
   async refreshToken(refresh_token: string): Promise<any> {
     try {
@@ -159,8 +166,9 @@ export class AuthService {
         email: verify.email,
         refresh_token,
       });
+
       if (checkExistToken) {
-        return this.generateToken({ id: verify.id, email: verify.email, role:verify.role });
+        return this.generateToken({ id: verify.id, email: verify.email, role: verify.role });
       } else {
         throw new HttpException(
           'Refresh token is not valid',
@@ -174,14 +182,14 @@ export class AuthService {
       );
     }
   }
+
   private async generateToken(payload: { id: number; email: string; role: number }) {
-    // Chỉ tạo access_token
+    // Generate only access_token
     const access_token = await this.jwtService.signAsync(payload);
 
-    // Không cần tạo hoặc lưu refresh_token
+    // No need to generate or store refresh_token
     return { access_token };
   }
-
 
   private async hashPassword(password: string): Promise<string> {
     const saltRound = 10;
@@ -207,24 +215,25 @@ export class AuthService {
       throw new UnprocessableEntityException(invalidMessage);
     }
 
-    // Cập nhật trạng thái sau khi xác minh thành công
+    // Update status after successful verification
     user.emailVerifiedAt = new Date();
-    user.statusVerify = 'active'; // Cập nhật `statusVerify` thành 'active'
-    await this.userRepository.save(user); // Chỉ lưu một lần sau khi cập nhật trạng thái
+    user.statusVerify = 'active'; // Update `statusVerify` to 'active'
+    await this.userRepository.save(user); // Save only after updating status
 
     return true;
   }
 
   async forgotPassword(email: string) {
     let response = common_response;
-    // Kiểm tra định dạng email hợp lệ
+
+    // Check if email is valid
     if (!validator.isEmail(email)) {
       response.success = false;
       response.message = 'Email must be a valid email address';
       return response;
     }
 
-    // Kiểm tra xem người dùng có tồn tại không
+    // Check if user exists
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       response.success = false;
@@ -233,32 +242,32 @@ export class AuthService {
     }
 
     try {
-      // Generate một token reset mật khẩu ngẫu nhiên
+      // Generate a random password reset token
       const resetToken = randomBytes(32).toString('hex');
       console.log('Reset Password Token:', resetToken);
 
-      // Thiết lập thời gian hết hạn cho token (1 giờ từ thời điểm hiện tại)
+      // Set the expiration time for the token (1 hour from now)
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
       console.log('Expires At:', expiryDate);
 
-      // Cập nhật trạng thái xác minh của người dùng (nếu cần thiết)
+      // Update user's status if needed
       user.statusVerify = "active";
-      await this.userRepository.save(user); // Lưu lại người dùng
+      await this.userRepository.save(user); // Save user
 
-      // Tạo và lưu trữ token xác minh vào cơ sở dữ liệu
+      // Create and store the verification token
       await this.verificationService.createVerificationToken(user.id, resetToken, expiryDate);
 
-      // Gửi email reset mật khẩu
+      // Send password reset email
       await this.emailService.sendPasswordResetEmail(user.email, resetToken);
 
       console.log("Forgot Password process completed", user);
 
-      // Phản hồi khi gửi thành công
+      // Response on success
       response.success = true;
       response.message = 'Password reset link sent!';
-      response.token = resetToken;  // Token gửi qua email
-      response.userId = user.id;    // ID người dùng
+      response.token = resetToken;  // Token sent via email
+      response.userId = user.id;    // User ID
     } catch (error) {
       response.success = false;
       response.message = 'Failed to process password reset';
@@ -267,7 +276,6 @@ export class AuthService {
 
     return response;
   }
-
 
   async resetPassword(resetPasswordToken: string, newPassword: string, newConfirmPassword: string) {
     let response = common_response;
@@ -312,13 +320,11 @@ export class AuthService {
     user.password = await this.hashPassword(newPassword);
     await this.userRepository.save(user);
 
-    // Xóa mã xác minh sau khi sử dụng (nếu cầ n)
+    // Xóa mã xác minh sau khi sử dụng (nếu cần)
     await this.verificationService.removeVerification(verification);
 
     response.success = true;
     response.message = 'Password changed successfully.';
     return response;
   }
-  
-
 }

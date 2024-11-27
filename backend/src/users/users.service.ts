@@ -2,18 +2,24 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/users.entity';
-import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, QueryFailedError, Repository, UpdateResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { FilterUserDto } from 'src/users/dto/filter-user.dto';
 import { common_response } from 'src/ultils/common';
 import validator from 'validator';
+import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
+import { Video } from 'src/videos/entities/videos.entity';
 
 
 @Injectable()
 export class UsersService {
 
-    constructor(@InjectRepository(User) private userRepository:Repository<User>){}
+    constructor(@InjectRepository(User) private userRepository:Repository<User>,
+               @InjectRepository(VideoDetail) private videoDetailRepository:Repository<VideoDetail>,
+               @InjectRepository(Video) private videoRepository:Repository<Video>
+    ){}
 
     // async findAll():Promise<User[]>{
     //     let response = common_response;
@@ -86,54 +92,89 @@ export class UsersService {
       return response;
     }
 
-  async create(CreateUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
-
     try {
-      // Validate email existence and format
-      if (!validator.isEmail(CreateUserDto.email)) {
-        response.success = false;
-        response.message = 'Email must be a valid email.';
-        return response;  
-      }
-
-      // const emailExist = await this.userRepository.findOne({
-      //   where: {email: CreateUserDto.email },
-      // });
-      // if(emailExist){
-      //   response.success = false;
-      //   response.message = 'Email already exists.';
-      //   return response;
-      // }
-      // Hash the password
-      const hashPassword = await this.hashPassword(CreateUserDto.password);
-
-      // Create the user
-      let user = await this.userRepository.save({
-        ...CreateUserDto,
-        refresh_token: 'refresh_token_string',
-        password: hashPassword,
-      });
-
+      // Create user in the repository
+      const user = await this.userRepository.save(createUserDto);
+      const hashPassword = await this.hashPassword(createUserDto.password);
       if (user) {
-        response.success = true;  
-        response.user = user;
+        // Set the user status to active after successful creation
+        user.statusVerify = 'active';
+        user.password = hashPassword;
+        await this.userRepository.save(user);  // Update user with statusVerify
+
+        response.success = true;
+        response.user = user;  // Include the created user in the response
       } else {
         response.success = false;
-        response.message = 'User creation failed.';
+        response.message = 'User creation failed';
+        response.statusCode = 400;
       }
     } catch (error) {
+      console.error('Error:', error);
+
+      // Handle database-specific errors (e.g., duplicate email)
+      if (error instanceof QueryFailedError) {
+        if (error.driverError.code === 'ER_DUP_ENTRY') {
+          response.success = false;
+          response.message = `User with email ${createUserDto.email} already exists.`;
+          response.statusCode = 400;
+          return response;
+        }
+      }
+
+      // For unexpected errors
       response.success = false;
-      response.message = error.message || 'An unexpected error occurred.';
+      response.message = 'An unexpected error occurred.';
+      response.statusCode = 500;
     }
 
     return response;
   }
 
+
+  async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<any> {
+    let response = common_response
+
+    try {
+      // Ensure password and confirm_password match
+      if (changePasswordDto.password !== changePasswordDto.confirm_password) {
+        response.message = 'Password and confirm password do not match.'
+        return response;
+      }
+
+      // Hash the new password
+      const hashPassword = await this.hashPassword(changePasswordDto.password);
+
+      // Update the user's password
+      const updateResult = await this.userRepository.update(id, { password: hashPassword });
+
+      console.log('Update result:', updateResult);  
+
+      if (updateResult.affected === 1) {
+        response.success = true;
+        response.message = 'Password updated successfully.';
+      } else {
+        response.message = 'Failed to update the password. User not found or no changes made.';
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      response.message = 'An unexpected error occurred while updating the password.';
+    }
+
+    return response;
+  }
+
+
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
       let response = common_response;
       
-  
+      if (updateUserDto.password) {
+     
+        const hashPassword = await this.hashPassword(updateUserDto.password);
+        updateUserDto.password = hashPassword;
+    }
       let updateUser =  await this.userRepository.update(id,updateUserDto);
       if(updateUser){
         response.success = true;
@@ -150,7 +191,10 @@ export class UsersService {
 
     async delete(id:number):Promise<DeleteResult>{
       let response = common_response;
+     try {
 
+      await this.videoDetailRepository.delete({ user: { id } });
+      await this.videoRepository.delete({ user: { id } });
       let deleteUser  = await this.userRepository.delete(id);
       if(deleteUser){
         response.success = true;
@@ -160,7 +204,40 @@ export class UsersService {
         response.success = false
       }
         return response;
+      
+     } catch (error) {
+
+      response.success = false;
+          response.message = error.message || 'An error occurred while deleting the user';
+          return response;
+      
+     }
     }
+
+  //   async delete(id: number): Promise<DeleteResult> {
+  //     let response = common_response;
+  
+  //     try {
+         
+  //         await this.videoDetailRepository.delete({ user: { id } });
+  
+  //         const deleteResult = await this.userRepository.delete(id);
+  
+  //         if (deleteResult.affected === 1) {
+  //             response.success = true;
+  //             response.message = 'User and related details deleted successfully';
+  //         } else {
+  //             response.success = false;
+  //             response.message = 'Failed to delete user';
+  //         }
+  
+  //         return response;
+  //     } catch (error) {
+  //         response.success = false;
+  //         response.message = error.message || 'An error occurred while deleting the user';
+  //         return response;
+  //     }
+  // }
     private async hashPassword(password: string): Promise<string> {
       const saltRound = 10;
       const salt = await bcrypt.genSalt(saltRound);

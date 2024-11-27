@@ -115,6 +115,8 @@ const ListCategory = () => {
     // console.log('category hhh',categories);
   };
 
+  
+
 
 
   const validateInputs = () => {

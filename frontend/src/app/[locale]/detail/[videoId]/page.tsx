@@ -1,4 +1,6 @@
 
+
+import LoginView from '@/components/auth/login/LoginView';
 import VideoDetail from '@/components/video-detail';
 import { NextPage } from 'next';
 

@@ -1,6 +1,9 @@
+'use client';
 
-'use client'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+
+import requestApi from "../../../helpers/api";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Box, Grid, Typography, Avatar, Button, IconButton, TextField } from '@mui/material';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
@@ -12,14 +15,80 @@ import SortIcon from '@mui/icons-material/Sort';
 import ListItem from '@mui/material/ListItem';
 import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import { closeDrawer } from '@/stores/features/masterSlice';
+import { _ENV } from "@/contstants";
+
 
 
 const VideoDetail = () => {
-  const dispatch = useAppDispatch();
-  const masterStore = useAppSelector((state: any) => state.master);
+  const router = useRouter();
+  const { videoId } = useParams(); 
+  const searchParams = useSearchParams(); // Dùng để lấy query params
+  const categoryId = searchParams.get("categoryId"); // Lấy categoryId từ URL
+  const [videoData, setVideoData] = useState<any>(null);
+  const [proposeVideoData, setProposeVideoData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // const [userData, setUserData] = useState([]);
   useEffect(() => {
-    dispatch(closeDrawer());
-}, [masterStore])
+    if (videoId) {
+
+      fetchVideoDetail();
+      
+    }
+
+  }, [videoId]);
+
+  const fetchVideoDetail = async () => {
+    
+    await requestApi(`videos/${videoId}`,'GET').then((res: any) => {
+      // console.log('res one',res)
+      if (res.success) {
+
+        setVideoData(res.data) 
+        // setUserData(res.data.user); 
+
+      }
+
+    }).catch((err: any) => {
+      console.error(err);
+    })
+    setLoading(false)
+  
+     
+  };
+  useEffect(() => {
+    if (categoryId) {
+      fetchVideoDetailByCategoryId();
+    }
+  }, [categoryId]);
+
+  const fetchVideoDetailByCategoryId = async () => {
+    
+    await requestApi(`video-details/${categoryId}`,'GET').then((res: any) => {
+      console.log("Videos by Category:", res.data);
+      if (res.success) {
+        setProposeVideoData(res.data);
+         
+      }
+
+    }).catch((err: any) => {
+      console.error(err);
+    })
+
+    setLoading(false)
+  
+     
+  };
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+
+
+  if (!videoData) {
+    return <div>Video not found</div>;
+  }
+
   return (
     <Box className={styles.container}>
       <Grid container spacing={3}>
@@ -28,15 +97,15 @@ const VideoDetail = () => {
             <iframe
               className={styles.videoIframe}
               title="Material UI Tutorial #1 - Intro &amp; Setup"
-              src="https://www.youtube.com/embed/0KEpWHtG10M?list=PL4cUxeGkcC9gjxLvV4VEkZ6H6H4yWuS58"
+              src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`} 
               allowFullScreen
             ></iframe>
           </div>
-          <h1 className={styles.videoTitle}>Material UI Tutorial #1 - Intro & Setup</h1>
+          <h1 className={styles.videoTitle}>{videoData.name}</h1>
           <Box className={styles.channelInfo}>
-            <Avatar src= '/public/image/logo.png' alt = 'akelo'/>
+            <Avatar src={`${_ENV.NEXT_URL_LOCAL}/avatars/${videoData.user.avatar}`}  alt = 'akelo'/>
             <Box className={styles.channelText}>
-              <Typography variant="subtitle1">Haven Deep</Typography>
+              <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
               <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography>
             </Box>
             <Button variant="contained" color="primary" className={styles.subscribeButton}>
@@ -44,21 +113,22 @@ const VideoDetail = () => {
             </Button>
           </Box>
           <Box className={styles.videoButton}>
-            <Button startIcon={<ThumbUpOutlinedIcon />}>3,9 N</Button>
-            <Button startIcon={<ThumbDownOutlinedIcon />}></Button>
+            <Button startIcon={<ThumbUpOutlinedIcon />}>{videoData.likes}</Button>
+            <Button startIcon={<ThumbDownOutlinedIcon />}>{videoData.dislike}</Button>
             <Button startIcon={<ShareOutlinedIcon />}>Chia sẻ</Button>
             <IconButton><MoreHorizIcon /></IconButton>
           </Box>
           <Box className={styles.videoInfo}>
-            <Typography variant="body2">63,897,730 views • 3 weeks ago • #16 on Trending for music</Typography>
+            <Typography variant="body2">{videoData.viewed} views • 3 weeks ago • #16 on Trending for music</Typography>
             <Typography variant="body2">
-              Listen to "Die With A Smile", song and video out now: <a href="http://GagaMars.lnk.to/DieWithASmile">http://GagaMars.lnk.to/DieWithASmile</a>
+              {videoData.description}
+              {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}
             </Typography>
             <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
           </Box>
 
           <Box className={styles.commentsSection}>
-            <Typography variant="h6">74,731 Comments</Typography>
+            {/* <Typography variant="h6">74,731 Comments</Typography> */}
             <Button startIcon={<SortIcon />}>Sort by</Button>
 
             <Box className={styles.addComment}>
@@ -72,27 +142,32 @@ const VideoDetail = () => {
         </Grid>
 
         <Grid item xs={5}>
-          
-          {[...Array(10)].map((_, index) => (
+         {
+          proposeVideoData.map((video:any)=>(
+            video.video.url !== videoData.url && (
             <Grid rowSpacing={1} columnSpacing={2}>
-              <Grid item xs={4} className={styles.test}>
-                <iframe
-                  title="Material UI Tutorial #1 - Intro &amp; Setup"
-                  src="https://www.youtube.com/embed/0KEpWHtG10M?list=PL4cUxeGkcC9gjxLvV4VEkZ6H6H4yWuS58"
-                  allowFullScreen
-                ></iframe>
-              </Grid>
-              <Grid item xs={4}>
-                  <h1 >Material UI Tutorial #{index + 1} - Intro & Setup</h1>
-                  </Grid>
+            <Grid item xs={4} className={styles.test}>
+              <iframe
+                title={video.video.name}
+                src={`${_ENV.NEXT_URL_LOCAL}/videos/${video.video.url}`} 
+                allowFullScreen
+              ></iframe>
             </Grid>
-             
-          ))}
+            <Grid item xs={4}>
+                <h1 >{video.video.name}</h1>
+                </Grid>
+          </Grid>
+            )
+          ))
+         }
+          
+
         </Grid>
       </Grid>
       
     </Box>
   );
 };
+
 
 export default VideoDetail;

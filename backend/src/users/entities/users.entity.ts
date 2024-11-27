@@ -1,8 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { Video } from 'src/videos/entities/videos.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne, Unique } from 'typeorm';
 
 @Entity()
+@Unique(['email'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

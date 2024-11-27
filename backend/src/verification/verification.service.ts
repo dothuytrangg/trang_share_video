@@ -23,7 +23,7 @@ export class VerificationService {
             where: {
                 userId,
                 createdAt: MoreThan(
-                    new Date(now.getTime() - this.minRequestIntervalMinutes * 60 * 1000),
+                    new Date(now.getTime() - this.minRequestIntervalMinutes * 30 * 1000),
                 ),
             },
         });

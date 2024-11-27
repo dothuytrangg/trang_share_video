@@ -31,4 +31,6 @@ export class CreateUserDto{
     
     status: number;
 
+  statusVerify: 'active' | 'inactive';
+
 }

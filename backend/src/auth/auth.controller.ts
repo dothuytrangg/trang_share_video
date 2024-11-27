@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UnprocessableEntityException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UnprocessableEntityException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';//loi
 import { AuthService } from './auth.service';
 import { User } from 'src/users/entities/users.entity';
@@ -6,14 +6,16 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { VerifyDto } from './dto/verify-user.dto';
+import { VerificationService } from 'src/verification/verification.service';
 
 
 
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService:AuthService){}
-   
+    constructor(private authService:AuthService,
+                private verification: VerificationService
+    ){}
     @Post('register')
     @UsePipes(ValidationPipe)
     async register(@Body() registerUserDto: RegisterUserDto) {
@@ -68,6 +70,15 @@ export class AuthController {
     ) {
         const { newPassword, newConfirmPassword } = resetPasswordDto;
         return this.authService.resetPassword(resetToken, newPassword, newConfirmPassword);
+    }
+
+    @Post('resend-otp')
+    async resendOTP(@Body('userId') userId: number) {
+        if (!userId) {
+            throw new BadRequestException('User ID is required');
+        }
+        const otp = await this.verification.resendOtp(userId);
+        return { message: 'OTP resent successfully', otp };
     }
 
 

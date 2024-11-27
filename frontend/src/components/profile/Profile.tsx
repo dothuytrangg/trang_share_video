@@ -89,9 +89,7 @@ const Profile= () => {
     }).catch((err: any) => {
       console.error(err);
     })
-    // console.log(check)
-    // setCategories(check.data);
-    // console.log('category hhh',categories);
+  
   };
   useEffect(()=>{
     if (!ranonce) {
