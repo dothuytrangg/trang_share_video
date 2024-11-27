@@ -65,3 +65,24 @@
         padding: 16px;
     }
 }
+
+.proposeVideoContainer {
+    overflow: hidden; /* Xóa scrollbar */
+    max-height: 100%; /* Đảm bảo không có nội dung vượt ngoài kích thước */
+  }
+  
+  .proposeVideoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Khoảng cách giữa các video */
+    overflow-y: auto; /* Chỉ cuộn nếu nội dung vượt quá chiều cao */
+    scrollbar-width: thin; /* (Tùy chọn) Làm mỏng scrollbar */
+  }
+
+  .videoPlayer {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #000; /* Đặt màu nền cho video */
+    border-radius: 8px; /* Tùy chỉnh góc bo tròn */
+  }

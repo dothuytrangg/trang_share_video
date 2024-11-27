@@ -16,6 +16,7 @@ import ListItem from '@mui/material/ListItem';
 import { useAppDispatch, useAppSelector } from '@/stores/hookStore';
 import { closeDrawer } from '@/stores/features/masterSlice';
 import { _ENV } from "@/contstants";
+import ProposeVideo from "@/components/video-detail/propose/ProposeVideo";
 
 
 
@@ -78,6 +79,19 @@ const VideoDetail = () => {
   
      
   };
+  // const [isPlaying, setIsPlaying] = useState(true);
+
+// const togglePlay = () => {
+//   const videoElement = document.querySelector(".styles_videoPlayer__1");
+//   if (videoElement) {
+//     if (isPlaying) {
+//       videoElement.pause();
+//     } else {
+//       videoElement.play();
+//     }
+//     setIsPlaying(!isPlaying);
+//   }
+// };
   
   if (loading) {
     return <div>Loading...</div>;
@@ -93,14 +107,16 @@ const VideoDetail = () => {
     <Box className={styles.container}>
       <Grid container spacing={3}>
         <Grid item xs={7}>
-          <div className={styles.videoWrapper}>
-            <iframe
-              className={styles.videoIframe}
-              title="Material UI Tutorial #1 - Intro &amp; Setup"
-              src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`} 
-              allowFullScreen
-            ></iframe>
-          </div>
+        <div className={styles.videoWrapper}>
+          <video
+            className={styles.videoPlayer}
+            src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
+            autoPlay
+            muted
+            loop
+            playsInline
+          ></video>
+        </div>
           <h1 className={styles.videoTitle}>{videoData.name}</h1>
           <Box className={styles.channelInfo}>
             <Avatar src={`${_ENV.NEXT_URL_LOCAL}/avatars/${videoData.user.avatar}`}  alt = 'akelo'/>
@@ -127,7 +143,7 @@ const VideoDetail = () => {
             <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
           </Box>
 
-          <Box className={styles.commentsSection}>
+          <Box  style={{ height: "100%", overflow: "hidden" }}>
             {/* <Typography variant="h6">74,731 Comments</Typography> */}
             <Button startIcon={<SortIcon />}>Sort by</Button>
 
@@ -140,29 +156,9 @@ const VideoDetail = () => {
           </Box> 
 
         </Grid>
+        <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId}/>
 
-        <Grid item xs={5}>
-         {
-          proposeVideoData.map((video:any)=>(
-            video.video.url !== videoData.url && (
-            <Grid rowSpacing={1} columnSpacing={2}>
-            <Grid item xs={4} className={styles.test}>
-              <iframe
-                title={video.video.name}
-                src={`${_ENV.NEXT_URL_LOCAL}/videos/${video.video.url}`} 
-                allowFullScreen
-              ></iframe>
-            </Grid>
-            <Grid item xs={4}>
-                <h1 >{video.video.name}</h1>
-                </Grid>
-          </Grid>
-            )
-          ))
-         }
-          
 
-        </Grid>
       </Grid>
       
     </Box>

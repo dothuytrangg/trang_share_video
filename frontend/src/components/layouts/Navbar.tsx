@@ -295,7 +295,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (valid && thumbnailFile && videoFile) {
         const slug = slugify(name);
         const formData = new FormData();
-
+        
 
         formData.append("thumbnail", thumbnailFile);
         formData.append("name", name);

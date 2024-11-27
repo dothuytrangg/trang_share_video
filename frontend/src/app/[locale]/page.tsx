@@ -21,7 +21,8 @@ export default function HomePage() {
       {/* <h1>fdfdfd</h1> */}
       <Category onCategorySelect={(id)=>setSelectedCategoryId(id)}></Category> 
        <div className="grid grid-cols-4 gap-3 mt-4"> 
-          <Videos categoryId={selectedCategoryId}></Videos>
+          <Videos categoryId={selectedCategoryId}>
+          </Videos>
       </div>
 
       {/* <VideoDetail></VideoDetail> */}
