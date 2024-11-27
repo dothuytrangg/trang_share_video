@@ -33,8 +33,9 @@ const VideoDetail = () => {
   const [proposeVideoData, setProposeVideoData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true); // Điều khiển ẩn/hiện nút
-  const [isMuted, setIsMuted] = useState(true); // Trạng thái âm thanh
+  const [isMuted, setIsMuted] = useState(false); // Trạng thái âm thanh
   // const [userData, setUserData] = useState([]);
+
   useEffect(() => {
     if (videoId) {
 
@@ -92,11 +93,20 @@ const VideoDetail = () => {
 
   const togglePlayPause = () => {
     if (videoRef.current) {
+      // Nếu video đang phát -> Pause
       if (isPlaying) {
         videoRef.current.pause();
       } else {
+        // Nếu video đang dừng -> Play
         videoRef.current.play();
+  
+        // Khi video được phát lần đầu, bật âm thanh nếu đang tắt
+        if (videoRef.current.muted) {
+          videoRef.current.muted = false;
+          setIsMuted(false);
+        }
       }
+  
       setIsPlaying(!isPlaying);
     }
   };
@@ -233,6 +243,7 @@ const VideoDetail = () => {
               },
             }}
           >
+            
             {isMuted ? <VolumeOffIcon fontSize="large" /> : <VolumeUpIcon fontSize="large" />}
           </IconButton>
         </Box>

@@ -14,7 +14,7 @@ import { cookies } from "next/headers";
 import { useState } from "react";
 export default function HomePage() {
   const t = useTranslations("HomePage");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("1");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("2");
 
   return (
     <div className="grid">
