@@ -4,7 +4,7 @@
 import Category from "@/components/HomePages/category";
 import VideoDetail from "@/components/video-detail/VideoDetail";
 import Videos from "@/components/HomePages/videos";
-import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardMedia, Typography, Grid } from "@mui/material";
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/stores/hookStore";
@@ -17,16 +17,13 @@ export default function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState("2");
 
   return (
-    <div className="grid">
-      {/* <h1>fdfdfd</h1> */}
-      <Category onCategorySelect={(id)=>setSelectedCategoryId(id)}></Category> 
-       <div className="grid grid-cols-4 gap-3 mt-4"> 
-          <Videos categoryId={selectedCategoryId}>
-          </Videos>
-      </div>
 
-      {/* <VideoDetail></VideoDetail> */}
-   
-    </div>
+    <Grid >
+      <Category onCategorySelect={(id) => setSelectedCategoryId(id)}></Category>
+      <Grid sx={{ mt: 1 }} container spacing={2}>
+        <Videos categoryId={selectedCategoryId}>
+        </Videos>
+      </Grid>
+    </Grid>
   );
 }

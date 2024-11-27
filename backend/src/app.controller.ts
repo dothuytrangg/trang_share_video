@@ -12,12 +12,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  
-  // @Get('image')
-  // image(){
-  //         // return 3;
-  //     return readFileSync('uploads/avatar/1729937828293-thumb-nail-69.jpg');
-  // }
   @Get('resource/:folder/:name')
   getFile(@Param('name') name:string, @Param('folder') folder:string): StreamableFile {
     // console.log('`uploads/${folder}/${name}`: ', `uploads/${folder}/${name}`);

@@ -24,6 +24,11 @@ export class VideosController {
         return this.videoService.findAllPage(query)
     }
 
+    @Get("videoHomePage")
+    getVideoHomePage(@Query() query:FilterVideoDto):Promise<Video[]>{
+        return this.videoService.getVideoForHomePage(query)
+    }
+
 
 
 
@@ -172,7 +177,7 @@ export class VideosController {
         }
         let fileName = file.filename;
         let fileContent = readFileSync(file.path);
-        WebDav.put('avatars/'+fileName,fileContent).then(res=>{
+        WebDav.put('videos/'+fileName,fileContent).then(res=>{
             if(res.status == 201){
                 //remove
             //    unlink(file.path,(err)=>{

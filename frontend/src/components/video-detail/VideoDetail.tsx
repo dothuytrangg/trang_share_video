@@ -26,7 +26,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 
 const VideoDetail = () => {
   const router = useRouter();
-  const { videoId } = useParams(); 
+  const { videoId } = useParams();
   const searchParams = useSearchParams(); // Dùng để lấy query params
   const categoryId = searchParams.get("categoryId"); // Lấy categoryId từ URL
   const [videoData, setVideoData] = useState<any>(null);
@@ -35,23 +35,28 @@ const VideoDetail = () => {
   const [showControls, setShowControls] = useState(true); // Điều khiển ẩn/hiện nút
   const [isMuted, setIsMuted] = useState(false); // Trạng thái âm thanh
   // const [userData, setUserData] = useState([]);
-
+  var ranonce = false;
   useEffect(() => {
-    if (videoId) {
+    if (!ranonce) {
+      if (videoId) {
 
-      fetchVideoDetail();
-      
+        fetchVideoDetail();
+      }
+      if (categoryId) {
+        fetchVideoDetailByCategoryId();
+      }
+      ranonce = true;
     }
 
-  }, [videoId]);
+  }, [videoId, categoryId]);
 
   const fetchVideoDetail = async () => {
-    
-    await requestApi(`videos/${videoId}`,'GET').then((res: any) => {
+
+    await requestApi(`videos/${videoId}`, 'GET').then((res: any) => {
       // console.log('res one',res)
       if (res.success) {
 
-        setVideoData(res.data) 
+        setVideoData(res.data)
         // setUserData(res.data.user); 
 
       }
@@ -60,24 +65,20 @@ const VideoDetail = () => {
       console.error(err);
     })
     setLoading(false)
-  
-     
+
+
   };
 
 
-  useEffect(() => {
-    if (categoryId) {
-      fetchVideoDetailByCategoryId();
-    }
-  }, [categoryId]);
+
 
   const fetchVideoDetailByCategoryId = async () => {
-    
-    await requestApi(`video-details/${categoryId}`,'GET').then((res: any) => {
+
+    await requestApi(`video-details/${categoryId}`, 'GET').then((res: any) => {
       console.log("Videos by Category:", res.data);
       if (res.success) {
         setProposeVideoData(res.data);
-         
+
       }
 
     }).catch((err: any) => {
@@ -85,8 +86,8 @@ const VideoDetail = () => {
     })
 
     setLoading(false)
-  
-     
+
+
   };
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -99,14 +100,14 @@ const VideoDetail = () => {
       } else {
         // Nếu video đang dừng -> Play
         videoRef.current.play();
-  
+
         // Khi video được phát lần đầu, bật âm thanh nếu đang tắt
         if (videoRef.current.muted) {
           videoRef.current.muted = false;
           setIsMuted(false);
         }
       }
-  
+
       setIsPlaying(!isPlaying);
     }
   };
@@ -126,21 +127,21 @@ const VideoDetail = () => {
     setShowControls(true);
   };
 
-    // Hàm bật/tắt âm thanh
-    const toggleMute = () => {
-      if (videoRef.current) {
-        videoRef.current.muted = !isMuted;
-        setIsMuted(!isMuted);
-      }
-    };
+  // Hàm bật/tắt âm thanh
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
 
-    
-  
+
+
   if (loading) {
     return <div>Loading...</div>;
   }
-  
+
 
 
   if (!videoData) {
@@ -153,7 +154,7 @@ const VideoDetail = () => {
     <Box className={styles.container}>
       <Grid container spacing={3}>
         <Grid item xs={7}>
-        {/* <div className={styles.videoWrapper}>
+          {/* <div className={styles.videoWrapper}>
           <video
             className={styles.videoPlayer}
             src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
@@ -163,98 +164,98 @@ const VideoDetail = () => {
             playsInline
           ></video>
         </div> */}
-      <Box
-      sx={{
-        width: "100%",
-        maxWidth: 800,
-        aspectRatio: "16/9",
-        position: "relative",
-        backgroundColor: "#000",
-        overflow: "hidden",
-      }}
-
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setShowControls(false)} // Ẩn nút khi rời chuột
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        className={styles.videoPlayer}
-        src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
-        loop
-        muted
-        playsInline
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      />
-
-      {/* Play/Pause Button */}
-      {showControls && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            cursor: "pointer",
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-          }}
-          onClick={togglePlayPause}
-        >
-          <IconButton
+          <Box
             sx={{
-              color: "#fff",
-              fontSize: "2rem",
+              width: "100%",
+              maxWidth: 800,
+              aspectRatio: "16/9",
+              position: "relative",
+              backgroundColor: "#000",
+              overflow: "hidden",
             }}
-            className={styles.overlayButton }
 
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={() => setShowControls(false)} // Ẩn nút khi rời chuột
           >
-            {isPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
-          </IconButton>
-        </Box>
-      )}
+            {/* Video Element */}
+            <video
+              ref={videoRef}
+              className={styles.videoPlayer}
+              src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
+              loop
+              muted
+              playsInline
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
 
-       {/* Nút Âm Thanh */}
-       {showControls && (
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 10,
-            right: 10,
-            zIndex: 10,
-          }}
-        >
-          <IconButton
-            onClick={toggleMute}
-            sx={{
-              backgroundColor: "rgba(0, 0, 0, 0.6)",
-              color: "#fff",
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-              },
-            }}
-          >
-            
-            {isMuted ? <VolumeOffIcon fontSize="large" /> : <VolumeUpIcon fontSize="large" />}
-          </IconButton>
-        </Box>
-      )}
-    </Box>
+            {/* Play/Pause Button */}
+            {showControls && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10,
+                  cursor: "pointer",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                }}
+                onClick={togglePlayPause}
+              >
+                <IconButton
+                  sx={{
+                    color: "#fff",
+                    fontSize: "2rem",
+                  }}
+                  className={styles.overlayButton}
+
+                >
+                  {isPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+                </IconButton>
+              </Box>
+            )}
+
+            {/* Nút Âm Thanh */}
+            {showControls && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 10,
+                  right: 10,
+                  zIndex: 10,
+                }}
+              >
+                <IconButton
+                  onClick={toggleMute}
+                  sx={{
+                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    color: "#fff",
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    },
+                  }}
+                >
+
+                  {isMuted ? <VolumeOffIcon fontSize="large" /> : <VolumeUpIcon fontSize="large" />}
+                </IconButton>
+              </Box>
+            )}
+          </Box>
 
 
 
           <h1 className={styles.videoTitle}>{videoData.name}</h1>
           <Box className={styles.channelInfo}>
-            <Avatar src={`${_ENV.NEXT_URL_LOCAL}/avatars/${videoData.user.avatar}`}  alt = 'akelo'/>
+            <Avatar src={`${_ENV.NEXT_URL_LOCAL}/avatars/${videoData.user.avatar}`} alt='akelo' />
             <Box className={styles.channelText}>
               <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
               <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography>
@@ -278,7 +279,7 @@ const VideoDetail = () => {
             <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
           </Box>
 
-          <Box  style={{ height: "100%", overflow: "hidden" }}>
+          <Box style={{ height: "100%", overflow: "hidden" }}>
             {/* <Typography variant="h6">74,731 Comments</Typography> */}
             <Button startIcon={<SortIcon />}>Sort by</Button>
 
@@ -288,14 +289,14 @@ const VideoDetail = () => {
               <Button variant="text">Cancel</Button>
               <Button variant="text" disabled>Comment</Button>
             </Box>
-          </Box> 
+          </Box>
 
         </Grid>
-        <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId}/>
+        <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId} />
 
 
       </Grid>
-      
+
     </Box>
   );
 };

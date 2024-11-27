@@ -73,6 +73,45 @@ export class VideosService {
       return response;
 
   }
+
+  async getVideoForHomePage(query:FilterVideoDto):Promise<any>{
+    let response = common_response;
+    const items_per_page = Number(query.items_per_page) || 10;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1)* items_per_page;
+    const keyword = query.search || '';
+   
+    const [res, total] = await this.videoRepository.findAndCount({
+        where:[
+            {status:'confirmed'}
+          
+        ],
+        order: {created_at:"DESC"},
+        take:items_per_page,
+        skip:skip,
+        select:['id','name','description','slug','user','timeout','url','likes','dislike','viewed','thumbnail','position','is_hot','status','created_at','updated_at'],
+        relations: ['user'],
+    })
+    const lastPage = Math.ceil(total / items_per_page);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+    let ok = [res, total]
+    if(ok){
+      response.success = true;
+      response.data = res;
+      response.page = page;
+      response.lastPage = lastPage;
+      response.nextPage = nextPage;
+      response.prevPage = prevPage;
+      response.total = total;
+      return response;
+    }else{
+      response.success = false;
+    }
+
+    return response;
+
+}
   async findOne(id:number):Promise<Video>{
     let response = common_response;
     const video = await this.videoRepository.findOne({
