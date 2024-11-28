@@ -3,8 +3,11 @@ import Grid from "@mui/material/Grid";
 import styles from "./YourStyles.module.css"; // Đảm bảo bạn có tệp CSS hoặc module styles.
 import { _ENV } from "@/contstants";
 import { Box, Button, Typography } from "@mui/material";
+import { useLocale, useTranslations } from "next-intl";
 
 const ProposeVideo = ({ proposeVideoData, videoData,categoryId }: { proposeVideoData: any[]; videoData: any,categoryId:any }) => {
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
   return (
  (
     <Grid
@@ -66,7 +69,7 @@ const ProposeVideo = ({ proposeVideoData, videoData,categoryId }: { proposeVideo
                 {video.video.name}
               </Typography>
               <Button
-                href={`${_ENV.NEXT_URL_PRODUCTION}/en/detail/${video.video.id}?categoryId=${categoryId}`}
+                href={`${_ENV.NEXT_URL_PROD}/${locale}/detail/${video.video.id}?categoryId=${categoryId}`}
                 target="_blank"
                 sx={{
                   fontSize: "12px",
