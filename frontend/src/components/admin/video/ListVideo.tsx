@@ -12,6 +12,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { Span } from "next/dist/trace";
 import { format } from "date-fns";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 
 
@@ -502,7 +503,7 @@ const formatDateTime = (isoString: string): string => {
                                     fullWidth
                                     variant="outlined"
                                     placeholder={t("name_video")}
-                                    style={{ marginBottom: 20 }}
+                                    sx={{ mb: 2 }}
                                 />
 
                                 {/* Input for Video Description */}
@@ -520,14 +521,15 @@ const formatDateTime = (isoString: string): string => {
                                     multiline
                                     rows={3}
                                     InputProps={{ style: { resize: 'vertical' } }}
-                                    style={{ marginBottom: 20 }}
+                                    sx={{ mb: 2 }}
                                 />
+
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6} >
-                                        {/* Khung chứa ảnh*/}
+                                    <Grid item xs={12} sm={6}>
+                                        {/* Thumbnail Box */}
                                         <Box
                                             sx={{
-                                                width: '250px',
+                                                width: { xs: '100%', sm: '250px' },
                                                 height: '150px',
                                                 border: '2px dashed #3f51b5',
                                                 borderRadius: '8px',
@@ -536,7 +538,7 @@ const formatDateTime = (isoString: string): string => {
                                                 justifyContent: 'center',
                                                 overflow: 'hidden',
                                                 backgroundColor: '#f0f0f0',
-                                                marginTop: 2
+                                                mt: 2
                                             }}
                                         >
                                             {thumbnailPreview ? (
@@ -554,44 +556,38 @@ const formatDateTime = (isoString: string): string => {
                                             )}
                                         </Box>
                                         {thumbnailError && (
-                                            <span style={{ color: 'red', display: 'block'}}>
+                                            <span style={{ color: 'red', display: 'block' }}>
                                                 {thumbnailErrorMessage}
                                             </span>
                                         )}
-
                                     </Grid>
-                                    <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <Grid item style={{
-              
-                                           display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
-                                                <Autocomplete
-                                                    multiple
-                                                    options={categoryData}
-                                                    getOptionLabel={(option) => option.label}
-                                                    value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
-                                                    onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
-                                                    renderInput={(params) => (
-                                                        <TextField {...params}
-                                                         label={t('add_to_category')}
-                                                         error={optionError}
-                                                         helperText={optionErrorMessage} />
-                                                    )}
-                                                    filterOptions={(options, state) =>
-                                                        options.filter(option =>
-                                                            option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                                                        )
-                                                    }
-                                                    style={{ width: 300 }}
-                                                    
 
-                                                />
-                                             
-                                                
+                                    <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 3 }}>
+                                            <Autocomplete
+                                                multiple
+                                                options={categoryData}
+                                                getOptionLabel={(option) => option.label}
+                                                value={categoryOptions}
+                                                onChange={(event, newValue: any) => setCategoryOptions(newValue)}
+                                                renderInput={(params) => (
+                                                    <TextField {...params}
+                                                        label={t('add_to_category')}
+                                                        error={optionError}
+                                                        helperText={optionErrorMessage} />
+                                                )}
+                                                filterOptions={(options, state) =>
+                                                    options.filter(option =>
+                                                        option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                                                    )
+                                                }
+                                                sx={{ width: { xs: '100%', sm: 300 } }}
+                                            />
                                         </Grid>
 
-                                        <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
+                                        <Grid item sx={{ mt: 9, justifyContent: "flex-end", display: "flex" }}>
                                             {videoError ? (
-                                                <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                                                <span style={{ color: 'red', display: 'block'}}>
                                                     {videoErrorMessage}
                                                 </span>
                                             ) : (
@@ -604,20 +600,18 @@ const formatDateTime = (isoString: string): string => {
                                         </Grid>
                                     </Grid>
 
-                                    {/* </Grid> */}
-
-
-                                    {/* Cột nút chọn ảnh Thumbnail */}
-                                    <Grid item xs={6}>
+                                    {/* Thumbnail Button */}
+                                    <Grid item xs={12} sm={6}>
                                         <Button
                                             variant="contained"
                                             color="primary"
                                             component="label"
                                             startIcon={<PhotoCameraIcon />}
-                                            style={{
+                                            sx={{
                                                 color: '#fff',
                                                 fontWeight: 'bold',
-                                                padding: '8px 16px',
+                                                p: 1,
+                                                width: { xs: '100%', sm: 'auto' }
                                             }}
                                         >
                                             {t('Choose_thumbnail')}
@@ -628,19 +622,19 @@ const formatDateTime = (isoString: string): string => {
                                                 accept="image/*"
                                             />
                                         </Button>
-
                                     </Grid>
 
-                                    {/* Cột nút chọn video */}
-                                    <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    {/* Video Button */}
+                                    <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                         <Button
                                             variant="contained"
                                             color="secondary"
                                             component="label"
                                             startIcon={<VideoLibraryIcon />}
-                                            style={{
-                                                padding: '8px 16px',
+                                            sx={{
+                                                p: 1,
                                                 fontWeight: 'bold',
+                                                width: { xs: '100%', sm: 'auto' }
                                             }}
                                         >
                                             {t('upload_video')}
@@ -652,10 +646,7 @@ const formatDateTime = (isoString: string): string => {
                                             />
                                         </Button>
                                     </Grid>
-
-
                                 </Grid>
-
                             </DialogContent>
 
                             {/* Dialog Actions */}
@@ -868,12 +859,24 @@ const formatDateTime = (isoString: string): string => {
 
 
                           <TableCell  >
-                            <Button variant="outlined" color="primary" onClick={()=>handleOpenUpdateDialog(video)}  >
+                            <Stack
+                              direction={{ xs: 'column', sm: 'row' }}
+                              spacing={1}
+                            >
+                            <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(video)} sx={{
+                              minWidth: { xs: '100%', sm: 'auto' },
+                            }}
+                            >
                               {t("edit")}
                             </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleOpenDeleteDialog(video)}>
+                            <Button variant="outlined" color="primary"  onClick={() => handleOpenDeleteDialog(video)} sx={{
+                              minWidth: { xs: '100%', sm: 'auto' },
+                            }}
+                            >
                               {t("delete")}
                             </Button>
+                            </Stack>
+
                               {/* <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>{setStatus("comfirmed"),console.log(status)}}  >
                               accept_status
                             </Button> */}
@@ -924,6 +927,7 @@ const formatDateTime = (isoString: string): string => {
                             </Stack>
 
                         </div>
+
 
                     </React.StrictMode>
                 </div>

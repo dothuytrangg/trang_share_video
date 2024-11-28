@@ -1,4 +1,3 @@
-
 'use client'
 
 import Table from '@mui/material/Table';
@@ -20,6 +19,7 @@ import router from 'next/router';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from "next/navigation";
 import { format } from 'date-fns';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
 
 function createData(
   name: string,
@@ -315,251 +315,262 @@ const handleOpenDeleteDialog = (user: any) => {
 
   const renderPage = () => {
     if (!loading) {
-      return <div className="grid grid-cols-1 gap-4">
-        <React.StrictMode>
-
-      
-        <Dialog
-        open={openAddDialog}
-        onClose={() => setOpenAddDialog(false)}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault(); 
-            handleCreateUser()
-       
-          },
-        }}
-      >
-        <DialogTitle>{t("add_user")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-          {t("add_text")}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            error={nameError}
-            helperText={nameErrorMessage}
-            onChange={(val) => {
-              setName(val.target.value);
-            }}
-            margin="dense"
-            id="full_name"
-            name="full_name"
-            label={t("name_account")}
-            type="text"
-            fullWidth
-            variant="standard"
-            placeholder= {t("input_name")}
-          />
-           <TextField
-            autoFocus
-            error={emailError}
-            helperText={emailErrorMessage}
-            onChange={(val) => {
-              setEmail(val.target.value);
-              setEmailErrorMessage('');
-            }}
-            margin="dense"
-            id="email"
-            name="email"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            placeholder="Email..."
-          />
-            <TextField
-            autoFocus
-            error={passwordError}
-            helperText={passwordErrorMessage}
-            onChange={(val) => {
-              setPassword(val.target.value);
-            }}
-            margin="dense"
-            id="password"
-            name="password"
-            label= {t("password")}
-            type="password"
-            fullWidth
-            variant="standard"
-            
-          />
-      
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={()=>setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("add_user")}</Button>
-        </DialogActions>
-      </Dialog>
-     
-      <Dialog
-        open={openUpdateDialog}
-        onClose={() => setOpenUpdateDialog(false)}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault(); 
-            handleUpdateUser(selectedUser.id);
-       
-          },
-        }}
-      >
-        <DialogTitle>{t("update_user")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-          {t("update_text")}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            error={nameError}
-            helperText={nameErrorMessage}
-            onChange={(val) => {
-              setName(val.target.value);
-            }}
-            value={full_name}
-            margin="dense"
-            id="full_name"
-            name="full_name"
-            label= {t("name_account")}
-            type="text"
-            fullWidth
-            variant="standard"
-            placeholder= {t("input_name")}
-          />
-          <TextField
-            autoFocus
-            error={passwordError}
-            helperText={passwordErrorMessage}
-            onChange={(val) => {
-              setPassword(val.target.value);
-            }}
-            value={password}
-            margin="dense"
-            id="password"
-            name="password"
-            label= {t("password")}
-            type="password"
-            fullWidth
-            variant="standard"
-            
-          />
-    
-      
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("btnUpdate")}</Button>
-        </DialogActions>
-      </Dialog>
-            {/* Snackbar for notifications */}
-        <Snackbar
-        open={openSnackbar}
-        autoHideDuration={4000}
-        onClose={() => setOpenSnackbar(false)}
-        >
-        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-        </Snackbar>
-        <div className="m-5 mt-20">
-          <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={()=>setOpenAddDialog(true)}>
-                {t("addAccount")}
-            </Button>
-
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell >{t("name_account")}</TableCell>
-                  <TableCell >Email</TableCell>
-                  <TableCell >{t("role")}</TableCell>
-                  <TableCell >{t("create_date")}</TableCell>
-                  <TableCell >{t("action")}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                  {
-                    users.map((user: any) => (
-                      <TableRow key={user.id}>
-                        <TableCell>{user.id}</TableCell>
-                        <TableCell >{user.full_name}</TableCell>
-                        <TableCell >{user.email}</TableCell>
-                        <TableCell >{
-                           user.role == 3 ? (t("admin")) :(t('user'))
-                          }</TableCell>
-                        <TableCell >
-                          {formatDateTime(user.created_at)}
-                        </TableCell>
-                     
-                        <TableCell  >
-                          <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
-                            {t("edit")}
-                          </Button>
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)} >
-                            {t("delete")}
-                          </Button>
-                          
-                        </TableCell>
-                      
-                      </TableRow>
-                    ))
-                  
-                  }
-                
-                </TableBody>
-            </Table>
-            <Dialog
-                open={openDeleteDialog}
-                onClose={() => setOpenDeleteDialog(false)}
+      return (
+        <div className="grid grid-cols-1 gap-4">
+          <React.StrictMode>
+            <ReponsiveContainer>
+              <Dialog
+                open={openAddDialog}
+                onClose={() => setOpenAddDialog(false)}
+                PaperProps={{
+                  component: 'form',
+                  onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                    event.preventDefault();
+                    handleCreateUser();
+                  },
+                }}
               >
-                <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                <DialogTitle>{t("add_user")}</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    {t("are_you_sure_delete_user", { user: selectedUser?.name })}
+                    {t("add_text")}
                   </DialogContentText>
+                  <TextField
+                    autoFocus
+                    error={nameError}
+                    helperText={nameErrorMessage}
+                    onChange={(val) => {
+                      setName(val.target.value);
+                    }}
+                    margin="dense"
+                    id="full_name"
+                    name="full_name"
+                    label={t("name_account")}
+                    type="text"
+                    fullWidth
+                    variant="standard"
+                    placeholder= {t("input_name")}
+                  />
+                   <TextField
+                    autoFocus
+                    error={emailError}
+                    helperText={emailErrorMessage}
+                    onChange={(val) => {
+                      setEmail(val.target.value);
+                      setEmailErrorMessage('');
+                    }}
+                    margin="dense"
+                    id="email"
+                    name="email"
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    variant="standard"
+                    placeholder="Email..."
+                  />
+                    <TextField
+                    autoFocus
+                    error={passwordError}
+                    helperText={passwordErrorMessage}
+                    onChange={(val) => {
+                      setPassword(val.target.value);
+                    }}
+                    margin="dense"
+                    id="password"
+                    name="password"
+                    label= {t("password")}
+                    type="password"
+                    fullWidth
+                    variant="standard"
+                    
+                  />
+              
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
-                  <Button
-                    onClick={() => {
-                      console.log("Selected user ID:", selectedUser?.id); // Log để kiểm tra
-                      if (selectedUser?.id) {
-                        handleDeleteUser(selectedUser.id);
-                      }
-                      setOpenDeleteDialog(false);
-                    }}
-                    color="error"
-                  >
-                    {t("btnDelete")}
-                  </Button>
-
+                  <Button onClick={()=>setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                  <Button type="submit" >{t("add_user")}</Button>
                 </DialogActions>
               </Dialog>
 
-  
-          </TableContainer>
-          <Stack spacing={2}>
-      <Pagination style={{margin:10}}  count={lastPage} page={page} onChange={handleChange}  variant="outlined" color="primary"  />
-  
-    </Stack>
- 
+              <Dialog
+                open={openUpdateDialog}
+                onClose={() => setOpenUpdateDialog(false)}
+                PaperProps={{
+                  component: 'form',
+                  onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                    event.preventDefault();
+                    handleUpdateUser(selectedUser.id);
+                  },
+                }}
+              >
+                <DialogTitle>{t("update_user")}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {t("update_text")}
+                  </DialogContentText>
+                  <TextField
+                    autoFocus
+                    error={nameError}
+                    helperText={nameErrorMessage}
+                    onChange={(val) => {
+                      setName(val.target.value);
+                    }}
+                    value={full_name}
+                    margin="dense"
+                    id="full_name"
+                    name="full_name"
+                    label= {t("name_account")}
+                    type="text"
+                    fullWidth
+                    variant="standard"
+                    placeholder= {t("input_name")}
+                  />
+                  <TextField
+                    autoFocus
+                    error={passwordError}
+                    helperText={passwordErrorMessage}
+                    onChange={(val) => {
+                      setPassword(val.target.value);
+                    }}
+                    value={password}
+                    margin="dense"
+                    id="password"
+                    name="password"
+                    label= {t("password")}
+                    type="password"
+                    fullWidth
+                    variant="standard"
+                    
+                  />
+              
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+                  <Button type="submit" >{t("btnUpdate")}</Button>
+                </DialogActions>
+              </Dialog>
 
+              <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+              >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
 
+              <div className="m-5 mt-20">
+                <TableContainer className="p-5" sx={{ border: 0 }} component={Paper}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenAddDialog(true)}
+                  >
+                    {t("addAccount")}
+                  </Button>
 
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>ID</TableCell>
+                        <TableCell>{t("name_account")}</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>{t("role")}</TableCell>
+                        <TableCell>{t("create_date")}</TableCell>
+                        <TableCell>{t("action")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {users.map((user: any) => (
+                        <TableRow key={user.id}>
+                          <TableCell>{user.id}</TableCell>
+                          <TableCell>{user.full_name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            {user.role == 3 ? t("admin") : t("user")}
+                          </TableCell>
+                          <TableCell>{formatDateTime(user.created_at)}</TableCell>
+                          <TableCell>
+                            <Stack
+                              direction={{ xs: 'column', sm: 'row' }}
+                              spacing={1}
+                            >
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => handleOpenUpdateDialog(user)}
+                                sx={{
+                                  minWidth: { xs: '100%', sm: 'auto' },
+                                }}
+                              >
+                                {t("edit")}
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => handleOpenDeleteDialog(user)}
+                                sx={{
+                                  minWidth: { xs: '100%', sm: 'auto' },
+                                }}
+                              >
+                                {t("delete")}
+                              </Button>
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  <Dialog
+                    open={openDeleteDialog}
+                    onClose={() => setOpenDeleteDialog(false)}
+                  >
+                    <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        {t("are_you_sure_delete_user", { user: selectedUser?.name })}
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => setOpenDeleteDialog(false)}>
+                        {t("btnCancel")}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          if (selectedUser?.id) {
+                            handleDeleteUser(selectedUser.id);
+                          }
+                          setOpenDeleteDialog(false);
+                        }}
+                        color="error"
+                      >
+                        {t("btnDelete")}
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </TableContainer>
+
+                <Stack spacing={2}>
+                  <Pagination
+                    style={{ margin: 10 }}
+                    count={lastPage}
+                    page={page}
+                    onChange={handleChange}
+                    variant="outlined"
+                    color="primary"
+                  />
+                </Stack>
+              </div>
+            </ReponsiveContainer>
+          </React.StrictMode>
         </div>
-    
-
-
-        </React.StrictMode>
-
-  
-      </div>
+      );
     }
-  }
+  };
 
-  return renderPage()
+  return renderPage();
 };
 
 export default ListAccount;

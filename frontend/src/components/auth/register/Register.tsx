@@ -25,8 +25,16 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   margin: 'auto',
   boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
+  backgroundColor: theme.palette.background.default,
   [theme.breakpoints.up('sm')]: {
     width: '450px',
+    backgroundColor: "red",
+  },
+  [theme.breakpoints.up('md')]: {
+    backgroundColor: "yellow",
+  },
+  [theme.breakpoints.up('lg')]: {
+    backgroundColor: "blue",
   },
 }));
 
@@ -34,6 +42,16 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   height: '100%',
   padding: 4,
   backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+  backgroundColor: theme.palette.background.default,
+  [theme.breakpoints.up('sm')]: {
+    backgroundColor: theme.palette.secondary.light,
+  },
+  [theme.breakpoints.up('md')]: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+  [theme.breakpoints.up('lg')]: {
+    backgroundColor: theme.palette.secondary.dark,
+  },
 }));
 
 const Register = () => {

@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic'
 import Header from '@/components/layouts/Header'
 import { cookies } from "next/headers";
 import React from "react";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 export const metadata: Metadata = {
   title: "TUN STUDIO",

@@ -26,6 +26,7 @@ import requestApi from "../../../../helpers/api";
 import { resolveSoa } from "dns";
 import { format } from 'date-fns';
 import Category from "@/components/HomePages/category";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 
 // import Modal from "@mui/material/Modal";
@@ -311,6 +312,8 @@ const ListCategory = () => {
       return (
         <div className="grid grid-cols-1 gap-4">
           <React.StrictMode>
+            <ReponsiveContainer>
+
             <Dialog
               open={openAddDialog}
               onClose={() => setOpenAddDialog(false)}
@@ -472,17 +475,32 @@ const ListCategory = () => {
                           <TableCell >
                             {formatDateTime(category.created_at)}
                           </TableCell>
-
-                          <TableCell  >
-                            <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(category)} >
+                          <TableCell>
+                            <Stack
+                              direction={{ xs: 'column', sm: 'row' }}
+                              spacing={1}
+                            >
+                            <Button 
+                            variant="outlined" 
+                            color="primary" 
+                            onClick={() => handleOpenUpdateDialog(category)} 
+                              sx={{
+                                minWidth: { xs: '100%', sm: 'auto' },
+                              }}>
                               {t("edit")}
                             </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(category)}>
+                            <Button 
+                            variant="outlined" 
+                            color="primary"
+                            onClick={() => handleOpenDeleteDialog(category)}
+                              sx={{
+                                minWidth: { xs: '100%', sm: 'auto' },
+                              }}>
                               {t("delete")}
                               
                             </Button>
+                            </Stack>
                           </TableCell>
-
                         </TableRow>
                       ))
                       
@@ -529,6 +547,8 @@ const ListCategory = () => {
               </Stack>
 
             </div>
+          </ReponsiveContainer>
+
           </React.StrictMode>
         </div>
       );

@@ -33,6 +33,8 @@ import {
 } from "@/stores/features/masterSlice";
 import { useLocale, useTranslations } from "next-intl";
 import Videos from "@/components/HomePages/videos";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
+import CustomCard from "@/util/customCard";
 
 // import NavBar from './NavBar';
 
@@ -185,7 +187,7 @@ const LoginView = () => {
 
     } else {
       return (
-        <SignInContainer direction="column" justifyContent="space-between">
+        <ReponsiveContainer direction="column" justifyContent="space-between">
           <Stack
             sx={{
               justifyContent: "center",
@@ -193,7 +195,7 @@ const LoginView = () => {
               p: 2,
             }}
           >
-            <Card variant="outlined">
+            <CustomCard variant="outlined">
               <Image
                 src={logo}
                 className="m-auto"
@@ -287,9 +289,9 @@ const LoginView = () => {
                   </span>
                 </Typography>
               </Box>
-            </Card>
+            </CustomCard>
           </Stack>
-        </SignInContainer>
+        </ReponsiveContainer>
       );
     }
   };

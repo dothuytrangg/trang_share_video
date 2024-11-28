@@ -30,6 +30,12 @@ export class VideosController {
     }
 
 
+    @Get("key")
+    searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
+        return this.videoService.searchVideo(query)
+    }
+
+
 
 
     // @UseGuards(AuthGuard)

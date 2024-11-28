@@ -48,6 +48,7 @@ export class AuthService {
       password: hashPassword,
     });
     if (user) {
+      user.statusVerify = 'active';
       response.success = true;  
       response.message = 'Registration successful';
     } else {

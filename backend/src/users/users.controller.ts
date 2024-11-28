@@ -16,110 +16,110 @@ import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 @Controller('users')
 export class UsersController {
 
-    constructor(private userService:UsersService){}
+    constructor(private userService: UsersService) { }
     @UseGuards(AuthGuard)
     @Get()
-    FindAllPage(@Query() query: FilterUserDto):Promise<User[]>{
+    FindAllPage(@Query() query: FilterUserDto): Promise<User[]> {
         // console.log(query);
         return this.userService.findAllPage(query);
     }
 
     @UseGuards(AuthGuard)
     @Get('profile')
-    Profile(@Req() req:any):Promise<User>{
-        
+    Profile(@Req() req: any): Promise<User> {
+
         return this.userService.findOne(Number(req.user_data.id))
     }
-    
+
 
     @UseGuards(AuthGuard)
     @Get(':id')
-    findOne(@Param('id') id:string):Promise<User>{
+    findOne(@Param('id') id: string): Promise<User> {
         return this.userService.findOne(Number(id));
     }
-       
+
     @UseGuards(AuthGuard)
     // @UsePipes(ValidationPipe)
     @Post()
-    create(@Body() createUserDto:CreateUserDto):Promise<User>{
-        
+    create(@Body() createUserDto: CreateUserDto): Promise<User> {
+
         return this.userService.create(createUserDto);
     }
 
-   
+
 
     @UseGuards(AuthGuard)
     // @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)
     @Put('change-password/:id')
-    changePassword(@Param('id') id:string,@Body() changePasswordDto:ChangePasswordDto){
+    changePassword(@Param('id') id: string, @Body() changePasswordDto: ChangePasswordDto) {
         console.log('hhhh')
-        return this.userService.changePassword(Number(id),changePasswordDto);
+        return this.userService.changePassword(Number(id), changePasswordDto);
     }
     @UseGuards(AuthGuard)
     // @UseGuards(AdminAuth)
     @UsePipes(ValidationPipe)
     @Put(':id')
-    update(@Param('id') id:string,@Body() updateUserDto:UpdateUserDto){
-        return this.userService.update(Number(id),updateUserDto);
+    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        return this.userService.update(Number(id), updateUserDto);
     }
 
     @UseGuards(AuthGuard)
     @Delete(':id')
-    delete(@Param('id') id:string){
+    delete(@Param('id') id: string) {
         return this.userService.delete(Number(id));
     }
 
     @Post('upload-avatar')
     @UseGuards(AuthGuard)
-    @UseInterceptors(FileInterceptor('avatar',{
-        storage:storageConfig('avatars'),
-        fileFilter:(req,file,cb)=>{
+    @UseInterceptors(FileInterceptor('avatar', {
+        storage: storageConfig('avatars'),
+        fileFilter: (req, file, cb) => {
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
-            if(!allowedExtArr.includes(ext)){
+            const allowedExtArr = ['.jpg', '.png', '.jpeg', '.webp', '.PNG', '.JPG'];
+            if (!allowedExtArr.includes(ext)) {
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
-                cb(null,false);
-            }else{
+                cb(null, false);
+            } else {
                 const fileSize = parseInt(req.headers['content-length']);
-                if(fileSize > 1024 * 1024 * 5 ){
+                if (fileSize > 1024 * 1024 * 5) {
                     req.fileValidationError = 'File size is too large.Accepted size is less than';
-                    cb(null,false);
-                }else{
-                    cb(null,true)
+                    cb(null, false);
+                } else {
+                    cb(null, true)
                 }
             }
 
 
         }
 
-        }))
-    async uploadAvatar(@Req() req:any,@UploadedFile() file:Express.Multer.File){
+    }))
+    async uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
 
         // console.log("upload avavar");
         // console.log('user data',req.user_data)
         console.log(file)
 
-        if(req.fileValidationError){
-            throw new BadRequestException(req.fileValidationError )
+        if (req.fileValidationError) {
+            throw new BadRequestException(req.fileValidationError)
         }
-        if(!file){
+        if (!file) {
             throw new BadRequestException('File is required');
         }
         let fileName = file.filename;
         let fileContent = readFileSync(file.path);
-        WebDav.put('avatars/'+fileName,fileContent).then(res=>{
-            if(res.status == 201){
+        WebDav.put('avatars/' + fileName, fileContent).then(res => {
+            if (res.status == 201) {
                 // remove
-            //    unlink(file.path,(err)=>{
-            //     if (err) throw err;
-               
-            //    });
+                //    unlink(file.path,(err)=>{
+                //     if (err) throw err;
+
+                //    });
             }
-        }).catch((e=>{
+        }).catch((e => {
 
         }))
-        return this.userService.uploadAvatar(req.user_data.id,file.filename); 
+        return this.userService.uploadAvatar(req.user_data.id, file.filename);
     }
 
 }

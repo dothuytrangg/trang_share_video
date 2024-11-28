@@ -15,6 +15,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useLocale } from "next-intl";
 import { useDispatch } from "react-redux";
 import { setIsAdmin, setIsAuth } from "@/stores/features/masterSlice";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 export default function RootLayout({
   children,
 }: {
@@ -89,8 +90,10 @@ export default function RootLayout({
       </Backdrop>
     } else {
       return <Box className={classNameBackground} sx={{ display: "flex", height: '100vh' }}>
+        <ReponsiveContainer>
           <Navbar></Navbar>
           <Sidebar></Sidebar>
+        </ReponsiveContainer>
           <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 7 }}>
         <React.StrictMode>
             {children}

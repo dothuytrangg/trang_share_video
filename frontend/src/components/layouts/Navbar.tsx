@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete, useMediaQuery } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -23,7 +23,6 @@ import { _ENV, _GLOBAL } from "@/contstants";
 import requestApi from "../../../helpers/api";
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -53,8 +52,8 @@ export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(true)
   // const [user, setUser] = useState()
-  const [profileData,setProfileData] = useState([]);
-  const [profileAvatar,setProfileAvatar] = useState<any>(masterStore.user.avatar);;
+  const [profileData, setProfileData] = useState([]);
+  const [profileAvatar, setProfileAvatar] = useState<any>(masterStore.user.avatar);;
   var ranonce = false;
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
@@ -65,8 +64,8 @@ export default function Navbar() {
   const [nameErrorMessage, setNameErrorMessage] = useState("");
   const [descriptionError, setDescriptionError] = useState(false);
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-  const [thumbnailFile, setThumbnailFile] = useState<File | null >(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null); 
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [optionError, setOptionError] = useState(false);
   const [optionErrorMessage, setOptionErrorMessage] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -74,7 +73,7 @@ export default function Navbar() {
   const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState("");
   const [videoError, setVideoError] = useState(false);
   const [videoErrorMessage, setVideoErrorMessage] = useState("");
-  
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
@@ -82,50 +81,51 @@ export default function Navbar() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // const dispatch = useAppDispatch();
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-     setLoading(masterStore.loading)
-     loadAllCategory();
+    setLoading(masterStore.loading)
+    loadAllCategory();
 
     //  setProfileAvatar(masterStore.user.avatar);
-  
+
     if (!loading) {
-      requestApi('users/profile','GET').then((res:any)=>{
-        console.log('res profile',res);
-         if(res.success){
-             setProfileAvatar(res.data.avatar);
-             setLoading(true)
-         }
- 
+      requestApi('users/profile', 'GET').then((res: any) => {
+        console.log('res profile', res);
+        if (res.success) {
+          setProfileAvatar(res.data.avatar);
+          setLoading(true)
+        }
+
       }
- 
-      ).catch((err)=>{
-       console.log('err',err);
+
+      ).catch((err) => {
+        console.log('err', err);
       })
-      
-       setLoading(true)
-     }
-    
+
+      setLoading(true)
+    }
+
     console.log('masterStore: ', masterStore);
-    }, [masterStore])
+  }, [masterStore])
 
-    const loadAllCategory = async () => {
-      await requestApi(`categories/all`, "GET").then((res: any) => {
-          console.log('res category all', res);
-          if (res.success) {
-            setCategories(res.data)
-          }
+  const loadAllCategory = async () => {
+    await requestApi(`categories/all`, "GET").then((res: any) => {
+      console.log('res category all', res);
+      if (res.success) {
+        setCategories(res.data)
+      }
 
-      }).catch((err: any) => {
-          console.error(err);
-      })
+    }).catch((err: any) => {
+      console.error(err);
+    })
 
   };
-;
+  ;
 
-  
+
 
   const handleToggleDrawer = () => {
     dispatch(toggleDrawer());
@@ -163,7 +163,7 @@ export default function Navbar() {
     setAnchorEl(event.currentTarget);
   };
 
-  
+
   function slugify(str: string): string {
 
     str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -179,10 +179,10 @@ export default function Navbar() {
   const validateInputs = () => {
     const name = document.getElementById("name") as HTMLInputElement;
     const description = document.getElementById("description") as HTMLInputElement;
-  
+
     let isValid = true;
-  
-  
+
+
     if (!name.value) {
       setNameError(true);
       setNameErrorMessage(t("name_required"));
@@ -199,7 +199,7 @@ export default function Navbar() {
       setNameError(false);
       setNameErrorMessage("");
     }
-  
+
 
     if (!description.value) {
       setDescriptionError(true);
@@ -218,15 +218,14 @@ export default function Navbar() {
       setDescriptionErrorMessage("");
     }
 
-    if(categoryOptions.length < 1 )
-    {
-        setOptionError(true);
-        setOptionErrorMessage(t('select_at_least_1_category'))
-        isValid = false;
+    if (categoryOptions.length < 1) {
+      setOptionError(true);
+      setOptionErrorMessage(t('select_at_least_1_category'))
+      isValid = false;
 
     }
-  
-   
+
+
     if (!thumbnailFile) {
       setThumbnailError(true)
       setThumbnailErrorMessage(t("thumbnail_required"))
@@ -238,108 +237,111 @@ export default function Navbar() {
       setVideoErrorMessage(t("video_required"))
       isValid = false;
     }
-  
+
     return isValid;
   };
   const renderButtonThreeDot = () => {
-    if (!isLogin) {
-      return <IconButton
-        size="large"
-        aria-label="account of current user"
-        aria-controls="menu-appbar"
-        aria-haspopup="true"
-        onClick={handleClick}
-        color="inherit"
-      >
-        <MoreVertOutlinedIcon />
-      </IconButton>
+    if (isMobile) {
+      return (
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="menu-appbar"
+          aria-haspopup="true"
+          onClick={handleClick}
+          color="inherit"
+        >
+          <MoreVertOutlinedIcon/>
+        </IconButton>
+      );
     }
-  }
-  const handleLogout = () =>{
+  };
+
+  const handleLogout = () => {
     dispatch(logout())
     dispatch(updateLocalStorage())
     router.push(`/${locale}`)
   }
-  const handleProfile = ()=>{
-     router.replace(`/${locale}/profile`);
-     handleClose();
+  const handleProfile = () => {
+    router.replace(`/${locale}/profile`);
+    handleClose();
   }
 
-  
+
 
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-        console.log(event.target.files);
-        const file = event.target.files[0];
-        setThumbnailFile(file);
-        setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+      console.log(event.target.files);
+      const file = event.target.files[0];
+      setThumbnailFile(file);
+      setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
     }
-};
+  };
 
-const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        setVideoFile(file);
-        console.log(file);
+      const file = event.target.files[0];
+      setVideoFile(file);
+      console.log(file);
 
     }
-};
+  };
 
 
 
-  
+
   const handleCreateVideo = (): void => {
     const valid: boolean = validateInputs();
 
     if (valid && thumbnailFile && videoFile) {
-        const slug = slugify(name);
-        const formData = new FormData();
-        
+      const slug = slugify(name);
+      const formData = new FormData();
 
-        formData.append("thumbnail", thumbnailFile);
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("slug", slug);
-        formData.append("url", videoFile);
-        categoryOptions.forEach((category:any) => {
-            formData.append("categories[]", category.id);
+
+      formData.append("thumbnail", thumbnailFile);
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("slug", slug);
+      formData.append("url", videoFile);
+      categoryOptions.forEach((category: any) => {
+        formData.append("categories[]", category.id);
+      });
+
+      // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
+      console.log(thumbnailFile)
+      console.log(videoFile)
+
+      requestApi("videos", "POST", formData)
+        .then((res: any) => {
+          if (res.success) {
+            setOpenAddDialog(false);
+            // setThumbnailFile(null);
+            setThumbnailPreview(null);
+            setVideoFile(null);
+            setCategoryOptions([]);
+            setSnackbarMessage(t("create_video_success"));
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
+
+            // loadVideos(page);
+          } else {
+            setErrorCreate(res.message || t("create_video_failed"));
+            setSnackbarMessage(res.message || t("create_video_failed"));
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+          }
+        })
+        .catch((err: any) => {
+          console.error("Create video failed:", err);
+          setSnackbarMessage(t("create_video_occurred"));
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
         });
-        
-        // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
-        console.log(thumbnailFile)
-        console.log(videoFile)
-
-        requestApi("videos", "POST", formData)
-            .then((res: any) => {
-                if (res.success) {
-                    setOpenAddDialog(false);
-                    // setThumbnailFile(null);
-                    setThumbnailPreview(null);
-                    setVideoFile(null);     
-                    setCategoryOptions([]); 
-                    setSnackbarMessage(t("create_video_success"));
-                    setSnackbarSeverity("success");
-                    setOpenSnackbar(true);
-
-                    // loadVideos(page);
-                } else {
-                    setErrorCreate(res.message || t("create_video_failed"));
-                    setSnackbarMessage(res.message || t("create_video_failed"));
-                    setSnackbarSeverity("error");
-                    setOpenSnackbar(true);
-                }
-            })
-            .catch((err: any) => {
-                console.error("Create video failed:", err);
-                setSnackbarMessage(t("create_video_occurred"));
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
-            });
     } else {
-        console.log('No file selected for thumbnail or video');
+      console.log('No file selected for thumbnail or video');
     }
-};
+  };
 
 
 
@@ -352,32 +354,38 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       </Button>
     } else {
       return (
-        
         <Box>
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
+          <Button
+            onClick={() => setOpenAddDialog(true)}
+            variant="outlined"
+            style={{ width: 20, height: 35, margin: 10 }}
+            startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}
+          >
           </Button>
-           <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
-      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
-      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
-        {masterStore.user.name}
-      </Button>
 
-      
-      
+          {/* Chỉ hiển thị Button có avatar khi không phải mobile */}
+          {!isMobile && (
+            <Button onClick={handleClick} variant="outlined" startIcon={
+              profileAvatar
+                ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25 }} />)
+                : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
+              {masterStore.user.name}
+            </Button>
+          )}
         </Box>
-      )
-      
+      );
+
+
     }
-
-
   }
+
 
   const updatePasswordValidateInputs = () => {
     const password = document.getElementById("password") as HTMLInputElement;
     let isValid = true;
 
-  
+
     if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -390,27 +398,27 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-  
+
     return isValid;
   };
-  
+
 
   const handleUpdatePassword = (userId: number) => {
     const valid: boolean = updatePasswordValidateInputs();
-  
+
     if (valid) {
- 
-      const userData_update = {password};
-   
-  
-      requestApi(`users/change-password/${userId}`, "PUT",userData_update)
+
+      const userData_update = { password };
+
+
+      requestApi(`users/change-password/${userId}`, "PUT", userData_update)
         .then((res: any) => {
-          console.log('res update password',res)
+          console.log('res update password', res)
           if (res.success) {
             //  loadUsers(page);
             //  console.log('res update password',res)
-             dispatch(updateLocalStorage());
-         
+            dispatch(updateLocalStorage());
+
             setOpenUpdateDialog(false);
             setSnackbarMessage(t("update_user_success"));
             setSnackbarSeverity("success");
@@ -432,11 +440,21 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
   const [categories, setCategories] = useState([]);
   const categoryData = categories
-  .filter((category: any) => category.name !=='All')
-  .map((category: any) => ({
+    .filter((category: any) => category.name !== 'All')
+    .map((category: any) => ({
       label: `${category.name}`,
       id: `${category.id}`
-  }));
+    }));
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Hàm gọi API tìm kiếm
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchTerm.length >= 1) {
+      // Chuyển hướng đến trang tìm kiếm với từ khóa
+      router.push(`/search?query=${searchTerm}`);
+    }
+  };
 
 
 
@@ -451,14 +469,17 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           <IconButton sx={{ mr: 2 }} color="inherit" aria-label="open drawer" onClick={handleToggleDrawer} edge="start">
             <MenuIcon />
           </IconButton>
-                <Typography variant="inherit" color="inherit" component="div" >
-              <Image onClick={()=>{
-                router.replace(`/${locale}`)
-              }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
-            </Typography>
-            <Box sx={{ flexGrow: 0.5 }} />
-   
-            <TextField
+          <Typography variant="inherit" color="inherit" component="div" >
+            <Image onClick={() => {
+              router.replace(`/${locale}`)
+            }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
+          </Typography>
+          
+          <Box sx={{ flexGrow: 0.5 }} />
+          <TextField
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch} // Lắng nghe phím Ente
             InputProps={{
               startAdornment: (
                 <InputAdornment position="end">
@@ -466,13 +487,13 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                 </InputAdornment>
               ),
             }}
-              size="small"
-              style = {{width: 500}}
-              placeholder={t('search') + "..."}
-              
-            />
+            size="small"
+            placeholder={t('search') + "..."}
+            style={{ width: 500 }}
 
-            
+          />
+
+
           <Box sx={{ flexGrow: 1 }} />
           <IconButton
             onClick={handleClick}
@@ -483,8 +504,8 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             aria-expanded={open ? 'true' : undefined}
           >
           </IconButton>
-{/* 
-          {renderButtonThreeDot()} */}
+          
+          {renderButtonThreeDot()} 
 
           <Menu
             anchorEl={anchorEl}
@@ -497,263 +518,252 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
             <MenuItem className="px-5" onClick={handleProfile}>{t('profile')}</MenuItem>
-            <MenuItem onClick={()=>setOpenUpdateDialog(true)}>{t('change_password')}</MenuItem>
+            <MenuItem onClick={() => setOpenUpdateDialog(true)}>{t('change_password')}</MenuItem>
             <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
             <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
             <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
           </Menu>
-       
+
           {renderButtonAcction()}
 
           <Dialog
-                open={openAddDialog}
-                onClose={() => setOpenAddDialog(false)}
-                PaperProps={{
-                    component: 'form',
-                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                        event.preventDefault();
-                        handleCreateVideo();
-                    },
-                }}
+            open={openAddDialog}
+            onClose={() => setOpenAddDialog(false)}
+            PaperProps={{
+              component: 'form',
+              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault();
+                handleCreateVideo();
+              },
+            }}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogTitle>{t("addVideo")}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {/* {t("addText_category")} */}
+              </DialogContentText>
+
+              {/* Input for Video Name */}
+              <TextField
+                autoFocus
+                error={nameError}
+                helperText={nameErrorMessage}
+                onChange={(val) => setName(val.target.value)}
+                margin="dense"
+                id="name"
+                name="name"
+                label={t("name_video")}
+                type="text"
                 fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>{t("addVideo")}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {/* {t("addText_category")} */}
-                    </DialogContentText>
+                variant="outlined"
+                placeholder={t("name_video")}
+                sx={{ mb: 2 }}
+              />
 
-                    {/* Input for Video Name */}
-                    <TextField
-                        autoFocus
-                        error={nameError}
-                        helperText={nameErrorMessage}
-                        onChange={(val) => setName(val.target.value)}
-                        margin="dense"
-                        id="name"
-                        name="name"
-                        label={t("name_video")}
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        placeholder={t("name_video")}
-                        style={{ marginBottom: 20 }}
+              {/* Input for Video Description */}
+              <TextField
+                error={descriptionError}
+                helperText={descriptionErrorMessage}
+                onChange={(val) => setDescription(val.target.value)}
+                margin="dense"
+                id="description"
+                name="description"
+                label={t("description_text")}
+                type="text"
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={3}
+                InputProps={{ style: { resize: 'vertical' } }}
+                sx={{ mb: 2 }}
+              />
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  {/* Thumbnail Box */}
+                  <Box
+                    sx={{
+                      width: { xs: '100%', sm: '250px' },
+                      height: '150px',
+                      border: '2px dashed #3f51b5',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      backgroundColor: '#f0f0f0',
+                      mt: 2
+                    }}
+                  >
+                    {thumbnailPreview ? (
+                      <img
+                        src={thumbnailPreview}
+                        alt="Thumbnail Preview"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    ) : (
+                      <span style={{ color: '#999' }}>{t('thumbnail')}</span>
+                    )}
+                  </Box>
+                  {thumbnailError && (
+                    <span style={{ color: 'red', display: 'block' }}>
+                      {thumbnailErrorMessage}
+                    </span>
+                  )}
+                </Grid>
+
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 3 }}>
+                    <Autocomplete
+                      multiple
+                      options={categoryData}
+                      getOptionLabel={(option) => option.label}
+                      value={categoryOptions}
+                      onChange={(event, newValue: any) => setCategoryOptions(newValue)}
+                      renderInput={(params) => (
+                        <TextField {...params}
+                          label={t('add_to_category')}
+                          error={optionError}
+                          helperText={optionErrorMessage} />
+                      )}
+                      filterOptions={(options, state) =>
+                        options.filter(option =>
+                          option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                        )
+                      }
+                      sx={{ width: { xs: '100%', sm: 300 } }}
                     />
+                  </Grid>
 
-                    {/* Input for Video Description */}
-                    <TextField
-                        error={descriptionError}
-                        helperText={descriptionErrorMessage}
-                        onChange={(val) => setDescription(val.target.value)}
-                        margin="dense"
-                        id="description"
-                        name="description"
-                        label={t("description_text")}
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={3}
-                        InputProps={{ style: { resize: 'vertical' } }}
-                        style={{ marginBottom: 20 }}
+                  <Grid item sx={{ mt: 9, justifyContent: "flex-end", display: "flex" }}>
+                    {videoError ? (
+                      <span style={{ color: 'red', display: 'block' }}>
+                        {videoErrorMessage}
+                      </span>
+                    ) : (
+                      videoFile && (
+                        <span style={{ color: 'black', display: 'block' }}>
+                          {videoFile.name}
+                        </span>
+                      )
+                    )}
+                  </Grid>
+                </Grid>
+
+                {/* Thumbnail Button */}
+                <Grid item xs={12} sm={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component="label"
+                    startIcon={<PhotoCameraIcon />}
+                    sx={{
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      p: 1,
+                      width: { xs: '100%', sm: 'auto' }
+                    }}
+                  >
+                    {t('Choose_thumbnail')}
+                    <input
+                      type="file"
+                      hidden
+                      onChange={handleFileChange}
+                      accept="image/*"
                     />
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} >
-                            {/* Khung chứa ảnh*/}
-                            <Box
-                                sx={{
-                                    width: '250px',
-                                    height: '150px',
-                                    border: '2px dashed #3f51b5',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    overflow: 'hidden',
-                                    backgroundColor: '#f0f0f0',
-                                    marginTop: 2
-                                }}
-                            >
-                                {thumbnailPreview ? (
-                                    <img
-                                        src={thumbnailPreview}
-                                        alt="Thumbnail Preview"
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover'
-                                        }}
-                                    />
-                                ) : (
-                                    <span style={{ color: '#999' }}>{t('Thumbnail')}</span>
-                                )}
-                            </Box>
-                            {thumbnailError && (
-                                <span style={{ color: 'red', display: 'block'}}>
-                                    {thumbnailErrorMessage}
-                                </span>
-                            )}
+                  </Button>
+                </Grid>
 
-                        </Grid>
-                        <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <Grid item style={{
-
-                              display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
-                                    <Autocomplete
-                                        multiple
-                                        options={categoryData}
-                                        getOptionLabel={(option) => option.label}
-                                        value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
-                                        onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
-                                        renderInput={(params) => (
-                                            <TextField {...params}
-                                            label={t('add_to_category')}
-                                            error={optionError}
-                                            helperText={optionErrorMessage} />
-                                        )}
-                                        filterOptions={(options, state) =>
-                                            options.filter(option =>
-                                                option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                                            )
-                                        }
-                                        style={{ width: 300 }}
-                                        
-
-                                    />
-                                
-                                    
-                            </Grid>
-
-                            <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
-                                {videoError ? (
-                                    <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
-                                        {videoErrorMessage}
-                                    </span>
-                                ) : (
-                                    videoFile && (
-                                        <span style={{ color: 'black', display: 'block' }}>
-                                            {videoFile.name}
-                                        </span>
-                                    )
-                                )}
-                            </Grid>
-                        </Grid>
-
-                        {/* </Grid> */}
-
-
-                        {/* Cột nút chọn ảnh Thumbnail */}
-                        <Grid item xs={6}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                component="label"
-                                startIcon={<PhotoCameraIcon />}
-                                style={{
-                                    color: '#fff',
-                                    fontWeight: 'bold',
-                                    padding: '8px 16px',
-                                }}
-                            >
-                                {t('Choose_thumbnail')}
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleFileChange}
-                                    accept="image/*"
-                                />
-                            </Button>
-
-                        </Grid>
-
-                        {/* Cột nút chọn video */}
-                        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                component="label"
-                                startIcon={<VideoLibraryIcon />}
-                                style={{
-                                    padding: '8px 16px',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                {t('upload_video')}
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleFileVideoChange}
-                                    accept="video/*"
-                                />
-                            </Button>
-                        </Grid>
-
-
-                    </Grid>
-
-                </DialogContent>
-
-                {/* Dialog Actions */}
-                <DialogActions>
-                    <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                    <Button type="submit">{t("add")}</Button>
-                </DialogActions>
+                {/* Video Button */}
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    component="label"
+                    startIcon={<VideoLibraryIcon />}
+                    sx={{
+                      p: 1,
+                      fontWeight: 'bold',
+                      width: { xs: '100%', sm: 'auto' }
+                    }}
+                  >
+                    {t('upload_video')}
+                    <input
+                      type="file"
+                      hidden
+                      onChange={handleFileVideoChange}
+                      accept="video/*"
+                    />
+                  </Button>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            {/* Dialog Actions */}
+            <DialogActions>
+              <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+              <Button type="submit">{t("add")}</Button>
+            </DialogActions>
           </Dialog>
           <Dialog
-        open={openUpdateDialog}
-        onClose={() => setOpenUpdateDialog(false)}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault(); 
-            // console.log('user id',masterStore.user.id);
-            handleUpdatePassword(masterStore.user.id);
-       
-          },
-        }}
-      >
-        <DialogTitle>{t("change_password")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-          {t("update_text")}
-          </DialogContentText>
-      
-          <TextField
-            autoFocus
-            error={passwordError}
-            helperText={passwordErrorMessage}
-            onChange={(val) => {
-              setPassword(val.target.value);
+            open={openUpdateDialog}
+            onClose={() => setOpenUpdateDialog(false)}
+            PaperProps={{
+              component: 'form',
+              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault();
+                // console.log('user id',masterStore.user.id);
+                handleUpdatePassword(masterStore.user.id);
+
+              },
             }}
-            value={password}
-            margin="dense"
-            id="password"
-            name="password"
-            label= {t("password")}
-            type="password"
-            fullWidth
-            variant="standard"
-            
-          />
-    
-      
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("btnUpdate")}</Button>
-        </DialogActions>
-      </Dialog>
-          
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={4000}
-                onClose={() => setOpenSnackbar(false)}
-               >
-                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-                  {snackbarMessage}
-                </Alert>
-              </Snackbar>
+          >
+            <DialogTitle>{t("change_password")}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {t("update_text")}
+              </DialogContentText>
+
+              <TextField
+                autoFocus
+                error={passwordError}
+                helperText={passwordErrorMessage}
+                onChange={(val) => {
+                  setPassword(val.target.value);
+                }}
+                value={password}
+                margin="dense"
+                id="password"
+                name="password"
+                label={t("password")}
+                type="password"
+                fullWidth
+                variant="standard"
+
+              />
+
+
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+              <Button type="submit" >{t("btnUpdate")}</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={4000}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
 
 
         </Toolbar>

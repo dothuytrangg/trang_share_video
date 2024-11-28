@@ -79,6 +79,7 @@ export const masterSlice = createSlice({
       state.lang = "en";
       state.teo = action.payload;
     },
+
     updateLocalStorage: (state: any) => {
      secureLocalStorage.setItem("master", JSON.stringify(state));
     },

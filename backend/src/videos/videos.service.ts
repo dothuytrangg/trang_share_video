@@ -112,6 +112,59 @@ export class VideosService {
     return response;
 
 }
+
+  async searchVideo(query: FilterVideoDto): Promise<any> {
+    let response = common_response;
+    const items_per_page = Number(query.items_per_page) || 3;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1) * items_per_page;
+    const keyword = query.search || '';
+
+    // Điều kiện tìm kiếm theo nhiều field
+    const searchConditions = [
+      { name: Like(`%${keyword}%`) },
+      { description: Like(`%${keyword}%`) },
+      { url: Like(`%${keyword}%`) },
+      { slug: Like(`%${keyword}%`) },
+    ];
+
+    // Lấy kết quả và tổng số lượng
+    const [res, total] = await this.videoRepository.findAndCount({
+      where: searchConditions,
+      order: { created_at: 'DESC' },
+      take: items_per_page,
+      skip: skip,
+      select: [
+        'id', 'name', 'description', 'slug', 'user', 'timeout', 'url',
+        'likes', 'dislike', 'viewed', 'thumbnail', 'position', 'is_hot',
+        'status', 'created_at', 'updated_at'
+      ],
+      relations: ['user'],
+    });
+
+    // Pagination: Tính toán tổng trang, trang trước, và trang sau
+    const lastPage = Math.ceil(total / items_per_page);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+
+    // Gán thông tin response
+    if (res.length > 0) {
+      response.success = true;
+      response.data = res;
+      response.page = page;
+      response.lastPage = lastPage;
+      response.nextPage = nextPage;
+      response.prevPage = prevPage;
+      response.total = total;
+      return response;
+    } else {
+      response.success = false;
+      response.message = 'No videos found!';
+    }
+
+    return response;
+  }
+
   async findOne(id:number):Promise<Video>{
     let response = common_response;
     const video = await this.videoRepository.findOne({

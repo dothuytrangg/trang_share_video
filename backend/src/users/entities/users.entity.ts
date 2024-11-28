@@ -46,5 +46,8 @@ export class User {
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
 
+  @Column({ default: 'inactive' })
+  statusVerify: 'active' | 'inactive';
+
   
 }
