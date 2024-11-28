@@ -3,11 +3,47 @@
 }
 
 .videoWrapper {
+    width: 100%; /* Hoặc một giá trị cố định như 800px */
+    max-width: 800px;
+    height: 450px; /* Tỉ lệ 16:9 */
+    overflow: hidden;
     position: relative;
-    padding-top: 56.25%;
-    /* 16:9 Aspect Ratio */
+    background-color: #000; /* Đặt màu nền cho khung */
+  }
+  /* .videoPlayer {
     width: 100%;
-}
+    height: 100%;
+    object-fit: cover; /* Các giá trị khác: contain, fill */
+  /* } */ 
+  .videoPlayer {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #000; /* Nền đen sẽ xuất hiện nếu video không đầy khung */
+    border-radius: 8px; /* Tùy chỉnh góc bo tròn */
+  }
+
+  .overlayButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .overlayButton:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+    transition: all 0.3s ease-in-out;
+  }
 
 .videoIframe {
     position: absolute;
@@ -65,3 +101,16 @@
         padding: 16px;
     }
 }
+
+.proposeVideoContainer {
+    overflow: hidden; /* Xóa scrollbar */
+    max-height: 100%; /* Đảm bảo không có nội dung vượt ngoài kích thước */
+  }
+  
+  .proposeVideoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Khoảng cách giữa các video */
+    overflow-y: auto; /* Chỉ cuộn nếu nội dung vượt quá chiều cao */
+    scrollbar-width: thin; /* (Tùy chọn) Làm mỏng scrollbar */
+  }

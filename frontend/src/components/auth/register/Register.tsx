@@ -118,7 +118,9 @@ const Register = () => {
           if (res.success) {
             router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
           } else {
-            setErrorRegister(res.message)
+            setEmailError(true)
+            setEmailErrorMessage(t('user_with_email_already_exists'))
+            // setErrorRegister(res.message)
           }
         })
         .catch((err: any) => {

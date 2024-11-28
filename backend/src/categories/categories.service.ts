@@ -6,6 +6,7 @@ import { FilterCategoryDto } from 'src/categories/dto/filter-category.dto';
 import { UpdateCategoryDto } from 'src/categories/dto/update-category.dto';
 import { Category } from 'src/categories/entities/categories.entity';
 import { common_response } from 'src/ultils/common';
+import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { DeleteResult, Like, QueryFailedError, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
@@ -13,6 +14,8 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(VideoDetail)
+    private videoDetailRepository: Repository<VideoDetail>
   ) {}
 
   async findAlls(): Promise<Category[]> {
@@ -174,15 +177,22 @@ export class CategoriesService {
 
   async delete(id: number): Promise<DeleteResult> {
     let response = common_response;
-    let categories =  await this.categoryRepository.delete(id);
-    if(categories){
-       response.success = true;
-       return response;
-    }else{
-      response.success = false;
-      
-    }
+    try {
+        await this.videoDetailRepository.delete({ category: { id } });
+        let categories =  await this.categoryRepository.delete(id);
+        if(categories){
+          response.success = true;
+          return response;
+        }else{
+          response.success = false;
+          
+        }
     return response;
+    } catch (error) {
+      response.success = false;
+      response.message = error.message || 'An error occurred while deleting the category';
+      return response;
+    }
     // return await this.categoryRepository.delete(id);
   }
 }

@@ -9,9 +9,12 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
   const [lastPage, setLastPage] = useState(1);
   const [index, setIndex] = useState("");
   const [indexId, setIndexId] = useState("");
-  
+  var ranonce = false;
   useEffect(() => {
-    loadCategories(page);
+    if (!ranonce) {
+      loadCategories(page);
+      ranonce = true;
+    }
   }, []);
   const loadCategories = async (pageSelected: number) => {
     await requestApi(`categories?page=${pageSelected}&items_per_page=10&search`, "GET").then((res: any) => {
@@ -32,15 +35,15 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
     // console.log('category hhh',categories);
   };
 
-//   const setPositionCategory = (categoryId: string) => {
-//     requestApi(`categories/${categoryId}`, "GET")
-//       .then((res: any) => {
-//         console.log(res);
-          
-//       })
-// }
+  //   const setPositionCategory = (categoryId: string) => {
+  //     requestApi(`categories/${categoryId}`, "GET")
+  //       .then((res: any) => {
+  //         console.log(res);
 
-  
+  //       })
+  // }
+
+
 
 
   const renderPinnedCategory = () => {
@@ -48,48 +51,44 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
     // if (categories.length === 0) {
     //   return <p>No categories found.</p>;
     // }
-    if(index){
-      console.log(index)
+    if (index) {
       return (
         <Button
-     
-        sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-        color="inherit"
-        variant="contained"
-        size="small"
-        onClick={()=>onCategorySelect(indexId)}
-      >
-        {index }
-      </Button>
-      
-     
-        
+
+          sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+          color="inherit"
+          variant="contained"
+          size="small"
+          onClick={() => onCategorySelect(indexId)}
+        >
+          {index}
+        </Button>
 
       )
 
     }
- 
+
 
   };
 
-  return( 
-    
-       <div>
-        {renderPinnedCategory()}
-        {categories.map((category: any, id: number) => (
-      
-        category.status !==2 && 
+  return (
+
+    <div>
+      {renderPinnedCategory()}
+      {categories.map((category: any, id: number) => (
+
+        category.status !== 2 &&
         <Button
-        key={id}
-        sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-        color="inherit"
-        variant="contained"
-        size="small"
-        onClick={()=>onCategorySelect(category.id)}
-      >
-        {category.name}
-      </Button>
+          key={id}
+          sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+          color="inherit"
+          variant="contained"
+          size="small"
+          onClick={() => onCategorySelect(category.id)}
+        >
+          {category.name}
+        </Button>
       ))}
-       </div>
-       ); 
+    </div>
+  );
 }

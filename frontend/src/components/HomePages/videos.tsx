@@ -5,6 +5,7 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  Grid,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -25,28 +26,32 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   const locale = useLocale();
   const t = useTranslations("HomePage");
 
-  
+  var ranonce = false;
   const handleOnClick = (videoId: string) => {
-    router.push(`/en/detail/${videoId}`); 
+    router.push(`/en/detail/${videoId}?categoryId=${categoryId}`);
+  };
+
+  const loadVideos = async () => {
+    try {
+      const res: any = await requestApi(`videos/videoHomePage`, "GET");
+      console.log('res: ', res);
+      // console.log('res lis video', res.data.category);
+      if (res.success) {
+        setVideos(res.data);
+        // setVideoDetails(res.data);
+        // const extractedVideos = res.data.map((detail: any) => detail.video);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
-   
-    const loadVideos = async () => {
-      try {
-        const res: any = await requestApi(`video-details/${categoryId}`, "GET");
-        if (res.success) {
-          setVideoDetails(res.data);
-          const extractedVideos = res.data.map((detail: any) => detail.video); 
-          setVideos(extractedVideos);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadVideos();
+    if (!ranonce) {
+      loadVideos();
+      ranonce = true;
+    }
   }, [categoryId]);
 
   if (loading) {
@@ -56,52 +61,36 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   return (
     <React.Fragment>
       {videos.map((video: any) => (
-        <Card key={video.id} sx={{ maxWidth: 345, my: 1 }}>
-          <CardMedia
-            sx={{ height: 140 }}
-            image={`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`} 
-            title={video.name}
-          />
-          <CardContent sx={{ height: 140 }}>
-            <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-              {video.name.length > 50 ? (
-                <Tooltip title={video.name}>
-                  <span>{`${video.name.substring(0, 50)}...`}</span>
-                </Tooltip>
-              ) : (
-                video.name
-              )}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {video.description.length > 100 ? (
-                <Tooltip title={video.description}>
-                  <span>{`${video.description.substring(0, 100)}...`}</span>
-                </Tooltip>
-              ) : (
-                video.description
-              )}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-              color="inherit"
-              variant="contained"
-              size="small"
-            >
-              Share
-            </Button>
-            <Button
-              sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-              color="inherit"
-              variant="contained"
-              size="small"
-              onClick={()=>handleOnClick(video.id)}
-            >
-              Learn More
-            </Button>
-          </CardActions>
-        </Card>
+
+        <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }} >
+          <Card sx={{ mx: 2, my: 1, width: 1 }} >
+            <CardMedia
+              sx={{ height: 140 }}
+              image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+              title={video.name}
+            />
+            <CardContent sx={{ height: 140 }}>
+              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                {video.name.length > 50 ? (
+                  <Tooltip title={video.name}>
+                    <span>{`${video.name.substring(0, 50)}...`}</span>
+                  </Tooltip>
+                ) :
+                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                }
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {video.description.length > 100 ? (
+                  <Tooltip title={video.description}>
+                    <span>{`${video.description.substring(0, 100)}...`}</span>
+                  </Tooltip>
+                ) : (
+                  video.description
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
       ))}
     </React.Fragment>
   );

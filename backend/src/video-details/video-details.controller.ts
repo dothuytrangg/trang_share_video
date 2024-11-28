@@ -22,5 +22,10 @@ export class VideoDetailsController {
         return this.videoDetailService. findAllByCategoryId(Number(id));
     }
 
+    // @Get(':id')
+    // findAllByCategory(@Param('id') id:string):Promise<VideoDetail>{
+    //     return this.videoDetailService. findAllByCategoryId(Number(id));
+    // }
+
     
 }

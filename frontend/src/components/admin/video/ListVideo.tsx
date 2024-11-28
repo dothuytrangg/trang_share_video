@@ -406,6 +406,14 @@ const ListVideo = () => {
       
 
 
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+
+
+  const handleOpenDeleteDialog = (video: any) => {
+    console.log("Category selected:", video); // Log để kiểm tra giá trị
+    setSelectedVideo(video);
+    setOpenDeleteDialog(true);
+  };
 
       const handleDeleteVideo = (videoId: string) => {
 
@@ -863,7 +871,7 @@ const formatDateTime = (isoString: string): string => {
                             <Button variant="outlined" color="primary" onClick={()=>handleOpenUpdateDialog(video)}  >
                               {t("edit")}
                             </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleDeleteVideo(video.id)}>
+                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleOpenDeleteDialog(video)}>
                               {t("delete")}
                             </Button>
                               {/* <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>{setStatus("comfirmed"),console.log(status)}}  >
@@ -879,6 +887,35 @@ const formatDateTime = (isoString: string): string => {
 
                   </TableBody>
                 </Table>
+                      <Dialog
+                        open={openDeleteDialog}
+                        onClose={() => setOpenDeleteDialog(false)}
+                      >
+                        <DialogTitle>{t("confirm_delete")}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            {t("are_you_sure_delete_category", { category: selectedVideo?.name })}
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
+                          <Button
+                            onClick={() => {
+                              console.log("Selected Category ID:", selectedVideo?.id); // Log để kiểm tra
+                              if (selectedVideo?.id) {
+                                handleDeleteVideo(selectedVideo.id);
+                              }
+                              setOpenDeleteDialog(false);
+                            }}
+                            color="error"
+                          >
+                            {t("btnDelete")}
+                          </Button>
+
+                        </DialogActions>
+                      </Dialog>
+
+
 
         </TableContainer>
                             <Stack spacing={2}>
