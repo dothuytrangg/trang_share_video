@@ -231,27 +231,25 @@ const SendOTP = () => {
                                 </Typography>
                             )}
                         </FormControl>
-                        <FormControl>
-                            <Typography sx={{ textAlign: 'center' }}>
-                                {t('not_received_the_code')}{' '}
-                                <Link href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`} className="text-blue-600 underline">
-                                    {t('resend_otp')}
-                                </Link>
-                            </Typography>
-                            {/* <Button
-                                variant="text"
-                                onClick={handleSubmit}
-                                sx={{
-                                    textAlign: "center",
-                                    color: "blue",
-                                    padding: 0,
-                                    minWidth: 0,
-                                    textDecoration: "underline",
-                                }}
-                            >
-                                Receive again
-                            </Button> */}
-                        </FormControl>
+                            <FormControl>
+                                <Typography sx={{ textAlign: 'center' }}>
+                                    {t('not_received_the_code')}{' '}
+                                    <Button
+                                        variant="text"
+                                        onClick={handleResendOtp}
+                                        sx={{
+                                            textAlign: 'center',
+                                            color: 'blue',
+                                            padding: 0,
+                                            minWidth: 0,
+                                            textDecoration: 'underline',
+                                        }}
+                                    >
+                                        {t('resend_otp')}
+                                    </Button>
+                                </Typography>
+                            </FormControl>
+
                         <Stack direction="row" spacing={2}>
                             <Button fullWidth variant="outlined" onClick={() => router.push('/')}>
                                 {t('btnCancel')}

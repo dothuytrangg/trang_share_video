@@ -263,17 +263,17 @@ const handleUpdateUser = (userId: string) => {
   }
 };
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  // const [openDialog, setOpenDialog] = React.useState(false);
+  // const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
 
 
 
-  const handleOpenDeleteDialog = (user: any) => {
-    console.log("user selected:", user); // Log để kiểm tra giá trị
-    setSelectedUser(user);
-    setOpenDeleteDialog(true);
-  };
+  // const handleOpenDeleteDialog = (user: any) => {
+  //   console.log("user selected:", user); // Log để kiểm tra giá trị
+  //   setSelectedUser(user);
+  //   setOpenDeleteDialog(true);
+  // };
 
 const handleDeleteUser = (userId: string) => {
   requestApi(`users/${userId}`, "DELETE")
@@ -490,37 +490,32 @@ const handleOpenDeleteDialog = (user: any) => {
                   <TableCell >{t("action")}</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+                <TableBody>
                   {
                     users.map((user: any) => (
                       <TableRow key={user.id}>
                         <TableCell>{user.id}</TableCell>
-                        <TableCell >{user.full_name}</TableCell>
-                        <TableCell >{user.email}</TableCell>
-                        <TableCell >{
-                           user.role == 3 ? (t("admin")) :(t('user'))
-                          }</TableCell>
-                        <TableCell >
+                        <TableCell>{user.full_name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          {user.role == 3 ? t("admin") : t('user')}
+                        </TableCell>
+                        <TableCell>
                           {formatDateTime(user.created_at)}
                         </TableCell>
-                     
-                        <TableCell  >
-                          <Button variant="outlined" color="primary"  onClick={()=>handleOpenUpdateDialog(user)} >
+                        <TableCell>
+                          <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(user)}>
                             {t("edit")}
                           </Button>
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)} >
-                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)} >
+                          <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(user)}>
                             {t("delete")}
                           </Button>
-                          
                         </TableCell>
-                      
                       </TableRow>
                     ))
-                  
                   }
-                
                 </TableBody>
+
             </Table>
               <Dialog
                 open={openDeleteDialog}

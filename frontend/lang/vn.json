@@ -118,11 +118,16 @@
 
         "click_the_camera_to_upload_a_new_avatar":"Click vào camera để chọn ảnh",
         "category_with_name_already_exists":"Tên danh mục đã tồn tại",
+        "user_with_email_already_exists":"Email đã tồn tại",
+        "change_password":"Đổi mật khẩu",
+    
+     
+  
         "are_you_sure_delete_category":"Bạn có chắc chắn muốn xóa danh mục này không?",
-       
-       
-       "are_you_sure_delete_video":"Bạn có chắc chắn muốn xóa video này không?",
-       "are_you_sure_delete_user":"Bạn có chắc chắn muốn xóa người dùng này không?",
+            
+            
+        "are_you_sure_delete_video":"Bạn có chắc chắn muốn xóa video này không?",
+        "are_you_sure_delete_user":"Bạn có chắc chắn muốn xóa người dùng này không?",
         "btnDelete":"Xóa",
         "reset":"Đặt lại",
         "forgot_password": "Bạn quên mật khẩu?",
@@ -142,7 +147,16 @@
         "send_request":"Gửi yêu cầu",
         "user_not_found":"Không tìm thấy người dùng",
         "register_before_login":"Vui lòng đăng ký trước khi đăng nhập",
-        "password_incorrect":"Mật khẩu không chính xác"
+        "new_password":"Mật khẩu mới",
+        "confirm_password":"Xác nhận mật khẩu",
+        "password_not_match":"Mật khẩu mới và mật khẩu xác nhận không khớp",
+        "confirm_password_not_empty":"Mật khẩu xác nhận không được để trống"
+
+        
+
+        
+
+
 
     } 
 }
