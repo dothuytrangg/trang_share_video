@@ -74,7 +74,7 @@ export default function Sidebar() {
 
   const redirectHome = () => {
     const action = query.get("action");
-    console.log('action',action);
+    // console.log('action',action);
     router.replace(`/${locale}/`);
     
   };

@@ -41,7 +41,7 @@ const ProposeVideo = ({ proposeVideoData, videoData,categoryId }: { proposeVideo
             {/* Thumbnail */}
             <Box
               component="img"
-              src={`${_ENV.NEXT_URL_LOCAL}/videos/${video.video.thumbnail}`}
+              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.video.thumbnail}`}
               alt={video.video.name}
               sx={{
                 width: 120,

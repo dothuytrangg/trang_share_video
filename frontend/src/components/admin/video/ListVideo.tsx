@@ -12,6 +12,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { Span } from "next/dist/trace";
 import { format } from "date-fns";
+import { extname } from "path";
 
 
 
@@ -189,7 +190,7 @@ const ListVideo = () => {
             isValid = false;
 
         }
-      
+        const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
        
         if (!thumbnailFile) {
           setThumbnailError(true)
@@ -227,7 +228,8 @@ const ListVideo = () => {
             });
             
             // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
-            console.log(thumbnailFile)
+            
+            console.log(thumbnailFile.type)
             console.log(videoFile)
 
             requestApi("videos", "POST", formData)
@@ -245,7 +247,7 @@ const ListVideo = () => {
                         loadVideos(page);
                     } else {
                         setErrorCreate(res.message || t("create_video_failed"));
-                        setSnackbarMessage(res.message || t("create_video_failed"));
+                        setSnackbarMessage(res.message);
                         setSnackbarSeverity("error");
                         setOpenSnackbar(true);
                     }
@@ -272,7 +274,7 @@ const ListVideo = () => {
         setDescription(video.description);
         setThumbnailFile(null);
         // setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
-        setThumbnailPreview(`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`);
+        setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
         setStatus(video.status);
         // console.log('console thumbnail',selectedVideo.thumbnail);
 
@@ -576,11 +578,15 @@ const formatDateTime = (isoString: string): string => {
                                                          error={optionError}
                                                          helperText={optionErrorMessage} />
                                                     )}
-                                                    filterOptions={(options, state) =>
-                                                        options.filter(option =>
-                                                            option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                                                        )
-                                                    }
+                                                    filterOptions={(options) =>
+                                                      // Lọc ra các option chưa được chọn
+                                                      options.filter(
+                                                          (option) =>
+                                                              !categoryOptions.some(
+                                                                  (selectedOption:any) => selectedOption.id === option.id
+                                                              )
+                                                      )
+                                                  }
                                                     style={{ width: 300 }}
                                                     
 
@@ -834,7 +840,7 @@ const formatDateTime = (isoString: string): string => {
                           <TableCell>
                                 <img 
                                 // src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                                src={`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`} 
+                                src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`} 
                                 alt={video.name} 
                                 style={{ width: '100px', height: 'auto' }} // Adjust width and height as needed
                                 />
@@ -846,7 +852,7 @@ const formatDateTime = (isoString: string): string => {
                             {/* <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
                             </Link> */}
-                            <Link href={`${_ENV.NEXT_URL_LOCAL}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
+                            <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
                             </Link>
                           </Tooltip>

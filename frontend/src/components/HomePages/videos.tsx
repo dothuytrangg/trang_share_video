@@ -25,34 +25,36 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("HomePage");
-
-  var ranonce = false;
+  var flag = false;
+  
   const handleOnClick = (videoId: string) => {
-    router.push(`/en/detail/${videoId}?categoryId=${categoryId}`);
+    router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
   };
 
-  const loadVideos = async () => {
-    try {
-      const res: any = await requestApi(`videos/videoHomePage`, "GET");
-      console.log('res: ', res);
-      // console.log('res lis video', res.data.category);
-      if (res.success) {
-        setVideos(res.data);
-        // setVideoDetails(res.data);
-        // const extractedVideos = res.data.map((detail: any) => detail.video);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
   useEffect(() => {
-    if (!ranonce) {
-      loadVideos();
-      ranonce = true;
-    }
+   if(!flag){
+    loadVideoDetails();
+    flag = true;
+   }
+
+   
   }, [categoryId]);
+    const loadVideoDetails = async () => {
+      
+      try {
+        const res: any = await requestApi(`video-details/${categoryId}`, "GET");
+        console.log('res',res)
+        if (res.success) {
+          setVideoDetails(res.data);
+          const extractedVideos = res.data.map((detail: any) => detail.video); 
+          setVideos(extractedVideos);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   if (loading) {
     return <div>Loading...</div>;

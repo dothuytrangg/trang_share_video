@@ -75,13 +75,13 @@ export default function requestApi(
   } else {
     URL_API = _ENV.NEXT_URL_PRODUCTION;
   }
-  console.log({
-    method: method,
-    url: `${URL_API}/${endpoint}`,
-    data: body,
-    responseType: responseType as any,
-    trang:''
-  })
+  // console.log({
+  //   method: method,
+  //   url: `${URL_API}/${endpoint}`,
+  //   data: body,
+  //   responseType: responseType as any,
+  //   trang:''
+  // })
   return instance.request({
     method: method,
     url: `${URL_API}/${endpoint}`,

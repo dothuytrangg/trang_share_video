@@ -11,7 +11,7 @@ export const dataSourceOptions :DataSourceOptions = {
     entities: ['dist/**/*.entity.js'],
     migrations: ['dist/db/migrations/*.js'],
     synchronize:false,
-    // timezone: '+7:00', // Set to UTC+7 for Ho Chi Minh City
+    timezone: '+7:00', // Set to UTC+7 for Ho Chi Minh City
 } 
 
 console.log('dataSourceOptions: ', dataSourceOptions);

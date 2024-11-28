@@ -95,9 +95,9 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
     try {
-      
+      const hashPassword = await this.hashPassword(createUserDto.password);
 
-      const  user = await this.userRepository.save(createUserDto);
+      const  user = await this.userRepository.save({...createUserDto,password:hashPassword});
       if(user){
         response.success = true
         response.user = user

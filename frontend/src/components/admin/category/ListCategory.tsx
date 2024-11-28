@@ -101,7 +101,7 @@ const ListCategory = () => {
   // const handleClose = () => setOpen(false);
   const loadCategories = async (pageSelected: number) => {
     await requestApi(`categories?page=${pageSelected}&items_per_page=5&search`, "GET").then((res: any) => {
-      console.log('res category', res);
+      // console.log('res category', res);
       if (res.success) {
         setCategories(res.data);
         setLastPage(res.lastPage);
@@ -223,7 +223,8 @@ const ListCategory = () => {
     const valid: boolean = validateInputs();
 
     if (valid) {
-      const CategoryData_update = { name, description };
+      const slug = slugify(name);
+      const CategoryData_update = { name, description,slug };
 
       requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
         .then((res: any) => {
@@ -452,7 +453,8 @@ const ListCategory = () => {
                   <TableBody>
                     {
                       categories.map((category: any) => (
-                        <TableRow key={category.id}>
+                         category.status !== 2 && (
+                          <TableRow key={category.id}>
                           <TableCell>{category.id}</TableCell>
                           <TableCell >{category.name}</TableCell>
                           <TableCell>
@@ -484,6 +486,7 @@ const ListCategory = () => {
                           </TableCell>
 
                         </TableRow>
+                         )
                       ))
                       
 

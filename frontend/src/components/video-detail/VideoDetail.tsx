@@ -75,7 +75,7 @@ const VideoDetail = () => {
   const fetchVideoDetailByCategoryId = async () => {
 
     await requestApi(`video-details/${categoryId}`, 'GET').then((res: any) => {
-      console.log("Videos by Category:", res.data);
+      // console.log("Videos by Category:", res.data);
       if (res.success) {
         setProposeVideoData(res.data);
 
@@ -181,7 +181,7 @@ const VideoDetail = () => {
             <video
               ref={videoRef}
               className={styles.videoPlayer}
-              src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
+              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
               loop
               muted
               playsInline
@@ -255,7 +255,7 @@ const VideoDetail = () => {
 
           <h1 className={styles.videoTitle}>{videoData.name}</h1>
           <Box className={styles.channelInfo}>
-            <Avatar src={`${_ENV.NEXT_URL_LOCAL}/avatars/${videoData.user.avatar}`} alt='akelo' />
+            <Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${videoData.user.avatar}`} alt='akelo' />
             <Box className={styles.channelText}>
               <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
               <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography>
