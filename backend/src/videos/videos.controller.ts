@@ -24,10 +24,10 @@ export class VideosController {
         return this.videoService.findAllPage(query)
     }
 
-    @Get("videoHomePage")
-    getVideoHomePage(@Query() query:FilterVideoDto):Promise<Video[]>{
-        return this.videoService.getVideoForHomePage(query)
-    }
+    // @Get("videoHomePage")
+    // getVideoHomePage(@Query() query:FilterVideoDto):Promise<Video[]>{
+    //     return this.videoService.getVideoForHomePage(query)
+    // }
 
 
     @Get("key")
@@ -66,15 +66,15 @@ export class VideosController {
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
             }else{
-                const fileSize = parseInt(req.headers['content-length']);
-                if(fileSize > 1024 * 1024 * 100 ){
-                    req.fileValidationError = 'File size is too large.Accepted size is less than';
-                    cb(null,false);
+                // const fileSize = parseInt(req.headers['content-length']);
+                // if(fileSize > 1024 * 1024 * 100 ){
+                //     req.fileValidationError = 'File size is too large.Accepted size is less than';
+                //     cb(null,false);
                    
-                }else {
+                // }else {
                     //  console.log(ext)
                     cb(null, true);
-                  }
+                //   }
             }
 
         }
@@ -101,22 +101,32 @@ export class VideosController {
         // this.move()
         // console.log('video',video);
 
-        if(req.fileValidationError){
-            throw new BadRequestException(req.fileValidationError )
+        // if(req.fileValidationError){
+        //     throw new BadRequestException(req.fileValidationError )
+        // }
+        // if(!thumbnail ||  !video){
+        //     throw new BadRequestException('Thumbnail and video files are required');
+        // }
+
+
+        if (req.fileValidationError) {
+            return this.videoService.handleFileValidationError(req.fileValidationError);
         }
-        if(!thumbnail ||  !video){
+    
+        if (!files.thumbnail || !files.url) {
             throw new BadRequestException('Thumbnail and video files are required');
         }
+    
         //thumbnail;
         let fileName_thumbnail = thumbnail.filename;
         let fileContent_thumbnail = readFileSync(thumbnail.path);
-        WebDav.put('avatars/'+fileName_thumbnail,fileContent_thumbnail).then(res=>{
+        WebDav.put('videos/'+fileName_thumbnail,fileContent_thumbnail).then(res=>{
             if(res.status == 201){
                 // remove
-            //    unlink(thumbnail.path,(err)=>{
-            //     if (err) throw err;
+               unlink(thumbnail.path,(err)=>{
+                if (err) throw err;
                
-            //    });
+               });
             }
         }).catch((e=>{
 
@@ -128,10 +138,10 @@ export class VideosController {
          WebDav.put('videos/'+fileName_video,fileContent_video).then(res=>{
              if(res.status == 201){
                  //remove
-                // unlink(video.path,(err)=>{
-                //  if (err) throw err;
+                unlink(video.path,(err)=>{
+                 if (err) throw err;
                 
-                // });
+                });
              }
          }).catch((e=>{
  
@@ -172,8 +182,8 @@ export class VideosController {
 
         // }
         console.log(file)
-        if(req.fileValidationError){
-            throw new BadRequestException(req.fileValidationError )
+        if (req.fileValidationError) {
+            return this.videoService.handleFileValidationError(req.fileValidationError);
         }
         if(!file){
             if(updateVideoDto.thumbnail != null ){
@@ -186,10 +196,10 @@ export class VideosController {
         WebDav.put('videos/'+fileName,fileContent).then(res=>{
             if(res.status == 201){
                 //remove
-            //    unlink(file.path,(err)=>{
-            //     if (err) throw err;
+               unlink(file.path,(err)=>{
+                if (err) throw err;
                
-            //    });
+               });
             }
         }).catch((e=>{
 

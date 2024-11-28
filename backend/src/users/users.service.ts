@@ -95,26 +95,25 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     let response = common_response;
     try {
-      // Create user in the repository
-      const user = await this.userRepository.save(createUserDto);
       const hashPassword = await this.hashPassword(createUserDto.password);
-      if (user) {
-        // Set the user status to active after successful creation
-        user.statusVerify = 'active';
-        user.password = hashPassword;
-        await this.userRepository.save(user);  // Update user with statusVerify
 
-        response.success = true;
-        response.user = user;  // Include the created user in the response
-      } else {
-        response.success = false;
-        response.message = 'User creation failed';
-        response.statusCode = 400;
+      const  user = await this.userRepository.save({...createUserDto,password:hashPassword});
+      if(user){
+        response.success = true
+        response.user = user
+  
+
+      }else{
+        response.success = false
       }
-    } catch (error) {
-      console.error('Error:', error);
+      
 
-      // Handle database-specific errors (e.g., duplicate email)
+  
+      // Trả về thành công
+      return response;
+    }catch (error) {
+      
+      console.error('Error:', error); 
       if (error instanceof QueryFailedError) {
         if (error.driverError.code === 'ER_DUP_ENTRY') {
           response.success = false;

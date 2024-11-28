@@ -19,7 +19,10 @@ const _GLOBAL = {
 
 const _ENV ={
     NEXT_URL_LOCAL: "http://localhost:2070",
+    NEXT_URL_PROD : "https://trang.congcucuatoi.com/",
     NEXT_URL_PRODUCTION: "https://trang-backend.congcucuatoi.com",
+   
+
     NEXT_URL_RESOURCE:"https://nasdev.congcucuatoi.com/webdav",
     // NEXT_URL_RESOURCE: "http://localhost:2070/resource",
 }

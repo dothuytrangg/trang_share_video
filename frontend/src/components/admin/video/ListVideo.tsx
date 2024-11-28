@@ -12,7 +12,11 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { Span } from "next/dist/trace";
 import { format } from "date-fns";
+<<<<<<< HEAD
 import { ReponsiveContainer } from "@/util/reponsiveUtil";
+=======
+import { extname } from "path";
+>>>>>>> c7d8cf87b672110e397cad9e1ca783edad80b3f9
 
 
 
@@ -190,7 +194,7 @@ const ListVideo = () => {
             isValid = false;
 
         }
-      
+        const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG'];
        
         if (!thumbnailFile) {
           setThumbnailError(true)
@@ -228,7 +232,8 @@ const ListVideo = () => {
             });
             
             // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
-            console.log(thumbnailFile)
+            
+            console.log(thumbnailFile.type)
             console.log(videoFile)
 
             requestApi("videos", "POST", formData)
@@ -246,7 +251,7 @@ const ListVideo = () => {
                         loadVideos(page);
                     } else {
                         setErrorCreate(res.message || t("create_video_failed"));
-                        setSnackbarMessage(res.message || t("create_video_failed"));
+                        setSnackbarMessage(res.message);
                         setSnackbarSeverity("error");
                         setOpenSnackbar(true);
                     }
@@ -273,7 +278,7 @@ const ListVideo = () => {
         setDescription(video.description);
         setThumbnailFile(null);
         // setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
-        setThumbnailPreview(`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`);
+        setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
         setStatus(video.status);
         // console.log('console thumbnail',selectedVideo.thumbnail);
 
@@ -561,6 +566,36 @@ const formatDateTime = (isoString: string): string => {
                                             </span>
                                         )}
                                     </Grid>
+<<<<<<< HEAD
+=======
+                                    <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Grid item style={{
+              
+                                           display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
+                                                <Autocomplete
+                                                    multiple
+                                                    options={categoryData}
+                                                    getOptionLabel={(option) => option.label}
+                                                    value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                                                    onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
+                                                    renderInput={(params) => (
+                                                        <TextField {...params}
+                                                         label={t('add_to_category')}
+                                                         error={optionError}
+                                                         helperText={optionErrorMessage} />
+                                                    )}
+                                                    filterOptions={(options) =>
+                                                      // Lọc ra các option chưa được chọn
+                                                      options.filter(
+                                                          (option) =>
+                                                              !categoryOptions.some(
+                                                                  (selectedOption:any) => selectedOption.id === option.id
+                                                              )
+                                                      )
+                                                  }
+                                                    style={{ width: 300 }}
+                                                    
+>>>>>>> c7d8cf87b672110e397cad9e1ca783edad80b3f9
 
                                     <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
                                         <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 3 }}>
@@ -825,7 +860,7 @@ const formatDateTime = (isoString: string): string => {
                           <TableCell>
                                 <img 
                                 // src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                                src={`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`} 
+                                src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`} 
                                 alt={video.name} 
                                 style={{ width: '100px', height: 'auto' }} // Adjust width and height as needed
                                 />
@@ -837,7 +872,7 @@ const formatDateTime = (isoString: string): string => {
                             {/* <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
                             </Link> */}
-                            <Link href={`${_ENV.NEXT_URL_LOCAL}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
+                            <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
                             </Link>
                           </Tooltip>

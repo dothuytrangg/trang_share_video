@@ -8,7 +8,7 @@ import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
 import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
-import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, QueryFailedError, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class VideosService {
@@ -245,13 +245,24 @@ export class VideosService {
           return response;
   
       } catch (error) {
-      
-          response.success = false;
-          response.message = error.message || 'An error occurred';
-          return  response;
-        
+          
+        console.error('Error:', error);
+        // if (error instanceof QueryFailedError) {
+        //   if (error.driverError.code === 'ER_DUP_ENTRY') { 
+        //     response.success = false;
+        //     response.message = `User with email  ${createUserDto.email} already exists.`
+        //     response.statusCode =400
+        //     return response;    
+        //   }
+        // }
+        // response.success = false;
+        // response.message = "An unexpected error occurred."
+        // response.statusCode=500
+       
+        // throw new InternalServerErrorException("An unexpected error occurred.");
      
       }
+      return response;
   }
   async update(
         id: number,
@@ -319,6 +330,18 @@ export class VideosService {
             return response;
         }
     }
+
+    handleFileValidationError(errorMessage: string) {
+      // let response = {
+      //     success: false,
+      //     message: errorMessage,
+      // };
+      let response = common_response;
+      response.success = false;
+      response.message = errorMessage
+
+      return response;
+  }
     
 
       
