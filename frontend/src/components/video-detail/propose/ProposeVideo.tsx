@@ -66,7 +66,7 @@ const ProposeVideo = ({ proposeVideoData, videoData,categoryId }: { proposeVideo
                 {video.video.name}
               </Typography>
               <Button
-                href={`http://localhost:2050/en/detail/${video.video.id}?categoryId=${categoryId}`}
+                href={`${_ENV.NEXT_URL_PRODUCTION}/en/detail/${video.video.id}?categoryId=${categoryId}`}
                 target="_blank"
                 sx={{
                   fontSize: "12px",
