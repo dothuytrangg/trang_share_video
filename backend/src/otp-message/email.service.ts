@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { createTransport, SendMailOptions, Transporter } from 'nodemailer';
 import { SendEmailDto } from './dto/send-email.dto';
 import { Injectable } from '@nestjs/common';
-
+import * as dotenv from 'dotenv'
 
 
 @Injectable()
@@ -46,7 +46,7 @@ export class EmailService {
     }
 
     async sendPasswordResetEmail(to: string, token: string) {
-        const resetLink = `http://localhost:2050/vn/reset_password?token=${token}`; 
+        const resetLink = `${process.env.NEXT_URL_PROD}/vn/reset_password?token=${token}`; 
         const mailOptions = {
             from: this.configService.get('MAIL_SENDER_NAME_DEFAULT'),
 
