@@ -252,7 +252,7 @@ const LoginView = () => {
                   {t("login")}
                 </Button>
                 <Typography sx={{ textAlign: "center" }}>
-                  {/* {t('forgot_password')}
+                  {t('forgot_password')}
                   <span>
                     <Link
                       className="text-blue-600 underline"
@@ -260,7 +260,7 @@ const LoginView = () => {
                     >
                       {t('a_forgot_password')}
                     </Link>
-                  </span> */}
+                  </span>
                 </Typography>
 
                 <Typography sx={{ textAlign: "center" }}>

@@ -1,6 +1,10 @@
 
 
+
+
+
 import ForgotPassword from '@/components/auth/forgotPassword';
+import LoginView from '@/components/auth/login/LoginView';
 import { NextPage } from 'next';
 
 interface Props { }
