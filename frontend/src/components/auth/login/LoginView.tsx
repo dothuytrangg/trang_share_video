@@ -258,7 +258,7 @@ const LoginView = () => {
                       className="text-blue-600 underline"
                       href={`/${locale}/${_GLOBAL.ROUTER_FORGOT_PASSWORD}`}
                     >
-                      {t('a_forgot_password')}
+                      {t('forgot_password')}
                     </Link>
                   </span>
                 </Typography>
