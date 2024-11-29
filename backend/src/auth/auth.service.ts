@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -15,6 +16,9 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { common_response } from 'src/ultils/common';
 import validator from 'validator';
+import { VerificationService } from 'src/verification/verification.service';
+import { EmailService } from 'src/otp-message/email.service';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -22,23 +26,85 @@ export class AuthService {
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private verificationService:VerificationService,
+    private emailService:EmailService
   ) {}
+
+  // async register(registerUserDto: RegisterUserDto) {
+  //   let response = common_response;
+
+
+  //  try {
+  //   if (!validator.isEmail(registerUserDto.email)){
+  //     response.success = false;
+  //     response.message = 'Email must be a valid email...';
+  //     return response;
+  //   }
+
+
+  //   if (!registerUserDto.password) {
+  //     response.success = false;
+  //     response.message = 'Password cannot be empty';
+  //     return response;
+  //   }
+  //   const hashPassword = await this.hashPassword(registerUserDto.password);
+  //   let user = await this.userRepository.save({
+  //     ...registerUserDto,
+  //     refresh_token: 'refresh_token_string',
+  //     password: hashPassword,
+  //   });
+  //   if (user) {
+  //     response.success = true;  
+  //     response.message = 'Registration successful';
+  //   } else {
+  //     response.success = false;
+  //     response.message = 'Registration failed';
+  //   }
+
+  //   return response;
+    
+  //  } catch (error) {
+  //   console.error('Error:', error); 
+  //   if (error instanceof QueryFailedError) {
+  //     if (error.driverError.code === 'ER_DUP_ENTRY') { 
+  //       response.success = false;
+  //       response.message = `User with email  ${registerUserDto.email} already exists.`
+  //       response.statusCode =400
+  //       return response;
+  //       // throw new BadRequestException(`Category with name  ${createCategoryDto.name} already exists.`);
+        
+  //     }
+  //   }
+  //     response.success = false;
+  //     response.message = "An unexpected error occurred."
+  //     response.statusCode=500
+    
+  //  }
+
+  //  return response;
+
+
+  // }
+
 
   async register(registerUserDto: RegisterUserDto) {
     let response = common_response;
-
-
-   try {
     if (!validator.isEmail(registerUserDto.email)){
       response.success = false;
       response.message = 'Email must be a valid email...';
       return response;
-    }
-
+     }
 
     if (!registerUserDto.password) {
       response.success = false;
       response.message = 'Password cannot be empty';
+      return response;
+    }
+    const existingUser = await this.userRepository.findOne({ where: { email: registerUserDto.email } });
+    if (existingUser) {
+      response.success = false;
+      response.message = 'You are already registered. Please log in.';
+      response.errorCode = 'USER_EXISTS';
       return response;
     }
     const hashPassword = await this.hashPassword(registerUserDto.password);
@@ -48,38 +114,76 @@ export class AuthService {
       password: hashPassword,
     });
     if (user) {
-      response.success = true;  
-      response.message = 'Registration successful';
+      try {
+        // Generate OTP
+        const otp = await this.verificationService.generateOtp(user.id);
+        console.log('OTP:', otp);
+        console.log("user", user.id);
+        user.statusVerify = "inactive";
+
+        // Send OTP to user's email
+        await this.emailService.sendEmail({
+          subject: 'MyApp - Account Verification',
+          recipients: [{ name: user.full_name ?? '', address: user.email }],
+          html: `<p>Hi${user.full_name ? ' ' + user.full_name : ''},</p><p>You may verify your MyApp account using the following OTP: <br /><span style="font-size:24px; font-weight: 700;">${otp}</span></p><p>Regards,<br />MyApp</p>`,
+        });
+
+        // Generate token for email verification or login purposes
+        const token = this.createToken(user);
+
+        response.success = true;
+        response.message = 'Registration successful. Please verify your email with the OTP sent.';
+       
+        response.token = token; // Include the token in the response
+        response.userId = user.id; // Include userId in the response
+      } catch (error) {
+        response.success = false;
+        response.message = 'Registration successful, but failed to send OTP';
+      }
     } else {
       response.success = false;
       response.message = 'Registration failed';
     }
 
     return response;
-    
-   } catch (error) {
-    console.error('Error:', error); 
-    if (error instanceof QueryFailedError) {
-      if (error.driverError.code === 'ER_DUP_ENTRY') { 
-        response.success = false;
-        response.message = `User with email  ${registerUserDto.email} already exists.`
-        response.statusCode =400
-        return response;
-        // throw new BadRequestException(`Category with name  ${createCategoryDto.name} already exists.`);
-        
-      }
-    }
-      response.success = false;
-      response.message = "An unexpected error occurred."
-      response.statusCode=500
-    
-   }
-
-   return response;
-
-
   }
 
+  createToken(user: any): string {
+    const payload = { id: user.id, username: user.full_name };
+    return this.jwtService.sign(payload, { expiresIn: '3d' });
+  }
+
+  async forgotPassword(email: string) {
+    let response = common_response;
+    console.log("Received email:", email);
+    const user = await this.userRepository.findOne({ where: { email } });
+    console.log('user', user);
+
+    if (user) {
+      // Generate a random reset token using VerificationService
+      const resetToken = randomBytes(32).toString('hex');
+      console.log('Reset Password Token:', resetToken);
+
+
+      // Set an expiry time for 1 hour from now
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 1);
+      user.statusVerify = "active"
+      console.log('Expires At:', expiryDate);
+
+      // Create and save a verification entity with the reset token
+      await this.verificationService.createVerificationToken(user.id, resetToken, expiryDate);
+
+      // Send the password reset email
+      await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+      console.log("forgotpassword", user);
+
+      return { success: true, message: 'Password reset link sent!' };
+    }
+    return { success: false, message: 'User not found' };
+  }
+
+//
   async findUserById(id:any){
     let user = await this.userRepository.findOne({where:{
       id:id
@@ -174,6 +278,31 @@ export class AuthService {
     const salt = await bcrypt.genSalt(saltRound);
     const hash = await bcrypt.hash(password, saltRound);
     return hash;
+  }
+
+  async verifyEmail(userId: number, token: string) {
+    const invalidMessage = 'Invalid or expired OTP';
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new UnprocessableEntityException(invalidMessage);
+    }
+
+    if (user.emailVerifiedAt) {
+      throw new UnprocessableEntityException('Account already verified');
+    }
+
+    const isValid = await this.verificationService.validateOtp(user.id, token);
+    if (!isValid) {
+      throw new UnprocessableEntityException(invalidMessage);
+    }
+
+    // Cập nhật trạng thái sau khi xác minh thành công
+    user.emailVerifiedAt = new Date();
+    user.statusVerify = 'active'; // Cập nhật `statusVerify` thành 'active'
+    await this.userRepository.save(user); // Chỉ lưu một lần sau khi cập nhật trạng thái
+
+    return true;
   }
   
 

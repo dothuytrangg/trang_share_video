@@ -9,11 +9,14 @@ import * as dotenv from 'dotenv';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 import { APP_GUARD } from '@nestjs/core';
+import { VerificationService } from 'src/verification/verification.service';
+import { EmailService } from 'src/otp-message/email.service';
+import { Verification } from 'src/verification/entities/verification.entity';
 dotenv.config();
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,Verification]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
@@ -24,6 +27,8 @@ dotenv.config();
   controllers: [AuthController],
   providers: [
     AuthService,
+    VerificationService,
+    EmailService
    
   ],
 })

@@ -15,16 +15,19 @@ const _GLOBAL = {
   ROUTE_ADMIN_VIDEO: "video",
   LOCAL_STOREAGE: "master",
   ROLE_ADMIN: 3,
+  ROUTE_SEND_OTP: "send-otp",
+  ROUTER_FORGOT_PASSWORD: "forgotpassword"
 };
 
 const _ENV ={
     NEXT_URL_LOCAL: "http://localhost:2070",
-    NEXT_URL_PROD : "https://trang.congcucuatoi.com/",
+    NEXT_URL_PROD : "http://localhost:2050",
+    // NEXT_URL_PROD : "https://trang.congcucuatoi.com/",
     NEXT_URL_PRODUCTION: "https://trang-backend.congcucuatoi.com",
    
 
-    NEXT_URL_RESOURCE:"https://nasdev.congcucuatoi.com/webdav",
-    // NEXT_URL_RESOURCE: "http://localhost:2070/resource",
+    // NEXT_URL_RESOURCE:"https://nasdev.congcucuatoi.com/webdav",
+    NEXT_URL_RESOURCE: "http://localhost:2070/resource",
 }
 
 export { _GLOBAL, _ENV };

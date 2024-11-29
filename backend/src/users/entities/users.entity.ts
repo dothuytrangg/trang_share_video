@@ -42,6 +42,12 @@ export class User {
 
   @CreateDateColumn()
   updated_at: Date;
+
+  @Column({nullable: true})
+  emailVerifiedAt: Date;
+
+  @Column({ default: 'inactive' })
+  statusVerify: 'active' | 'inactive';
   
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
