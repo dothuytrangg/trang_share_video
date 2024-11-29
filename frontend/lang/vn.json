@@ -153,7 +153,9 @@
         "new_password":"Mật khẩu mới",
         "confirm_password":"Xác nhận mật khẩu",
         "password_not_match":"Mật khẩu mới và mật khẩu xác nhận không khớp",
-        "confirm_password_not_empty":"Mật khẩu xác nhận không được để trống"
+        "confirm_password_not_empty":"Mật khẩu xác nhận không được để trống",
+
+         "all":"Tất cả"
 
         
 

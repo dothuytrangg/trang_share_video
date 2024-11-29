@@ -150,7 +150,9 @@
         "new_password": "New password",
         "confirm_password": "Confirm password",
         "password_not_match": "New password and confirm password not match",
-        "confirm_password_not_empty": "Confirm password not empty"
+        "confirm_password_not_empty": "Confirm password not empty",
+
+        "all":"All"
     
     
     
