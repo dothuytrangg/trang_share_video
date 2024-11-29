@@ -19,6 +19,7 @@ import validator from 'validator';
 import { VerificationService } from 'src/verification/verification.service';
 import { EmailService } from 'src/otp-message/email.service';
 import { randomBytes } from 'crypto';
+import { Verification } from 'src/verification/entities/verification.entity';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,9 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private verificationService:VerificationService,
-    private emailService:EmailService
+    private emailService:EmailService,
+    @InjectRepository(Verification) private tokenRepository: Repository<Verification>
+    
   ) {}
 
   // async register(registerUserDto: RegisterUserDto) {
@@ -181,6 +184,58 @@ export class AuthService {
       return { success: true, message: 'Password reset link sent!' };
     }
     return { success: false, message: 'User not found' };
+  }
+
+
+  async resetPassword(resetPasswordToken: string, newPassword: string, newConfirmPassword: string) {
+    let response = common_response;
+
+    // Kiểm tra nếu mật khẩu mới và mật khẩu xác nhận không trùng khớp
+    if (newPassword !== newConfirmPassword) {
+      response.success = false;
+      response.message = 'New password and confirmation password do not match.';
+      return response;
+    }
+
+    console.log("Reset Token: ", resetPasswordToken);  // Kiểm tra token đã nhận
+
+    // Tìm mã xác minh trong bảng Verification
+    const verification = await this.tokenRepository.findOne({ where: { token: resetPasswordToken } });
+
+    console.log('Verification:', verification);
+    // Kiểm tra xem verification có tồn tại không
+    if (!verification) {
+      response.success = false;
+      response.message = 'Invalid or expired reset token.';
+      return response;
+    }
+
+    // Kiểm tra ngày hết hạn của token
+    if (verification.expiresAt < new Date()) {
+      response.success = false;
+      response.message = 'Reset token has expired.';
+      return response;
+    }
+    console.log('Expires At:', verification.expiresAt);
+
+    // Tìm người dùng dựa trên userId từ verification
+    const user = await this.userRepository.findOne({ where: { id: verification.userId } });
+    if (!user) {
+      response.success = false;
+      response.message = 'User not found.';
+      return response;
+    }
+
+    // Cập nhật mật khẩu cho người dùng
+    user.password = await this.hashPassword(newPassword);
+    await this.userRepository.save(user);
+
+    // Xóa mã xác minh sau khi sử dụng (nếu cần)
+    await this.verificationService.removeVerification(verification);
+
+    response.success = true;
+    response.message = 'Password changed successfully.';
+    return response;
   }
 
 //

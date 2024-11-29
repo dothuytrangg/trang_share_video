@@ -80,6 +80,9 @@ export default function Navbar() {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [password, setPassword] = useState("");
+  const [confirm_password, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] =useState(false)
+  const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState("")
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   // const dispatch = useAppDispatch();
@@ -295,7 +298,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (valid && thumbnailFile && videoFile) {
         const slug = slugify(name);
         const formData = new FormData();
-        
+
 
         formData.append("thumbnail", thumbnailFile);
         formData.append("name", name);
@@ -341,6 +344,16 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     }
 };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Hàm gọi API tìm kiếm
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchTerm.length >= 1) {
+      // Chuyển hướng đến trang tìm kiếm với từ khóa
+      router.push(`/search?query=${searchTerm}`);
+    }
+  };
+
 
 
 
@@ -374,25 +387,51 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   }
 
   const updatePasswordValidateInputs = () => {
-    const password = document.getElementById("password") as HTMLInputElement;
     let isValid = true;
 
-  
-    if (!password.value) {
+    // Kiểm tra trường password
+    if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_not_empty'));
+      setPasswordErrorMessage(t('password_not_empty')); // Mật khẩu không được để trống
       isValid = false;
-    } else if (password.value.length < 6) {
+    } else if (password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_least_6'));
+      setPasswordErrorMessage(t('password_least_6')); // Mật khẩu phải có ít nhất 6 ký tự
+      isValid = false;
+    } else if (password.length > 16) {
+      setPasswordError(true);
+      setPasswordErrorMessage(t('password_more_16')); // Mật khẩu không được quá 16 ký tự
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-  
+
+    // Kiểm tra trường confirm_password
+    if (!confirm_password) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage(t('confirm_password_not_empty')); // Xác nhận mật khẩu không được để trống
+      isValid = false;
+    } else if (confirm_password.length < 6) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage(t('password_least_6')); // Xác nhận mật khẩu phải có ít nhất 6 ký tự
+      isValid = false;
+    } else if (confirm_password.length > 16) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage(t('password_more_16')); // Xác nhận mật khẩu không được quá 16 ký tự
+      isValid = false;
+    } else if (password !== confirm_password) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage(t('password_not_match')); // Mật khẩu không khớp
+      isValid = false;
+    } else {
+      setConfirmPasswordError(false);
+      setConfirmPasswordErrorMessage('');
+    }
+
     return isValid;
   };
+
   
 
   const handleUpdatePassword = (userId: number) => {
@@ -400,7 +439,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   
     if (valid) {
  
-      const userData_update = {password};
+      const userData_update = { password, confirm_password };
    
   
       requestApi(`users/change-password/${userId}`, "PUT",userData_update)
@@ -459,6 +498,9 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             <Box sx={{ flexGrow: 0.5 }} />
    
             <TextField
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch} 
             InputProps={{
               startAdornment: (
                 <InputAdornment position="end">
@@ -612,15 +654,11 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                                             error={optionError}
                                             helperText={optionErrorMessage} />
                                         )}
-                                        filterOptions={(options) =>
-                                          // Lọc ra các option chưa được chọn
-                                          options.filter(
-                                              (option) =>
-                                                  !categoryOptions.some(
-                                                      (selectedOption:any) => selectedOption.id === option.id
-                                                  )
-                                          )
-                                      }
+                                        filterOptions={(options, state) =>
+                                            options.filter(option =>
+                                                option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                                            )
+                                        }
                                         style={{ width: 300 }}
                                         
 
@@ -717,32 +755,47 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           },
         }}
       >
-        <DialogTitle>{t("change_password")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-          {t("update_text")}
-          </DialogContentText>
-      
-          <TextField
-            autoFocus
-            error={passwordError}
-            helperText={passwordErrorMessage}
-            onChange={(val) => {
-              setPassword(val.target.value);
-            }}
-            value={password}
-            margin="dense"
-            id="password"
-            name="password"
-            label= {t("password")}
-            type="password"
-            fullWidth
-            variant="standard"
-            
-          />
-    
-      
-        </DialogContent>
+            <DialogTitle>{t("change_password")}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {t("update_text")}
+              </DialogContentText>
+
+              <TextField
+                autoFocus
+                error={passwordError} 
+                helperText={passwordErrorMessage} 
+                onChange={(val) => {
+                  setPassword(val.target.value);  
+                }}
+                value={password}
+                margin="dense"
+                id="password"
+                name="password"
+                label={t("new_password")}
+                type="password"
+                fullWidth
+                variant="standard"
+              />
+
+              <TextField
+                autoFocus
+                error={confirmPasswordError}  // Lỗi sẽ được hiển thị khi confirmPasswordError là true
+                helperText={confirmPasswordErrorMessage}  // Thông báo lỗi hiển thị dưới trường input
+                onChange={(val) => {
+                  setConfirmPassword(val.target.value);  // Cập nhật giá trị confirm_password
+                }}
+                value={confirm_password}
+                margin="dense"
+                id="confirm_password"
+                name="confirm_password"
+                label={t("confirm_password")}
+                type="password"
+                fullWidth
+                variant="standard"
+              />
+            </DialogContent>
+
         <DialogActions>
           <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
           <Button type="submit" >{t("btnUpdate")}</Button>
