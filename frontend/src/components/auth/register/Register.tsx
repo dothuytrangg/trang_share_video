@@ -16,27 +16,8 @@ import { useAppSelector } from '@/stores/hookStore';
 import { _GLOBAL } from '@/contstants';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReponsiveContainer } from '@/util/reponsiveUtil';
 import CustomCard from '@/util/customCard';
-
-// const Card = styled(MuiCard)(({ theme }) => ({
-//   display: 'flex',
-//   flexDirection: 'column',
-//   alignSelf: 'center',
-//   width: '100%',
-//   padding: theme.spacing(4),
-//   margin: 'auto',
-//   boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
-//   [theme.breakpoints.up('sm')]: {
-//     width: '450px',
-//   },
-// }));
-
-// const SignUpContainer = styled(Stack)(({ theme }) => ({
-//   height: '100%',
-//   padding: 4,
-//   backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-// }));
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
 
 const Register = () => {
   const router = useRouter();
@@ -54,11 +35,11 @@ const Register = () => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
   const masterStore = useAppSelector((state) => state.master);
-
+  const [successRegister, setSuccessRegister] = React.useState('');
 
   const validateInputs = () => {
     let isValid = true;
-  
+
     if (!full_name) {
       setNameError(true);
       setNameErrorMessage(t('name'));
@@ -80,10 +61,10 @@ const Register = () => {
       setEmailError(true);
       setEmailErrorMessage(t('email_invalid'));
       isValid = false;
-    }else {
-        setEmailError(false);
-        setEmailErrorMessage('');
-    } 
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage('');
+    }
     if (!password) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -100,8 +81,8 @@ const Register = () => {
     return isValid;
   };
 
-  const handleRegister =  async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Ngăn chặn hành động mặc định
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default action
 
     const valid = validateInputs();
 
@@ -110,27 +91,33 @@ const Register = () => {
         full_name,
         email,
         password,
-
       };
 
-      requestApi('auth/register', 'POST', registerData)
-        .then((res: any) => {
-          if (res.success) {
-            localStorage.setItem('userId', res.userId); // Store userId
-            console.log('userId stored in localStorage:', res.userId);
+      try {
+        const res: any = await requestApi('auth/register', 'POST', registerData);
+
+        if (res.success) {
+          setSuccessRegister(t('register_success'));
+          localStorage.setItem('userId', res.userId); // Store userId
+          console.log('userId stored in localStorage:', res.userId);
+          setTimeout(() => {
             router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTE_SEND_OTP}`);
-          } if (res.errorCode === 'USER_EXISTS') {
-            setErrorRegister(t('email_already_registered'));
-          } else{
-            setErrorRegister(res.message)
-          }
-        })
-        .catch((err: any) => {
-          console.error('Registration failed:', err.response?.data || err.message);
-          // Handle registration failure (e.g., show error message)
-        });
+          }, 1000);
+        } else if (res.errorCode === 'USER_EXISTS') {
+          setSuccessRegister('');
+          setErrorRegister(t('email_already_registered')); // Show error message for existing user
+        } else {
+          setErrorRegister(res.message); // Show other error messages if available
+          setSuccessRegister('');
+        }
+      } catch (err: any) {
+        console.error('Registration failed:', err.response?.data || err.message);
+        setErrorRegister(t('registration_failed')); // Show a generic error message in case of failure
+      }
     }
   };
+
+
   const renderRegister = () => {
     if (masterStore.isAuth) {
       router.replace(`/${locale}`);
@@ -174,7 +161,7 @@ const Register = () => {
                       setEmailErrorMessage(''); // Clear error message when user changes input
                     }}
                     error={emailError}
-                    helperText={emailErrorMessage} // Hiển thị thông báo lỗi
+                    helperText={emailErrorMessage} // Display error message
                   />
                 </FormControl>
 
@@ -194,11 +181,15 @@ const Register = () => {
                     helperText={passwordErrorMessage}
                   />
                 </FormControl>
-                {errorRegister && <p className='text-red-600 text-center'>{errorRegister}</p>}
+
+                {/* Conditionally render error/success messages */}
+                {errorRegister && <p className="text-red-600 text-center">{errorRegister}</p>}
+                {successRegister && <p className="text-black-600 text-center">{successRegister}</p>}
 
                 <Button type="submit" fullWidth variant="contained">
                   {t('register')}
                 </Button>
+
                 <Typography sx={{ textAlign: 'center' }}>
                   {(t('have_account'))}{' '}
                   <Link href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`} className="text-blue-600 underline">

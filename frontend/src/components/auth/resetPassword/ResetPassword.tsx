@@ -62,26 +62,25 @@ const ResetPassword = () => {
         event.preventDefault();
 
         if (validatePassword()) {
-            try {
-                const response = await requestApi(`auth/reset-password/${token}`, 'POST', {
-                    newPassword,
-                    newConfirmPassword: confirmPassword
-                });
-                console.log("New Password:", newPassword);
-                console.log("Confirm Password:", confirmPassword);
-                if (response.data.success) {
-                    setMessage('Mật khẩu đã được đổi thành công!');
-                    setError(false);
-                    router.push('/login'); // Redirect to login page after success
-                } else {
-                    setMessage(response.data.message || 'Đã xảy ra lỗi!');
-                    setError(true);
-                }
-            } catch (err) {
-                console.error(err);
-                setMessage('Có lỗi xảy ra. Vui lòng thử lại.');
-                setError(true);
-            }
+            requestApi(`auth/reset-password/${token}`, "POST",{
+                newPassword,
+                newConfirmPassword: confirmPassword
+            })
+        .then((res: any) => {
+          if (res.success) {
+            setMessage('Mật khẩu đã được đổi thành công!');
+            setError(false);
+             router.push('/login'); // Redirect to login page after success
+          } else {
+            setMessage(res.data.message || 'Đã xảy ra lỗi!');
+            setError(true);
+          }
+        })
+        .catch((err: any) => {
+            console.error(err);
+            setMessage('Có lỗi xảy ra. Vui lòng thử lại.');
+            setError(true);
+        });
         }
     };
 

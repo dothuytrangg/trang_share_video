@@ -147,7 +147,13 @@
         "send_request":"Gửi yêu cầu",
         "user_not_found":"Không tìm thấy người dùng",
         "thumbnail":"Thumbnail",
-        "register_before_login":"Vui lòng đăng ký trước khi đăng nhập"
+        "register_before_login":"Vui lòng đăng ký trước khi đăng nhập",
+
+
+        "new_password":"Mật khẩu mới",
+        "confirm_password":"Xác nhận mật khẩu",
+        "password_not_match":"Mật khẩu mới và mật khẩu xác nhận không khớp",
+        "confirm_password_not_empty":"Mật khẩu xác nhận không được để trống"
 
         
 
