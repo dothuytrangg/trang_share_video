@@ -654,11 +654,15 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                                             error={optionError}
                                             helperText={optionErrorMessage} />
                                         )}
-                                        filterOptions={(options, state) =>
-                                            options.filter(option =>
-                                                option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                                            )
-                                        }
+                                        filterOptions={(options) =>
+                                          // Lọc ra các option chưa được chọn
+                                          options.filter(
+                                              (option) =>
+                                                  !categoryOptions.some(
+                                                      (selectedOption:any) => selectedOption.id === option.id
+                                                  )
+                                          )
+                                      }
                                         style={{ width: 300 }}
                                         
 

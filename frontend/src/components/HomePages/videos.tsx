@@ -75,7 +75,7 @@ export default function Videos({ categoryId }: { categoryId: string }) {
               <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
                 {video.name.length > 50 ? (
                   <Tooltip title={video.name}>
-                    <span>{`${video.name.substring(0, 50)}...`}</span>
+                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
                   </Tooltip>
                 ) :
                   <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
