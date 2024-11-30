@@ -97,6 +97,11 @@
         "update_video_failed": "Cập nhật video không thành công!",
         "update_video_occerred": "Đã xảy ra lỗi khi cập nhật video",
 
+        "name_video_must_more_than_3_characters":"Tên video phải lớn hơn 3 kí tự",
+        "name_video_must_least_than_70_characters":"Tên video phải nhỏ hơn 70 kí tự",
+        "description_video_must_more_than_10_characters":"Mô tả phải lớn hơn 10 kí tự",
+        "description_video_must_least_than_300_characters":"Mô tả phải nhỏ hơn 300 kí tự",
+
         "Poster":"Người đăng",
 
         "Status":"Trạng thái",
@@ -125,6 +130,7 @@
   
         "are_you_sure_delete_category":"Bạn có chắc chắn muốn xóa danh mục này không?",
         "select_at_least_1_category":"Chọn ít nhất 1 danh mục",
+        "name_more_70": "Name must be at least 20 characters long.",
             
         "are_you_sure_delete_video":"Bạn có chắc chắn muốn xóa video này không?",
         "are_you_sure_delete_user":"Bạn có chắc chắn muốn xóa người dùng này không?",

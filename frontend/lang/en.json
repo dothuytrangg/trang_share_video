@@ -34,7 +34,7 @@
     "email_exist": "Email already exists",
     "name": "Name is not empty",
     "name_least_3": "Name must be at more 3 characters long.",
-    "name_more_70": "Name must be at least 20 characters long.",
+    "name_more_70": "Name must be at least 70 characters long.",
     "description_least_10":"Description must be at more 10 characters long.",
     "description_more_300":"Name must be at least 300 characters long.",
     "name_exist": "Name already exists",
@@ -94,6 +94,11 @@
     "update_video_success": "Video updated successfully!",
     "update_video_failed": "Failed to update user",
     "update_video_occerred": "An error occurred while update the user",
+
+    "name_video_must_more_than_3_characters":"Name video must more than 3 characters",
+    "name_video_must_least_than_70_characters":"Name video must least than 70 characters",
+    "description_video_must_more_than_10_characters":"Description video must more than 10 characters",
+    "description_video_must_least_than_300_characters":"Description video must least than 300 characters",
     
      "Poster":"Poster",
 

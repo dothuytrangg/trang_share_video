@@ -157,11 +157,11 @@ const ListVideo = () => {
           isValid = false;
         } else if (name.value.length < 3) {
           setNameError(true);
-          setNameErrorMessage(t("name_least_3"));
+          setNameErrorMessage(t("name_video_must_more_than_3_characters"));
           isValid = false;
         } else if (name.value.length > 70) {
           setNameError(true);
-          setNameErrorMessage(t("name_more_70"));
+          setNameErrorMessage(t("name_video_must_least_than_70_characters"));
           isValid = false;
         } else {
           setNameError(false);
@@ -175,11 +175,11 @@ const ListVideo = () => {
           isValid = false;
         } else if (description.value.length < 10) {
           setDescriptionError(true);
-          setDescriptionErrorMessage(t("description_least_10"));
+          setDescriptionErrorMessage(t("description_video_must_more_than_10_characters"));
           isValid = false;
         } else if (description.value.length > 300) {
           setDescriptionError(true);
-          setDescriptionErrorMessage(t("description_more_300"));
+          setDescriptionErrorMessage(t("description_video_must_least_than_300_characters"));
           isValid = false;
         } else {
           setDescriptionError(false);
