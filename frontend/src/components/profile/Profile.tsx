@@ -50,7 +50,7 @@ const Profile= () => {
       console.log('res',res);
       if(res.success){
          console.log('upload success !!')
-        //  setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
+         setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
          dispatch(updateLocalStorage({...res}));
          loadUser();
          setSnackbarMessage("upload avatar successfully");

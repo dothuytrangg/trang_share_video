@@ -91,6 +91,7 @@ const ListVideo = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     let [errorCreate, setErrorCreate] = useState("");
+    let [errorCreateMessage, setErrorCreateMessage] = useState("");
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState("");
     const [descriptionError, setDescriptionError] = useState(false);
@@ -115,6 +116,7 @@ const ListVideo = () => {
             const file = event.target.files[0];
             setThumbnailFile(file);
             setThumbnailPreview(URL.createObjectURL(file));
+            setThumbnailError(false)
         }
     };
 
@@ -122,6 +124,7 @@ const ListVideo = () => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             setVideoFile(file);
+            setVideoError(false)
             console.log(file);
 
         }
@@ -186,7 +189,7 @@ const ListVideo = () => {
         if(categoryOptions.length < 1 )
         {
             setOptionError(true);
-            setOptionErrorMessage(t('select_at_least_1_category'))
+            setOptionErrorMessage(t("select_at_least_1_category"))
             isValid = false;
 
         }
@@ -243,10 +246,12 @@ const ListVideo = () => {
                         setSnackbarMessage(t("create_video_success"));
                         setSnackbarSeverity("success");
                         setOpenSnackbar(true);
-
                         loadVideos(page);
+                      
+
+
                     } else {
-                        setErrorCreate(res.message || t("create_video_failed"));
+                        setErrorCreateMessage(res.message || t("create_video_failed"));
                         setSnackbarMessage(res.message);
                         setSnackbarSeverity("error");
                         setOpenSnackbar(true);
@@ -555,11 +560,11 @@ const formatDateTime = (isoString: string): string => {
                                                 <span style={{ color: '#999' }}>{t('thumbnail')}</span>
                                             )}
                                         </Box>
-                                        {thumbnailError && (
+                                       
                                             <span style={{ color: 'red', display: 'block'}}>
-                                                {thumbnailErrorMessage}
+                                                {thumbnailError ? (thumbnailErrorMessage):("")}
                                             </span>
-                                        )}
+                                     
 
                                     </Grid>
                                     <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -571,7 +576,13 @@ const formatDateTime = (isoString: string): string => {
                                                     options={categoryData}
                                                     getOptionLabel={(option) => option.label}
                                                     value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
-                                                    onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
+                                                    onChange={(event, newValue:any) => {
+                                                      setCategoryOptions(newValue),
+                                                      categoryOptions.length != null &&(
+                                                        setOptionError(false),
+                                                        setOptionErrorMessage("")
+                                                      )
+                                                    }} // Cập nhật state khi thay đổi
                                                     renderInput={(params) => (
                                                         <TextField {...params}
                                                          label={t('add_to_category')}
@@ -596,17 +607,12 @@ const formatDateTime = (isoString: string): string => {
                                         </Grid>
 
                                         <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
-                                            {videoError ? (
-                                                <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+
+                                          {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
                                                     {videoErrorMessage}
-                                                </span>
-                                            ) : (
-                                                videoFile && (
-                                                    <span style={{ color: 'black', display: 'block' }}>
-                                                        {videoFile.name}
-                                                    </span>
-                                                )
-                                            )}
+                                                </span>):(<span style={{ color: 'black', display: 'block' }}>
+                                                        {videoFile &&(videoFile.name)}
+                                                    </span>) }
                                         </Grid>
                                     </Grid>
 

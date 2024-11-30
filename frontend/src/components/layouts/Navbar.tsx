@@ -277,6 +277,7 @@ export default function Navbar() {
         const file = event.target.files[0];
         setThumbnailFile(file);
         setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+        setThumbnailError(false)
     }
 };
 
@@ -285,6 +286,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files[0];
         setVideoFile(file);
         console.log(file);
+        setVideoError(false)
 
     }
 };
@@ -548,204 +550,205 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           {renderButtonAcction()}
 
           <Dialog
-                open={openAddDialog}
-                onClose={() => setOpenAddDialog(false)}
-                PaperProps={{
-                    component: 'form',
-                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                        event.preventDefault();
-                        handleCreateVideo();
-                    },
-                }}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>{t("addVideo")}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {/* {t("addText_category")} */}
-                    </DialogContentText>
+                            open={openAddDialog}
+                            onClose={() => setOpenAddDialog(false)}
+                            PaperProps={{
+                                component: 'form',
+                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                    event.preventDefault();
+                                    handleCreateVideo();
+                                },
+                            }}
+                            fullWidth
+                            maxWidth="sm"
+                        >
+                            <DialogTitle>{t("addVideo")}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    {/* {t("addText_category")} */}
+                                </DialogContentText>
 
-                    {/* Input for Video Name */}
-                    <TextField
-                        autoFocus
-                        error={nameError}
-                        helperText={nameErrorMessage}
-                        onChange={(val) => setName(val.target.value)}
-                        margin="dense"
-                        id="name"
-                        name="name"
-                        label={t("name_video")}
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        placeholder={t("name_video")}
-                        style={{ marginBottom: 20 }}
-                    />
-
-                    {/* Input for Video Description */}
-                    <TextField
-                        error={descriptionError}
-                        helperText={descriptionErrorMessage}
-                        onChange={(val) => setDescription(val.target.value)}
-                        margin="dense"
-                        id="description"
-                        name="description"
-                        label={t("description_text")}
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={3}
-                        InputProps={{ style: { resize: 'vertical' } }}
-                        style={{ marginBottom: 20 }}
-                    />
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} >
-                            {/* Khung chứa ảnh*/}
-                            <Box
-                                sx={{
-                                    width: '250px',
-                                    height: '150px',
-                                    border: '2px dashed #3f51b5',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    overflow: 'hidden',
-                                    backgroundColor: '#f0f0f0',
-                                    marginTop: 2
-                                }}
-                            >
-                                {thumbnailPreview ? (
-                                    <img
-                                        src={thumbnailPreview}
-                                        alt="Thumbnail Preview"
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover'
-                                        }}
-                                    />
-                                ) : (
-                                    <span style={{ color: '#999' }}>{t('Thumbnail')}</span>
-                                )}
-                            </Box>
-                            {thumbnailError && (
-                                <span style={{ color: 'red', display: 'block'}}>
-                                    {thumbnailErrorMessage}
-                                </span>
-                            )}
-
-                        </Grid>
-                        <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <Grid item style={{
-
-                              display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
-                                    <Autocomplete
-                                        multiple
-                                        options={categoryData}
-                                        getOptionLabel={(option) => option.label}
-                                        value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
-                                        onChange={(event, newValue:any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
-                                        renderInput={(params) => (
-                                            <TextField {...params}
-                                            label={t('add_to_category')}
-                                            error={optionError}
-                                            helperText={optionErrorMessage} />
-                                        )}
-                                        filterOptions={(options) =>
-                                          // Lọc ra các option chưa được chọn
-                                          options.filter(
-                                              (option) =>
-                                                  !categoryOptions.some(
-                                                      (selectedOption:any) => selectedOption.id === option.id
-                                                  )
-                                          )
-                                      }
-                                        style={{ width: 300 }}
-                                        
-
-                                    />
-                                
-                                    
-                            </Grid>
-
-                            <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
-                                {videoError ? (
-                                    <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
-                                        {videoErrorMessage}
-                                    </span>
-                                ) : (
-                                    videoFile && (
-                                        <span style={{ color: 'black', display: 'block' }}>
-                                            {videoFile.name}
-                                        </span>
-                                    )
-                                )}
-                            </Grid>
-                        </Grid>
-
-                        {/* </Grid> */}
-
-
-                        {/* Cột nút chọn ảnh Thumbnail */}
-                        <Grid item xs={6}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                component="label"
-                                startIcon={<PhotoCameraIcon />}
-                                style={{
-                                    color: '#fff',
-                                    fontWeight: 'bold',
-                                    padding: '8px 16px',
-                                }}
-                            >
-                                {t('Choose_thumbnail')}
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleFileChange}
-                                    accept="image/*"
+                                {/* Input for Video Name */}
+                                <TextField
+                                    autoFocus
+                                    error={nameError}
+                                    helperText={nameErrorMessage}
+                                    onChange={(val) => setName(val.target.value)}
+                                    margin="dense"
+                                    id="name"
+                                    name="name"
+                                    label={t("name_video")}
+                                    type="text"
+                                    fullWidth
+                                    variant="outlined"
+                                    placeholder={t("name_video")}
+                                    style={{ marginBottom: 20 }}
                                 />
-                            </Button>
 
-                        </Grid>
-
-                        {/* Cột nút chọn video */}
-                        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                component="label"
-                                startIcon={<VideoLibraryIcon />}
-                                style={{
-                                    padding: '8px 16px',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                {t('upload_video')}
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleFileVideoChange}
-                                    accept="video/*"
+                                {/* Input for Video Description */}
+                                <TextField
+                                    error={descriptionError}
+                                    helperText={descriptionErrorMessage}
+                                    onChange={(val) => setDescription(val.target.value)}
+                                    margin="dense"
+                                    id="description"
+                                    name="description"
+                                    label={t("description_text")}
+                                    type="text"
+                                    fullWidth
+                                    variant="outlined"
+                                    multiline
+                                    rows={3}
+                                    InputProps={{ style: { resize: 'vertical' } }}
+                                    style={{ marginBottom: 20 }}
                                 />
-                            </Button>
-                        </Grid>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} >
+                                        {/* Khung chứa ảnh*/}
+                                        <Box
+                                            sx={{
+                                                width: '250px',
+                                                height: '150px',
+                                                border: '2px dashed #3f51b5',
+                                                borderRadius: '8px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                overflow: 'hidden',
+                                                backgroundColor: '#f0f0f0',
+                                                marginTop: 2
+                                            }}
+                                        >
+                                            {thumbnailPreview ? (
+                                                <img
+                                                    src={thumbnailPreview}
+                                                    alt="Thumbnail Preview"
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span style={{ color: '#999' }}>{t('thumbnail')}</span>
+                                            )}
+                                        </Box>
+                                       
+                                            <span style={{ color: 'red', display: 'block'}}>
+                                                {thumbnailError ? (thumbnailErrorMessage):("")}
+                                            </span>
+                                     
+
+                                    </Grid>
+                                    <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Grid item style={{
+              
+                                           display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
+                                                <Autocomplete
+                                                    multiple
+                                                    options={categoryData}
+                                                    getOptionLabel={(option) => option.label}
+                                                    value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                                                    onChange={(event, newValue:any) => {
+                                                      setCategoryOptions(newValue),
+                                                      categoryOptions.length != null &&(
+                                                        setOptionError(false),
+                                                        setOptionErrorMessage("")
+                                                      )
+                                                    }} // Cập nhật state khi thay đổi
+                                                    renderInput={(params) => (
+                                                        <TextField {...params}
+                                                         label={t('add_to_category')}
+                                                         error={optionError}
+                                                         helperText={optionErrorMessage} />
+                                                    )}
+                                                    filterOptions={(options) =>
+                                                      // Lọc ra các option chưa được chọn
+                                                      options.filter(
+                                                          (option) =>
+                                                              !categoryOptions.some(
+                                                                  (selectedOption:any) => selectedOption.id === option.id
+                                                              )
+                                                      )
+                                                  }
+                                                    style={{ width: 300 }}
+                                                    
+
+                                                />
+                                             
+                                                
+                                        </Grid>
+
+                                        <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
+
+                                          {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                                                    {videoErrorMessage}
+                                                </span>):(<span style={{ color: 'black', display: 'block' }}>
+                                                        {videoFile &&(videoFile.name)}
+                                                    </span>) }
+                                        </Grid>
+                                    </Grid>
+
+                                    {/* </Grid> */}
 
 
-                    </Grid>
+                                    {/* Cột nút chọn ảnh Thumbnail */}
+                                    <Grid item xs={6}>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            component="label"
+                                            startIcon={<PhotoCameraIcon />}
+                                            style={{
+                                                color: '#fff',
+                                                fontWeight: 'bold',
+                                                padding: '8px 16px',
+                                            }}
+                                        >
+                                            {t('Choose_thumbnail')}
+                                            <input
+                                                type="file"
+                                                hidden
+                                                onChange={handleFileChange}
+                                                accept="image/*"
+                                            />
+                                        </Button>
 
-                </DialogContent>
+                                    </Grid>
 
-                {/* Dialog Actions */}
-                <DialogActions>
-                    <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
-                    <Button type="submit">{t("add")}</Button>
-                </DialogActions>
-          </Dialog>
+                                    {/* Cột nút chọn video */}
+                                    <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            component="label"
+                                            startIcon={<VideoLibraryIcon />}
+                                            style={{
+                                                padding: '8px 16px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {t('upload_video')}
+                                            <input
+                                                type="file"
+                                                hidden
+                                                onChange={handleFileVideoChange}
+                                                accept="video/*"
+                                            />
+                                        </Button>
+                                    </Grid>
+
+
+                                </Grid>
+
+                            </DialogContent>
+
+                            {/* Dialog Actions */}
+                            <DialogActions>
+                                <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
+                                <Button type="submit">{t("add")}</Button>
+                            </DialogActions>
+                </Dialog>
           <Dialog
         open={openUpdateDialog}
         onClose={() => setOpenUpdateDialog(false)}
