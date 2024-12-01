@@ -49,10 +49,11 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
         <Button
           sx={{
             ml: 1, pr: 1, textTransform: "none", mt: 2,
-            backgroundColor: selectedCategory === indexId  ? 'primary.main' : '', // Màu khi chọn
-            '&:hover': {
-              backgroundColor: selectedCategory === indexId ? 'primary.dark' : 'lightgray', // Màu khi hover
-            }
+            backgroundColor: selectedCategory === indexId  ? (theme === "light"?'#121212' : '#fff'):'', // Màu khi chọn
+            // '&:hover': {
+            //   backgroundColor: selectedCategory === indexId ? 'primary.dark' : 'lightgray', // Màu khi hover
+            // },
+            color:selectedCategory === indexId  ? (theme === "light"?'#fff' : '#121212'):'',
           }}
           color="inherit"
           variant="contained"
@@ -77,10 +78,11 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
           key={id}
           sx={{
             ml: 1, pr: 1, textTransform: "none", mt: 2,
-            backgroundColor: selectedCategory === category.id ? 'primary.main' : '', // Màu khi chọn
-            '&:hover': {
-              backgroundColor: selectedCategory === category.id ? 'primary.dark' : 'Gray', // Màu khi hover
-            }
+            backgroundColor: selectedCategory === category.id  ? (theme === "light"?'#121212' : '#fff'):'', // Màu khi chọn
+            // '&:hover': {
+            //   backgroundColor: selectedCategory === category.id ? 'primary.dark' : 'Gray', // Màu khi hover
+            // },
+            color:selectedCategory ===  category.id  ? (theme === "light"?'#fff' : '#121212'):'',
           }}
           color="inherit"
           variant="contained"
