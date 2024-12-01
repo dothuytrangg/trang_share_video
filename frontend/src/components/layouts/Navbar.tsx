@@ -86,6 +86,9 @@ export default function Navbar() {
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   // const dispatch = useAppDispatch();
+  const [oldPassword, setOldPassword] = useState("");
+  const [oldPasswordError, setOldPasswordError] = useState(false);
+  const [oldPasswordErrorMessage, setOldPasswordErrorMessage] = useState("");
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
@@ -388,9 +391,16 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
   }
 
+
   const updatePasswordValidateInputs = () => {
     let isValid = true;
 
+    //kiểm tra trường old_password
+    if(!oldPassword){
+      setOldPasswordError(true)
+      setOldPasswordErrorMessage(t("password_not_empty"))
+      isValid = false;
+    }
     // Kiểm tra trường password
     if (!password) {
       setPasswordError(true);
@@ -434,24 +444,28 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     return isValid;
   };
 
-  
+
 
   const handleUpdatePassword = (userId: number) => {
     const valid: boolean = updatePasswordValidateInputs();
-  
+
     if (valid) {
- 
-      const userData_update = { password, confirm_password };
-   
-  
-      requestApi(`users/change-password/${userId}`, "PUT",userData_update)
+
+      const userData_update = {
+        old_password: oldPassword,
+        password,
+        confirm_password
+      };
+      console.log('User data for password update:', userData_update);
+
+      requestApi(`users/change-password/${userId}`, "PUT", userData_update)
         .then((res: any) => {
-          console.log('res update password',res)
+          console.log('res update password', res)
           if (res.success) {
             //  loadUsers(page);
             //  console.log('res update password',res)
-             dispatch(updateLocalStorage());
-         
+            dispatch(updateLocalStorage());
+
             setOpenUpdateDialog(false);
             setSnackbarMessage(t("update_user_success"));
             setSnackbarSeverity("success");
@@ -765,8 +779,21 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             <DialogTitle>{t("change_password")}</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                {t("update_text")}
+                {/* {t("update_text")} */}
               </DialogContentText>
+              <TextField
+                error={oldPasswordError}
+                helperText={oldPasswordErrorMessage}
+                onChange={(val) => setOldPassword(val.target.value)}
+                value={oldPassword}
+                margin="dense"
+                id="oldPassword"
+                name="oldPassword"
+                label={t("password")}
+                type="password"
+                fullWidth
+                variant="standard"
+              />
 
               <TextField
                 autoFocus

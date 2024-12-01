@@ -135,28 +135,64 @@ export class UsersService {
   }
   
 
-  async changePassword(id:number,changePasswordDto:ChangePasswordDto):Promise<UpdateResult>{
+  async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<any> {
     let response = common_response;
-  //   if (changePasswordDto.password) {
-     
-  //     const hashPassword = await this.hashPassword(changePasswordDto.password);
-  //     changePasswordDto.password = hashPassword;
-  // }
+    try {
+      console.log('Requested ID:', id);
 
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
+      console.log("user",user)
 
-    const hashPassword = await this.hashPassword(changePasswordDto.password);
+      if (!user) {
+        response.success = false;
+        response.message = 'User not found.';
+        return response;
+      }
 
-    let updateUser =  await this.userRepository.update(id,{...ChangePasswordDto,password:hashPassword});
-    if(updateUser){
-      response.success = true;
-      return response;
-    }else{
-      response.success = false;
+      const passwordMatch = await bcrypt.compare(changePasswordDto.old_password, user.password);
+      if (!passwordMatch) {
+        response.success = false;
+        response.message = 'Incorrect old password.';
+        return response;
+      }
+
+      // Ensure password and confirm_password match
+      if (changePasswordDto.password !== changePasswordDto.confirm_password) {
+        response.message = 'Password and confirm password do not match.';
+        return response;
+      }
+
+      // Check if the new password is the same as the old one
+      if (changePasswordDto.old_password === changePasswordDto.password) {
+        response.success = false;
+        response.message = 'New password cannot be the same as the old password.';
+        return response;
+      }
+
+      // Hash the new password
+      const hashPassword = await this.hashPassword(changePasswordDto.password);
+
+      // Update the user's password
+      const updateResult = await this.userRepository.update(id, { password: hashPassword });
+
+      console.log('Update result:', updateResult);
+
+      if (updateResult.affected === 1) {
+        response.success = true;
+        response.message = 'Password updated successfully.';
+      } else {
+        response.message = 'Failed to update the password. User not found or no changes made.';
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      response.message = 'An unexpected error occurred while updating the password.';
     }
-  
+
     return response;
   }
-
+  
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
       let response = common_response;
       

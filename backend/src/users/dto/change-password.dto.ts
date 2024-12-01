@@ -5,7 +5,24 @@ export class ChangePasswordDto{
  
  
     @IsNotEmpty()
+    old_password: string;
+    @IsNotEmpty()
+    @MinLength(6, {
+        message: 'Password is too short',
+    })
+    @MaxLength(16, {
+        message: 'Password is too long',
+    })
     password: string;
+
+    @IsNotEmpty()
+    @MinLength(6, {
+        message: 'Password is too short',
+    })
+    @MaxLength(16, {
+        message: 'Password is too long',
+    })
+    confirm_password: string;
     
 
 }
