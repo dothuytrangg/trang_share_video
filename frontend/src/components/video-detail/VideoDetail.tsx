@@ -38,22 +38,38 @@ const VideoDetail = () => {
   const [videoData, setVideoData] = useState<any>(null);
   const [proposeVideoData, setProposeVideoData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showControls, setShowControls] = useState(true); // Điều khiển ẩn/hiện nút
+  const [showControls, setShowControls] = useState(true);
+const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   // const [userData, setUserData] = useState([]);
-  var ranonce = false;
-  useEffect(() => {
-    if (!ranonce) {
-      if (videoId) {
+  // var ranonce = false;
+  // useEffect(() => {
+  //   if (!ranonce) {
+  //     if (videoId) {
 
-        fetchVideoDetail();
-      }
-      if (categoryId) {
-        fetchVideoDetailByCategoryId();
-      }
-      ranonce = true;
+  //       fetchVideoDetail();
+  //     }
+  //     if (categoryId) {
+  //       fetchVideoDetailByCategoryId();
+  //     }
+  //     ranonce = true;
+  //   }
+
+  // }, [videoId, categoryId]);
+
+  const isInitialRender = useRef(true);
+
+useEffect(() => {
+  if (isInitialRender.current) {
+    if (videoId) {
+      fetchVideoDetail();
     }
-
-  }, [videoId, categoryId]);
+    if (categoryId) {
+      fetchVideoDetailByCategoryId();
+    }
+    isInitialRender.current = false;
+  }
+}, [videoId, categoryId]);
 
   const fetchVideoDetail = async () => {
 
@@ -103,6 +119,36 @@ const VideoDetail = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
+
+  // Reset controls timeout
+  const resetControlsTimeout = () => {
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+  };
+
+  useEffect(() => {
+    resetControlsTimeout();
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, []);
+
+
+  const handleMouseOver = () => {
+    setShowControls(true);
+    resetControlsTimeout();
+  };
+
+  const handleMouseLeave = () => {
+    resetControlsTimeout();
+  };
+
+  
+
  // Toggle play/pause
  const togglePlayPause = () => {
   if (videoRef.current) {
@@ -133,27 +179,28 @@ const handleVolumeChange = (e: Event, value: number | number[]) => {
   }
 };
 
-// Update progress bar
 useEffect(() => {
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100);
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      setProgress((currentTime / duration) * 100); // Cập nhật phần trăm progress
     }
   };
 
   const video = videoRef.current;
   video?.addEventListener("timeupdate", handleTimeUpdate);
+
   return () => {
     video?.removeEventListener("timeupdate", handleTimeUpdate);
   };
 }, []);
 
-// Seek video
 const handleSeek = (e: Event, value: number | number[]) => {
   const newProgress = Array.isArray(value) ? value[0] : value;
   if (videoRef.current) {
-    videoRef.current.currentTime = (newProgress / 100) * videoRef.current.duration;
-    setProgress(newProgress);
+    videoRef.current.currentTime = (newProgress / 100) * videoRef.current.duration; 
+    setProgress(newProgress); // Đồng bộ trạng thái progress
   }
 };
 
@@ -162,17 +209,28 @@ const toggleFullscreen = () => {
   if (videoRef.current) {
     if (!isFullscreen) {
       videoRef.current.requestFullscreen();
+     
     } else {
       document.exitFullscreen();
+      // setIsFullscreen(false);
+      // setIsFullscreen(!isFullscreen);
     }
-    setIsFullscreen(!isFullscreen);
+    // setIsFullscreen(!isFullscreen);
   }
 };
 
-// Zoom functionality
-const handleZoom = (zoomIn: boolean) => {
-  const newZoom = zoomIn ? zoomLevel + 0.1 : zoomLevel - 0.1;
-  setZoomLevel(Math.max(1, newZoom));
+
+
+const formatTime = (seconds: number): string => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  } else {
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
 };
 
 
@@ -192,109 +250,107 @@ const handleZoom = (zoomIn: boolean) => {
     <Box className={styles.container}>
       <Grid container spacing={3}>
         <Grid item xs={7}>
-          {/* <div className={styles.videoWrapper}>
-          <video
-            className={styles.videoPlayer}
-            src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
-            autoPlay
-            muted
-            loop
-            playsInline
-          ></video>
-        </div> */}
-          <Box
-      sx={{
-        position: "relative",
-        width: "100%",
-        maxWidth: 800,
-        aspectRatio: "16/9",
-        backgroundColor: "#000",
-        overflow: "hidden",
-      }}
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
-        style={{
-          width: "100%",
-          height: "100%",
-          transform: `scale(${zoomLevel})`,
-          objectFit: "cover",
-        }}
-        onLoadedMetadata={() => {
-          if (videoRef.current) {
-            setDuration(videoRef.current.duration);
-          }
-        }}
-      />
+        <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 800,
+              // maxHeight:500,
+              aspectRatio: "16/9",
+              backgroundColor: "#000",
+              overflow: "hidden",
+            }}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Video Element */}
+            <video
+              ref={videoRef}
+              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
+              style={{
+                width: "100%",
+                height: "100%",
+                // transform: `scale(${zoomLevel})`,
+                objectFit: "contain",
+              }}
+              onLoadedMetadata={() => {
+                if (videoRef.current) {
+                  // const videoDuration = videoRef.current.duration;
+                  setDuration(videoRef.current.duration);
+                  // console.log('duration',videoRef.current)
+                }
+              }}
+            />
 
-      {/* Controls */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 10,
-          left: 10,
-          right: 10,
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-          padding: "10px",
-          borderRadius: "5px",
-        }}
-      >
-        {/* Play/Pause */}
-        <IconButton onClick={togglePlayPause} color="inherit">
-          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-        </IconButton>
+            {/* Controls */}
+            {showControls && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 10,
+                  left: 10,
+                  right: 10,
+                  zIndex: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  padding: "10px",
+                  borderRadius: "5px",
+                }}
+              >
+              {/* Play/Pause */}
+              <IconButton onClick={togglePlayPause} color="inherit">
+                {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+              </IconButton>
 
-        {/* Rewind */}
-        <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)} color="inherit">
-          <Replay10Icon />
-        </IconButton>
+              {/* Rewind */}
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)} color="inherit">
+                <Replay10Icon />
+              </IconButton>
 
-        {/* Progress */}
-        <Slider
-          value={progress}
-          onChange={handleSeek}
-          aria-labelledby="progress-slider"
-          sx={{ flex: 1, mx: 2 }}
-        />
+              <Slider
+              value={progress}
+              onChange={handleSeek}
+              aria-labelledby="progress-slider"
+              sx={{ flex: 1, mx: 2 }}
+              min={0}
+              max={100}
+              step={1}
+              valueLabelDisplay="on"
+              valueLabelFormat={(value) =>
+                duration > 0 ? formatTime((value / 100) * duration) : "0:00"
+              }
+            />
 
-        {/* Forward */}
-        <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} color="inherit">
-          <Forward10Icon />
-        </IconButton>
+              {/* Forward */}
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} color="inherit">
+                <Forward10Icon />
+              </IconButton>
 
-        {/* Volume */}
-        <IconButton onClick={toggleMute} color="inherit">
-          {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-        </IconButton>
-        <Slider
-          value={volume}
-          onChange={handleVolumeChange}
-          step={0.1}
-          min={0}
-          max={1}
-          sx={{ width: 100 }}
-        />
+              {/* Volume */}
+              <IconButton onClick={toggleMute} color="inherit">
+                {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+              </IconButton>
+              <Slider
+                value={volume}
+                onChange={handleVolumeChange}
+                step={0.1}
+                min={0}
+                max={1}
+                sx={{ width: 100 }}
+                
+              />
 
-        {/* Fullscreen */}
-        <IconButton onClick={toggleFullscreen} color="inherit">
-          {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </IconButton>
+              {/* Fullscreen */}
+              <IconButton onClick={toggleFullscreen} color="inherit">
+                {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              </IconButton>
 
-        {/* Zoom */}
-        {/* <IconButton onClick={() => handleZoom(true)} color="inherit">
-          <ZoomInIcon />
-        </IconButton>
-        <IconButton onClick={() => handleZoom(false)} color="inherit">
-          <ZoomOutIcon />
-        </IconButton> */}
+         
+            </Box>)}
       </Box>
-    </Box>
+           
 
 
           <h1 className={styles.videoTitle}>{videoData.name}</h1>
@@ -302,7 +358,7 @@ const handleZoom = (zoomIn: boolean) => {
             <Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${videoData.user.avatar}`} alt='akelo' />
             <Box className={styles.channelText}>
               <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
-              <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography>
+              {/* <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography> */}
             </Box>
             <Button variant="contained" color="primary" className={styles.subscribeButton}>
               Đăng ký
@@ -315,7 +371,7 @@ const handleZoom = (zoomIn: boolean) => {
             <IconButton><MoreHorizIcon /></IconButton>
           </Box>
           <Box className={styles.videoInfo}>
-            <Typography variant="body2">{videoData.viewed} views • 3 weeks ago • #16 on Trending for music</Typography>
+            <Typography variant="body2">{videoData.viewed} views • 3 weeks ago</Typography>
             <Typography variant="body2">
               {videoData.description}
               {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}

@@ -274,7 +274,7 @@ const ListVideo = () => {
     const handleOpenUpdateDialog = (video: any) => {
         console.log('video', video);
         setSelectedVideo(video);
-        console.log(selectedVideo);
+        console.log('ss',selectedVideo);
         setName(video.name);
         setDescription(video.description);
         setThumbnailFile(null);

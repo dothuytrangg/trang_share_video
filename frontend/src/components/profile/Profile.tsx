@@ -8,6 +8,7 @@ import { _ENV } from '@/contstants';
 import { useLocale, useTranslations } from 'next-intl';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { updateLocalStorage } from '@/stores/features/masterSlice';
+import { useRouter } from 'next/navigation';
 
 const Profile= () => {
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -21,7 +22,7 @@ const Profile= () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-
+  const router = useRouter();
 
   const handleImageChange = (event:any) => {
       if(event.target.files[0]){
@@ -36,11 +37,10 @@ const Profile= () => {
       }
   };
 
-  useEffect(()=>{
-    loadUser()
-
-  },[])
-
+  useEffect(() => {
+    loadUser();
+    setLoading(false);
+}, [])
  
 
   const handleUploadAvatar = () =>{
@@ -79,6 +79,7 @@ const Profile= () => {
               // setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/avatars/'+  res.data.avatar})
               setVideos(res.data.videos);
               
+              
             // setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
 
            
@@ -91,15 +92,14 @@ const Profile= () => {
     })
   
   };
-  useEffect(()=>{
-    if (!ranonce) {
-      loadUser();
-      setLoading(false);
+  // useEffect(()=>{
+   
+  //     loadUser();
+  //     setLoading(false);
     
-    }
-    ranonce = true;
+   
 
-  },[])
+  // },[])
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -121,19 +121,24 @@ const Profile= () => {
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
+
   const [status, setStatus] = useState("confirming");
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
 
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const handleOpenUpdateDialog = (video: any) => {
-      console.log('video', video);
+      console.log('video user', video);
       setSelectedVideo(video);
-      console.log(selectedVideo);
+      console.log('sss',selectedVideo)
+      // console.log(selectedVideo);
       setName(video.name);
       setDescription(video.description);
       setThumbnailFile(null);
-      setThumbnailPreview(`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`);
-    
+      // setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
+      setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
+      // console.log('console thumbnail',selectedVideo.thumbnail);
+
+      // console.log('thumbnailFile',thumbnailFile);
       setOpenUpdateDialog(true);
   };
 
@@ -143,62 +148,63 @@ const Profile= () => {
   };
 
   const validateUpdateInputs = () => {
-      const name = document.getElementById("name") as HTMLInputElement;
-      const description = document.getElementById("description") as HTMLInputElement;
-    
-      let isValid = true;
-    
-    
-      if (!name.value) {
-        setNameError(true);
-        setNameErrorMessage(t("name_required"));
-        isValid = false;
-      } else if (name.value.length < 3) {
-        setNameError(true);
-        setNameErrorMessage(t("name_least_3"));
-        isValid = false;
-      } else if (name.value.length > 70) {
-        setNameError(true);
-        setNameErrorMessage(t("name_more_70"));
-        isValid = false;
-      } else {
-        setNameError(false);
-        setNameErrorMessage("");
-      }
-    
+    const name = document.getElementById("name") as HTMLInputElement;
+    const description = document.getElementById("description") as HTMLInputElement;
   
-      if (!description.value) {
-        setDescriptionError(true);
-        setDescriptionErrorMessage(t("description_required"));
-        isValid = false;
-      } else if (description.value.length < 10) {
-        setDescriptionError(true);
-        setDescriptionErrorMessage(t("description_least_10"));
-        isValid = false;
-      } else if (description.value.length > 300) {
-        setDescriptionError(true);
-        setDescriptionErrorMessage(t("description_more_300"));
-        isValid = false;
-      } else {
-        setDescriptionError(false);
-        setDescriptionErrorMessage("");
-      }
-    
-     
-      // if (!thumbnailFile) {
-      //   setThumbnailError(true)
-      //   setThumbnailErrorMessage(t("thumbnail_required"))
-      //   isValid = false;
-      // }
+    let isValid = true;
   
-      // if (!videoFile) {
-      //   setVideoError(true)
-      //   setVideoErrorMessage(t("video_required"))
-      //   isValid = false;
-      // }
-    
-      return isValid;
-    };
+  
+    if (!name.value) {
+      setNameError(true);
+      setNameErrorMessage(t("name_required"));
+      isValid = false;
+    } else if (name.value.length < 3) {
+      setNameError(true);
+      setNameErrorMessage(t("name_least_3"));
+      isValid = false;
+    } else if (name.value.length > 70) {
+      setNameError(true);
+      setNameErrorMessage(t("name_more_70"));
+      isValid = false;
+    } else {
+      setNameError(false);
+      setNameErrorMessage("");
+    }
+  
+
+    if (!description.value) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_required"));
+      isValid = false;
+    } else if (description.value.length < 10) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_least_10"));
+      isValid = false;
+    } else if (description.value.length > 300) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(t("description_more_300"));
+      isValid = false;
+    } else {
+      setDescriptionError(false);
+      setDescriptionErrorMessage("");
+    }
+  
+   
+    // if (!thumbnailFile) {
+    //   setThumbnailError(true)
+    //   setThumbnailErrorMessage(t("thumbnail_required"))
+    //   isValid = false;
+    // }
+
+    // if (!videoFile) {
+    //   setVideoError(true)
+    //   setVideoErrorMessage(t("video_required"))
+    //   isValid = false;
+    // }
+  
+    return isValid;
+  };
+
 
     function slugify(str: string): string {
 
@@ -256,10 +262,10 @@ const Profile= () => {
           .then((res: any) => {
             // console.log('res update video',formData);
             if (res.success) {
-              // loadUser()
+              loadUser()
               // // console.log('res update video', res)
               dispatch(updateLocalStorage());
-    
+             
               setOpenUpdateDialog(false);
               setSnackbarMessage(t("update_video_success"));
               setSnackbarSeverity("success");
@@ -290,7 +296,7 @@ const Profile= () => {
       .then((res: any) => {
 
         if (res.success) {
-          // loadUser()
+          loadUser()
           // console.log("Video deleted:", res);
           setSnackbarMessage(t("delete_video_success"));
           setSnackbarSeverity("success");
@@ -315,6 +321,9 @@ const Profile= () => {
       
 
     };
+    const handleOnClick = (videoId: string) => {
+      router.push(`/${locale}/detail/${videoId}`);
+    };
 
 
   const renderPage = () => {
@@ -323,8 +332,8 @@ const Profile= () => {
         <div className="grid grid-cols-1 gap-4">
           <React.StrictMode>
 
-                      <Dialog
-                            open={openUpdateDialog}
+                        <Dialog
+                          open={openUpdateDialog}
                             onClose={() => handleCloseUpdateDialog()}
                             PaperProps={{
                                 component: 'form',
@@ -392,7 +401,7 @@ const Profile= () => {
                                         style={{ marginTop: 10, width: '60%', height: 'auto', maxHeight: '200px' }}
                                     />
                                 )}
-                          
+                         
 
 
 
@@ -400,8 +409,8 @@ const Profile= () => {
                             <DialogActions>
                                 <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
                                 <Button type="submit" >{t("btnUpdate")}</Button>
-                        </DialogActions>
-                </Dialog>
+                            </DialogActions>
+                        </Dialog>
            <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 2 }}>
             <CardContent>
                <Typography variant="h5" gutterBottom>
@@ -446,15 +455,15 @@ const Profile= () => {
                 title="green iguana"
               />
               <CardContent  sx={{ height: 140 }}>
-                <Typography gutterBottom variant="h6" component="div" sx={{ height: 30,paddingBottom:8 }}>
+              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
                 {video.name.length > 50 ? (
-                                  <Tooltip title={video.name}>
-                                    <span>{`${video.name.substring(0, 50)}...`}</span>
-                                  </Tooltip>
-                                ) : (
-                                  video.name
-                                )}
-                </Typography>
+                  <Tooltip title={video.name}>
+                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
+                  </Tooltip>
+                ) :
+                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                }
+              </Typography>
                 <Typography variant="body2" color="text.secondary" >
                 {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
                 </Typography>
@@ -464,39 +473,12 @@ const Profile= () => {
         <CardActions>
           <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
         color="inherit"
-        variant="contained" size="small">Share</Button>
+        variant="contained" size="small" onClick={()=>{handleOpenUpdateDialog(video)}} >{t('edit')}</Button>
           <Button  sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
         color="inherit"
-        variant="contained" size="small">Learn More</Button>
+        variant="contained" size="small"  onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</Button>
 
-     <IconButton
-        size="large"
-        aria-label="account of current user"
-        aria-controls="menu-appbar"
-        aria-haspopup="true"
-        onClick={handleClick}
-        color="inherit"
-        sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-        style={{marginLeft:90}}
-        
-      >   
-        <MoreVertOutlinedIcon />
-      </IconButton>
-      <Menu
-            anchorEl={anchorEl}
-            id="account-menu"
-            open={open}
-            onClose={handleClose}
-            onClick={handleClose}
 
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <MenuItem className="px-5" onClick={()=>handleOpenUpdateDialog(video)}>{t('edit')}</MenuItem>
-            <MenuItem onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</MenuItem>
-         
-          </Menu>
-          
       
           
         </CardActions>
