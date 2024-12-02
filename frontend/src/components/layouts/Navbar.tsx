@@ -47,6 +47,7 @@ export default function Navbar() {
   const locale = useLocale();
   const logo = "/image/logo_text.png";
   const theme = useTheme();
+  const themeMaster = useSelector((state: any) => state.master.theme); 
   const dispatch = useAppDispatch();
   // const open = useAppSelector((state) => state.master.drawer) as boolean;
   const masterStore = useAppSelector((state: any) => state.master);
@@ -365,17 +366,20 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
   const renderButtonAcction = () => {
     if (!isLogin) {
-      return <Button onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
+      return <Button sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}} onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
         {t('login')}
       </Button>
     } else {
       return (
         
-        <Box>
+        <Box >
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}  startIcon={<VideoCallOutlined style={{width:30,height:30}}/>}>
+          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}   sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}} startIcon={<VideoCallOutlined style={{width:30,height:30}}
+        
+         
+          />}>
           </Button>
-           <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
+           <Button onClick={handleClick} variant="outlined" sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}}  startIcon={profileAvatar
       ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
       :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
         {masterStore.user.name}
