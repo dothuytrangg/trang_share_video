@@ -27,6 +27,7 @@ import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import Forward10Icon from "@mui/icons-material/Forward10";
 import Replay10Icon from "@mui/icons-material/Replay10";
+import { useSelector } from "react-redux";
 
 
 
@@ -40,6 +41,7 @@ const VideoDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true);
 const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+const theme = useSelector((state: any) => state.master.theme); 
   
   // const [userData, setUserData] = useState([]);
   // var ranonce = false;
@@ -59,17 +61,55 @@ const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isInitialRender = useRef(true);
 
-useEffect(() => {
-  if (isInitialRender.current) {
-    if (videoId) {
-      fetchVideoDetail();
+
+
+  useEffect(() => {
+    // Lấy tham chiếu video
+    const video = videoRef.current;
+    // console.log("videoRef.current", videoRef.current);
+  
+    // Cờ để ngăn fetch lại dữ liệu ở lần render đầu tiên
+    if (isInitialRender.current) {
+      if (videoId) {
+        fetchVideoDetail();
+      }
+      if (categoryId) {
+        fetchVideoDetailByCategoryId();
+      }
+      isInitialRender.current = false;
     }
-    if (categoryId) {
-      fetchVideoDetailByCategoryId();
-    }
-    isInitialRender.current = false;
-  }
-}, [videoId, categoryId]);
+  
+    // Reset timeout để ẩn controls
+    const resetControlsTimeout = () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+      controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+    };
+  
+    resetControlsTimeout();
+  
+    // Hàm xử lý cập nhật tiến trình video
+    const handleTimeUpdate = () => {
+      if (video) {
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+        setProgress((currentTime / duration) * 100);
+      }
+    };
+  
+    // Gán sự kiện cho video
+    video?.addEventListener("timeupdate", handleTimeUpdate);
+  
+    // Cleanup khi component unmount
+    return () => {
+      video?.removeEventListener("timeupdate", handleTimeUpdate);
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, [videoId, categoryId,videoData]); // Dependencies chỉ cần là các tham số ảnh hưởng đến logic
+  
 
   const fetchVideoDetail = async () => {
 
@@ -128,14 +168,6 @@ useEffect(() => {
     controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
   };
 
-  useEffect(() => {
-    resetControlsTimeout();
-    return () => {
-      if (controlsTimeoutRef.current) {
-        clearTimeout(controlsTimeoutRef.current);
-      }
-    };
-  }, []);
 
 
   const handleMouseOver = () => {
@@ -179,22 +211,6 @@ const handleVolumeChange = (e: Event, value: number | number[]) => {
   }
 };
 
-useEffect(() => {
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
-      setProgress((currentTime / duration) * 100); // Cập nhật phần trăm progress
-    }
-  };
-
-  const video = videoRef.current;
-  video?.addEventListener("timeupdate", handleTimeUpdate);
-
-  return () => {
-    video?.removeEventListener("timeupdate", handleTimeUpdate);
-  };
-}, []);
 
 const handleSeek = (e: Event, value: number | number[]) => {
   const newProgress = Array.isArray(value) ? value[0] : value;
@@ -300,12 +316,24 @@ const formatTime = (seconds: number): string => {
                 }}
               >
               {/* Play/Pause */}
-              <IconButton onClick={togglePlayPause} color="inherit">
-                {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+              <IconButton onClick={togglePlayPause} 
+              sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}
+              // color="inherit"
+              >
+                {isPlaying ? <PauseIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }} /> : <PlayArrowIcon 
+              sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/>}
               </IconButton>
 
               {/* Rewind */}
-              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)} color="inherit">
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)}  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
                 <Replay10Icon />
               </IconButton>
 
@@ -324,13 +352,22 @@ const formatTime = (seconds: number): string => {
             />
 
               {/* Forward */}
-              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} color="inherit">
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} 
+                 sx={{
+                  color:theme === "light" ? '#FFF': '#fff'
+                }}>
                 <Forward10Icon />
               </IconButton>
 
               {/* Volume */}
-              <IconButton onClick={toggleMute} color="inherit">
-                {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+              <IconButton onClick={toggleMute}  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
+                {isMuted ? <VolumeOffIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/> : <VolumeUpIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/>}
               </IconButton>
               <Slider
                 value={volume}
@@ -338,13 +375,18 @@ const formatTime = (seconds: number): string => {
                 step={0.1}
                 min={0}
                 max={1}
-                sx={{ width: 100 }}
+                sx={{ width: 100
+                 }}
+             
                 
               />
 
               {/* Fullscreen */}
-              <IconButton onClick={toggleFullscreen} color="inherit">
-                {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              <IconButton onClick={toggleFullscreen} 
+               sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
+                {isFullscreen ? <FullscreenExitIcon  /> : <FullscreenIcon />}
               </IconButton>
 
          
