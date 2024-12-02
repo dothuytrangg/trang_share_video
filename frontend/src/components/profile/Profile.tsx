@@ -411,38 +411,38 @@ const Profile= () => {
                                 <Button type="submit" >{t("btnUpdate")}</Button>
                             </DialogActions>
                         </Dialog>
-           <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 2 }}>
-            <CardContent>
-               <Typography variant="h5" gutterBottom>
-                {t('profile')}
-               </Typography>
-              <Avatar
-                src={profileData.avatar ? profileData.avatar :""}
-                alt="Profile Picture"
-                sx={{ width: 100, height: 100, margin: '0 auto 16px' }}
-              />
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="avatar-upload"
-                type="file"
-                onChange={handleImageChange}
-                
-              />
-            
-              <label htmlFor="avatar-upload">
-                <IconButton color="primary" component="span">
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-              <Typography variant="body2" color="textSecondary">
-                {t('click_the_camera_to_upload_a_new_avatar')}
-              </Typography>
-              <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >{t('update')}</Button>
-            </CardContent>
-            </Card>
+            <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 2 }}>
+              <CardContent>
+                <Typography variant="h5" gutterBottom>
+                  {t('profile')}
+                </Typography>
+                <Avatar
+                  src={profileData.avatar ? profileData.avatar :""}
+                  alt="Profile Picture"
+                  sx={{ width: 100, height: 100, margin: '0 auto 16px' }}
+                />
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="avatar-upload"
+                  type="file"
+                  onChange={handleImageChange}
+                  
+                />
+              
+                <label htmlFor="avatar-upload">
+                  <IconButton color="primary" component="span">
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+                <Typography variant="body2" color="textSecondary">
+                  {t('click_the_camera_to_upload_a_new_avatar')}
+                </Typography>
+                <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >{t('update')}</Button>
+              </CardContent>
+              </Card>
 
-                                  
+                                    
 
                 <div className="grid grid-cols-4 gap-3 mt-4"style={{}}>
                 {
@@ -467,10 +467,13 @@ const Profile= () => {
                 <Typography variant="body2" color="text.secondary" >
                 {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
                 </Typography>
+
+               
               </CardContent>
          
 
         <CardActions>
+          
           <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
         color="inherit"
         variant="contained" size="small" onClick={()=>{handleOpenUpdateDialog(video)}} >{t('edit')}</Button>
@@ -478,10 +481,20 @@ const Profile= () => {
         color="inherit"
         variant="contained" size="small"  onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</Button>
 
+          {/* Hiển thị trạng thái */}
+          <Typography
+                      variant="body2"
+                      color={video.status === "confirmed" ? "green" : "#dc143c"}
+                      sx={{ mt: 2, fontWeight: "bold"}}
+                      style={{marginLeft:70}}
+                    >
 
+                  {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
+                </Typography>
       
           
         </CardActions>
+        
   
       </Card>
       

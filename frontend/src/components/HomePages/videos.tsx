@@ -64,35 +64,37 @@ export default function Videos({ categoryId }: { categoryId: string }) {
     <React.Fragment>
       {videos.map((video: any) => (
 
-        <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }} >
-          <Card sx={{ mx: 2, my: 1, width: 1 }} >
-            <CardMedia
-              sx={{ height: 140 }}
-              image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
-              title={video.name}
-            />
-            <CardContent sx={{ height: 140 }}>
-              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                {video.name.length > 50 ? (
-                  <Tooltip title={video.name}>
-                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
-                  </Tooltip>
-                ) :
-                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                }
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {video.description.length > 100 ? (
-                  <Tooltip title={video.description}>
-                    <span>{`${video.description.substring(0, 100)}...`}</span>
-                  </Tooltip>
-                ) : (
-                  video.description
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+          video.status === 'confirmed' && (
+            <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }} >
+            <Card sx={{ mx: 2, my: 1, width: 1 }} >
+              <CardMedia
+                sx={{ height: 140 }}
+                image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                title={video.name}
+              />
+              <CardContent sx={{ height: 140 }}>
+                <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                  {video.name.length > 50 ? (
+                    <Tooltip title={video.name}>
+                      <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
+                    </Tooltip>
+                  ) :
+                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                  }
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {video.description.length > 100 ? (
+                    <Tooltip title={video.description}>
+                      <span>{`${video.description.substring(0, 100)}...`}</span>
+                    </Tooltip>
+                  ) : (
+                    video.description
+                  )}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          )
       ))}
     </React.Fragment>
   );
