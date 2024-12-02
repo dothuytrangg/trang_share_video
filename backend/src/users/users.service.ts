@@ -283,4 +283,16 @@ export class UsersService {
       return response;
         
     }
+
+    handleFileValidationError(errorMessage: string) {
+      // let response = {
+      //     success: false,
+      //     message: errorMessage,
+      // };
+      let response = common_response;
+      response.success = false;
+      response.message = errorMessage
+
+      return response;
+  }
 }

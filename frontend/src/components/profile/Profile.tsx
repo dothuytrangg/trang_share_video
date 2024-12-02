@@ -57,7 +57,8 @@ const Profile= () => {
          setSnackbarSeverity("success");
          setOpenSnackbar(true);
       }else{
-          setSnackbarMessage(("upload avatar failed"));
+          setSnackbarMessage(res.message ? (`${locale}`=== 'en'?'Only accept image files with extensions .jpg, .png, .jpeg, webp'
+            :'Chỉ chấp nhận file ảnh có đuôi .jpg,.png,.jpeg,webp'):res.message);
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
       }
