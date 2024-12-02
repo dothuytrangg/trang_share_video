@@ -871,8 +871,16 @@ const formatDateTime = (isoString: string): string => {
                           {video.user.full_name}
                         </TableCell>
 
-                        <TableCell>
-                          {video.status == 'confirming' ? `${t('Confirming')}`: `${t('Confirmed')}`}
+                        <TableCell >
+                          {/* {video.status == 'confirming' ? `${t('Confirming')}`: `${t('Confirmed')}`} */}
+                          <Typography
+                              variant="body2"
+                              color={video.status === "confirmed" ? "green" : "#dc143c"}
+                             
+                            >
+
+                          {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
+                        </Typography>
                         </TableCell>
                         <TableCell>
                           {formatDateTime(video.created_at)}
