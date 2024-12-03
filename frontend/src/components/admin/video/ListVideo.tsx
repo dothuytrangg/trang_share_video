@@ -1,6 +1,6 @@
 import { _ENV, _GLOBAL } from "@/contstants";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Pagination, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, ButtonGroup, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Pagination, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -470,6 +470,12 @@ const formatDateTime = (isoString: string): string => {
         id: `${category.id}`
     }));
 
+    const [filterStatus, setFilterStatus] = useState("all");
+    const filteredVideos = videos.filter((video:any) => {
+      if (filterStatus === "all") return true;
+      return video.status === filterStatus;
+    });
+
   
     const renderPage = () => {
         if (!loading) {
@@ -800,10 +806,42 @@ const formatDateTime = (isoString: string): string => {
                         </Snackbar>
                         <div className="m-5 mt-20">
 
+
+
+   
+
+
         <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-                <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
-                  {t('addVideo')}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+             
+              <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
+                {t("addVideo")}
+              </Button>
+
+           
+              <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+                <Button
+                  variant={filterStatus === "all" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("all")}
+                >
+                  {t("all")}
                 </Button>
+                <Button
+                  variant={filterStatus === "confirmed" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("confirmed")}
+                >
+                  {t("Confirmed")}
+                </Button>
+                <Button
+                  variant={filterStatus === "confirming" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("confirming")}
+                >
+                  {t("Confirming")}
+                </Button>
+          </Box>
+        </Box>
+
+
 
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
@@ -821,91 +859,81 @@ const formatDateTime = (isoString: string): string => {
                   </TableHead>
 
                   <TableBody>
-                    {
-                      videos.map((video: any) => (
-                        <TableRow key={video.id}>
-                          <TableCell>{video.id}</TableCell>
-                          <TableCell>
-                          {video.name.length > 20 ? (
-                            <Tooltip title={video.name}>
-                              <span>{`${video.name.substring(0, 20)}...`}</span>
-                            </Tooltip>
-                          ) : (
-                            video.name
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {video.description.length > 20 ? (
-                            <Tooltip title={video.description}>
-                              <span>{`${video.description.substring(0, 20)}...`}</span>
-                            </Tooltip>
-                          ) : (   
-                            video.description
-                          )}
-                        </TableCell>
-                          <TableCell>
-                                <img 
-                                // src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                                src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`} 
-                                alt={video.name} 
-                                style={{ width: '100px', height: 'auto' }} // Adjust width and height as needed
-                                />
-                         </TableCell>
-                         <TableCell>
-                       
-                         {video.url ? (
+                  {filteredVideos.map((video:any) => (
+                    <TableRow key={video.id}>
+                      <TableCell>{video.id}</TableCell>
+                      <TableCell>
+                        {video.name.length > 20 ? (
+                          <Tooltip title={video.name}>
+                            <span>{`${video.name.substring(0, 20)}...`}</span>
+                          </Tooltip>
+                        ) : (
+                          video.name
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {video.description.length > 20 ? (
+                          <Tooltip title={video.description}>
+                            <span>{`${video.description.substring(0, 20)}...`}</span>
+                          </Tooltip>
+                        ) : (
+                          video.description
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <img
+                          src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                          alt={video.name}
+                          style={{ width: "100px", height: "auto" }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {video.url ? (
                           <Tooltip title={video.url}>
-                            {/* <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
-                              {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
-                            </Link> */}
-                            <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
+                            <Link
+                              href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`}
+                              target="_blank"
+                              rel="noopener"
+                              style={{ textDecoration: "none" }}
+                            >
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
                             </Link>
                           </Tooltip>
                         ) : (
-                          'N/A'
+                          "N/A"
                         )}
-                        </TableCell>
-
-                        <TableCell>
-                          {video.user.full_name}
-                        </TableCell>
-
-                        <TableCell >
-                          {/* {video.status == 'confirming' ? `${t('Confirming')}`: `${t('Confirmed')}`} */}
-                          <Typography
-                              variant="body2"
-                              color={video.status === "confirmed" ? "green" : "#dc143c"}
-                             
-                            >
-
+                      </TableCell>
+                      <TableCell>{video.user.full_name}</TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          color={video.status === "confirmed" ? "green" : "#dc143c"}
+                        >
                           {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
                         </Typography>
-                        </TableCell>
-                        <TableCell>
-                          {formatDateTime(video.created_at)}
-                        </TableCell>
+                      </TableCell>
+                      <TableCell>{formatDateTime(video.created_at)}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleOpenUpdateDialog(video)}
+                        >
+                          {t("edit")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          style={{ marginLeft: 8 }}
+                          onClick={() => handleOpenDeleteDialog(video)}
+                        >
+                          {t("delete")}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
 
-
-                          <TableCell  >
-                            <Button variant="outlined" color="primary" onClick={()=>handleOpenUpdateDialog(video)}  >
-                              {t("edit")}
-                            </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>handleOpenDeleteDialog(video)}>
-                              {t("delete")}
-                            </Button>
-                              {/* <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>{setStatus("comfirmed"),console.log(status)}}  >
-                              accept_status
-                            </Button> */}
-
-                          </TableCell>
-
-                        </TableRow>
-                      ))
-
-                    }
-
-                  </TableBody>
                 </Table>
                       <Dialog
                         open={openDeleteDialog}
