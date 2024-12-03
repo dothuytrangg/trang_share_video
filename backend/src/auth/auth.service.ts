@@ -255,6 +255,8 @@ export class AuthService {
     if (!user) {
         response.success = false;
         response.message = "User not existing."
+         response.errorCode = 'USER_NOT_EXIST'
+
         return response;
     } 
      if (!validator.isEmail(loginUserDto.email)){
@@ -269,6 +271,7 @@ export class AuthService {
     if (!checkPass) {
        response.success = false;
         response.message = "Password incorrect."
+        response.errorCode = 'PASSWORD_INCORRECT'
         return response;
     }
     //generate access token and refresh token

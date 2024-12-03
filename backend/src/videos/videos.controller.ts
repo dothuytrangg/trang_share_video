@@ -206,5 +206,10 @@ export class VideosController {
         return this.videoService.delete(Number(id));
     }
 
+    @Get("key")
+    searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
+        return this.videoService.searchVideo(query)
+    }
+
     
 }

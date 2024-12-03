@@ -32,8 +32,9 @@ import {
   updateLocalStorage,
 } from "@/stores/features/masterSlice";
 import { useLocale, useTranslations } from "next-intl";
-import CustomCard from "@/util/customCard";
+import Videos from "@/components/HomePages/videos";
 import { ReponsiveContainer } from "@/util/reponsiveUtil";
+import CustomCard from "@/util/customCard";
 
 // import NavBar from './NavBar';
 
@@ -129,7 +130,12 @@ const LoginView = () => {
       setPasswordError(true);
       setPasswordErrorMessage(t("password_least_6"));
       isValid = false;
-    } else {
+    } else if(password.value.length > 16){
+      setPasswordError(true);
+      setPasswordErrorMessage(t("password_most_16"));
+      isValid = false;
+
+    }else{
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
@@ -149,7 +155,15 @@ const LoginView = () => {
             dispatch(loginSuccess({ ...res }));
             dispatch(updateLocalStorage());
             router.push(`/${locale}`);
-          } else {
+          } else if (res.errorCode ==="PASSWORD_INCORRECT"){
+            setPasswordError(true);
+            setPasswordErrorMessage(t("password_incorrect"));
+
+          } else if (res.errorCode ==="USER_NOT_EXIST"){
+            setEmailError(true);
+            setEmailErrorMessage(t("user_not_found"));
+
+          } {
             setErrorLogin(res.message);
           }
         })

@@ -161,7 +161,11 @@
         "password_not_match":"Mật khẩu mới và mật khẩu xác nhận không khớp",
         "confirm_password_not_empty":"Mật khẩu xác nhận không được để trống",
 
-         "all":"Tất cả"
+        "all":"Tất cả",
+        "posted_date":"Ngày đăng",
+         "views":"lượt xem",
+         "current_password":"Mật khẩu của bạn",
+         "password_incorrect":"Mật khẩu không chính xác"
 
         
 

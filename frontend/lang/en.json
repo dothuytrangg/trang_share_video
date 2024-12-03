@@ -152,12 +152,19 @@
     "register_before_login":"Please register before login",
 
 
-        "new_password": "New password",
-        "confirm_password": "Confirm password",
-        "password_not_match": "New password and confirm password not match",
-        "confirm_password_not_empty": "Confirm password not empty",
+    "new_password": "New password",
+    "confirm_password": "Confirm password",
+    "password_not_match": "New password and confirm password not match",
+    "confirm_password_not_empty": "Confirm password not empty",
 
-        "all":"All"
+    "all":"All",
+    "posted_date":"Posted date",
+    "views":"views",
+    "current_password":"Your password",
+    "password_incorrect": "Password incorrect"
+
+
+
     
     
     

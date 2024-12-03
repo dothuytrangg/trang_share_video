@@ -28,6 +28,8 @@ import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import Forward10Icon from "@mui/icons-material/Forward10";
 import Replay10Icon from "@mui/icons-material/Replay10";
 import { useSelector } from "react-redux";
+import { format } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
 
 
 
@@ -40,9 +42,11 @@ const VideoDetail = () => {
   const [proposeVideoData, setProposeVideoData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true);
-const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-const theme = useSelector((state: any) => state.master.theme); 
-  
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const theme = useSelector((state: any) => state.master.theme); 
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
+    
   // const [userData, setUserData] = useState([]);
   // var ranonce = false;
   // useEffect(() => {
@@ -248,6 +252,14 @@ const formatTime = (seconds: number): string => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }
 };
+const formatDateTime = (isoString: string): string => {
+  try {
+    return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
+  } catch (error) {
+    console.error("Invalid date format:", isoString, error);
+    return 'invalid_date';
+  }
+};
 
 
   if (loading) {
@@ -402,9 +414,9 @@ const formatTime = (seconds: number): string => {
               <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
               {/* <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography> */}
             </Box>
-            <Button variant="contained" color="primary" className={styles.subscribeButton}>
+            {/* <Button variant="contained" color="primary" className={styles.subscribeButton}>
               Đăng ký
-            </Button>
+            </Button> */}
           </Box>
           <Box className={styles.videoButton}>
             <Button startIcon={<ThumbUpOutlinedIcon />}>{videoData.likes}</Button>
@@ -413,12 +425,13 @@ const formatTime = (seconds: number): string => {
             <IconButton><MoreHorizIcon /></IconButton>
           </Box>
           <Box className={styles.videoInfo}>
-            <Typography variant="body2">{videoData.viewed} views • 3 weeks ago</Typography>
+            <Typography variant="body2">{videoData.viewed} {t('views')} • 
+             {t('posted_date')}: {formatDateTime(videoData.created_at)}</Typography>
             <Typography variant="body2">
               {videoData.description}
               {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}
             </Typography>
-            <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
+            {/* <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography> */}
           </Box>
 
           <Box style={{ height: "100%", overflow: "hidden" }}>
