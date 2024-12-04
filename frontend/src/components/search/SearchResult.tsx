@@ -8,8 +8,6 @@ import {
     Grid,
     Tooltip,
     Typography,
-    Pagination,
-    Stack,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import requestApi from "../../../helpers/api";
@@ -20,35 +18,34 @@ import { useSearchParams } from "next/navigation";
 
 export default function SearchPage({ categoryId }: { categoryId: string }) {
     const [loading, setLoading] = useState(true);
-    const [videos, setVideos] = useState<any[]>([]); // Dùng để lưu mảng video
+    const [videos, setVideos] = useState<any[]>([]); // Lưu mảng video
     const [error, setError] = useState<string | null>(null);
-    const [totalPages, setTotalPages] = useState<number>(1); // Tổng số trang
-    const [currentPage, setCurrentPage] = useState<number>(1); // Trang hiện tại
     const [query, setQuery] = useState<string>(''); // Từ khóa tìm kiếm
     const locale = useLocale();
     const t = useTranslations("HomePage");
     const searchParams = useSearchParams(); // Lấy tham số tìm kiếm từ URL
     const router = useRouter();
-    const [videoDetails, setVideoDetails] = useState([]); // Lưu API gốc
     var flag = false;
+    const [videoDetails, setVideoDetails] = useState([]); // Lưu API gốc
+
 
 
     useEffect(() => {
         const searchQuery = searchParams.get('query'); // Lấy từ khóa tìm kiếm từ URL
         if (searchQuery) {
             setQuery(searchQuery);
-            fetchVideos(searchQuery, 1); // Tìm kiếm với trang đầu tiên
+            fetchVideos(searchQuery); 
         }
     }, [searchParams]);
 
-    const fetchVideos = async (searchTerm: string, page: number) => {
+    const fetchVideos = async (searchTerm: string) => {
         setLoading(true);
         setError(null);
         try {
-            const res: any = await requestApi(`videos/key?search=${searchTerm}&page=${page}`, 'GET');
+            const res: any = await requestApi(`videos/key?search=${searchTerm}`, 'GET');
+            console.log('search',res)
             if (res.success) {
                 setVideos(res.data);
-                setTotalPages(Math.ceil(res.total / res.items_per_page)); // Tính tổng số trang
             } else {
                 setError('Không tìm thấy video nào.');
             }
@@ -63,7 +60,6 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
     const handleOnClick = (videoId: string) => {
         router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
     };
-
     useEffect(() => {
         if (!flag) {
             loadVideoDetails();
@@ -89,26 +85,21 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         }
     };
 
-    const handlePaginationChange = (event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
-        fetchVideos(query, page); // Gọi API cho trang mới
-    };
-
     if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
         <React.Fragment>
-            {/* Hiển thị nếu có lỗi */}
             {error ? (
                 <Typography variant="h6" color="error" align="center">
                     {error}
                 </Typography>
             ) : (
                 <Grid container spacing={2} justifyContent="flex-start">
-                    {/* Hiển thị video */}
-                    {videos.map((video: any) => (
+                        {videos
+                            .filter((video: any) => video.status === 'confirmed') 
+                            .map((video: any) => (
                         <Grid item xs={12} sm={6} md={3} key={video.id}>
                             <Card sx={{ maxWidth: '100%' }}>
                                 <CardMedia
@@ -141,17 +132,6 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
                     ))}
                 </Grid>
             )}
-
-            {/* Phân trang */}
-            <Stack spacing={2} alignItems="center" sx={{ mt: 3 }}>
-                <Pagination
-                    count={totalPages}
-                    page={currentPage}
-                    onChange={handlePaginationChange}
-                    color="primary"
-                    size="large"
-                />
-            </Stack>
         </React.Fragment>
     );
 }

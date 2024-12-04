@@ -8,7 +8,7 @@ import WebDav from 'src/ultils/WebDav';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { VideoDetailsService } from 'src/video-details/video-details.service';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
-import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
+import { FilterVideoDto } from 'src/videos/dto/filter-video.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { VideosService } from 'src/videos/videos.service';
@@ -29,6 +29,15 @@ export class VideosController {
     //     return this.videoService.getVideoForHomePage(query)
     // }
 
+    
+    @Get("key")
+    searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
+        console.log("sssss")
+        return this.videoService.searchVideo(query)
+    }
+
+
+
 
 
 
@@ -37,6 +46,8 @@ export class VideosController {
     findOne(@Param('id') id:string):Promise<Video>{
         return this.videoService.findOne(Number(id));
     }
+
+    
 
    
 
@@ -205,11 +216,5 @@ export class VideosController {
     delete(@Param('id') id:string){
         return this.videoService.delete(Number(id));
     }
-
-    @Get("key")
-    searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
-        return this.videoService.searchVideo(query)
-    }
-
     
 }

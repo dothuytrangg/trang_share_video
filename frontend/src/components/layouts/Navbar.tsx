@@ -95,27 +95,30 @@ export default function Navbar() {
     setIsLogin(masterStore.is_login)
      setLoading(masterStore.loading)
      loadAllCategory();
+     console.log('masterStore navbar: ', masterStore);
+
 
     //  setProfileAvatar(masterStore.user.avatar);
-  
-    if (!loading) {
-      requestApi('users/profile','GET').then((res:any)=>{
-        console.log('res profile',res);
-         if(res.success){
-             setProfileAvatar(res.data.avatar);
-             setLoading(true)
-         }
+    // setProfileAvatar(res.data.avatar);
+    // if (!loading) {
+    //   requestApi('users/profile','GET').then((res:any)=>{
+    //     console.log('res profile',res);
+    //      if(res.success){
+    //       console.log('masterStore: ', masterStore);
+            
+    //          setLoading(true)
+    //      }
  
-      }
+    //   }
  
-      ).catch((err)=>{
-       console.log('err',err);
-      })
+    //   ).catch((err)=>{
+    //    console.log('err',err);
+    //   })
       
-       setLoading(true)
-     }
+    //    setLoading(true)
+    //  }
     
-    console.log('masterStore: ', masterStore);
+    
     }, [masterStore])
 
     const loadAllCategory = async () => {
@@ -380,7 +383,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           />}>
           </Button>
            <Button onClick={handleClick} variant="outlined" sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}}  startIcon={profileAvatar
-      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25}}/>) 
+      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} sx={{ width: 25, height: 25}}/>) 
       :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
         {masterStore.user.name}
       </Button>
@@ -399,46 +402,46 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   const updatePasswordValidateInputs = () => {
     let isValid = true;
 
-    //kiểm tra trường old_password
+ 
     if(!oldPassword){
       setOldPasswordError(true)
       setOldPasswordErrorMessage(t("password_not_empty"))
       isValid = false;
     }
-    // Kiểm tra trường password
+  
     if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_not_empty')); // Mật khẩu không được để trống
+      setPasswordErrorMessage(t('password_not_empty')); 
       isValid = false;
     } else if (password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_least_6')); // Mật khẩu phải có ít nhất 6 ký tự
+      setPasswordErrorMessage(t('password_least_6'));
       isValid = false;
     } else if (password.length > 16) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_more_16')); // Mật khẩu không được quá 16 ký tự
+      setPasswordErrorMessage(t('password_more_16'));
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
 
-    // Kiểm tra trường confirm_password
+
     if (!confirm_password) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('confirm_password_not_empty')); // Xác nhận mật khẩu không được để trống
+      setConfirmPasswordErrorMessage(t('confirm_password_not_empty'));
       isValid = false;
     } else if (confirm_password.length < 6) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_least_6')); // Xác nhận mật khẩu phải có ít nhất 6 ký tự
+      setConfirmPasswordErrorMessage(t('password_least_6'));
       isValid = false;
     } else if (confirm_password.length > 16) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_more_16')); // Xác nhận mật khẩu không được quá 16 ký tự
+      setConfirmPasswordErrorMessage(t('password_more_16')); 
       isValid = false;
     } else if (password !== confirm_password) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_not_match')); // Mật khẩu không khớp
+      setConfirmPasswordErrorMessage(t('password_not_match')); 
       isValid = false;
     } else {
       setConfirmPasswordError(false);

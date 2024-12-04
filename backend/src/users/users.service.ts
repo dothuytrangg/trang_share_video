@@ -272,10 +272,17 @@ export class UsersService {
     }
 
     async uploadAvatar(id:number,avatar:string):Promise<UpdateResult>{
+      console.log('avatar: ', avatar);
       let response = common_response;
       let upload = await this.userRepository.update(Number(id),{avatar});
-      if(upload){
+      let user = await this.userRepository.findOne({
+        where:{id:Number(id)},
+        select:['id','full_name','email','role','avatar','status','created_at','updated_at'],
+      });
+      console.log('upload: ', upload);
+      if(upload && user){
         response.success = true;
+        response.user = user;
         return response;
       }else{
         response.success = false;

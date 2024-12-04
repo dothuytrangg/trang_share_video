@@ -98,7 +98,7 @@ export class UsersController {
 
         // console.log("upload avavar");
         // console.log('user data',req.user_data)
-        console.log(file)
+        console.log("eeee",file)
         
         if (req.fileValidationError) {
             
