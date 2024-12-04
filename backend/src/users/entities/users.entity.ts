@@ -1,6 +1,7 @@
 
 
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
+import { LikePlaylist } from 'src/playlist-like/entities/likeplaylist.entity';
 import { Video } from 'src/videos/entities/videos.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Unique } from 'typeorm';
 
@@ -11,6 +12,9 @@ export class User {
   id: number;
 
   @Column()
+  @Matches(/^[a-zA-Z]+$/, {
+    message: 'Category name must contain only alphabetic characters.',
+  })
   full_name: string;
 
 
@@ -42,12 +46,19 @@ export class User {
 
   @CreateDateColumn()
   updated_at: Date;
+
+  @Column({nullable: true})
+  emailVerifiedAt: Date;
+
+  @Column({ default: 'inactive' })
+  statusVerify: 'active' | 'inactive';
   
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
 
-  @Column({ default: 'inactive' })
-  statusVerify: 'active' | 'inactive';
+  @OneToMany(() => LikePlaylist, (likePlaylist) => likePlaylist.video)
+  likePlaylists: LikePlaylist[];
+  
 
   
 }

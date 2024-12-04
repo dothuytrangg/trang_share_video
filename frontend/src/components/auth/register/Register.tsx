@@ -16,6 +16,8 @@ import { useAppSelector } from '@/stores/hookStore';
 import { _GLOBAL } from '@/contstants';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ReponsiveContainer } from '@/util/reponsiveUtil';
+import CustomCard from '@/util/customCard';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -25,16 +27,8 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   margin: 'auto',
   boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px',
-  backgroundColor: theme.palette.background.default,
   [theme.breakpoints.up('sm')]: {
     width: '450px',
-    backgroundColor: "red",
-  },
-  [theme.breakpoints.up('md')]: {
-    backgroundColor: "yellow",
-  },
-  [theme.breakpoints.up('lg')]: {
-    backgroundColor: "blue",
   },
 }));
 
@@ -42,16 +36,6 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   height: '100%',
   padding: 4,
   backgroundImage: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-  backgroundColor: theme.palette.background.default,
-  [theme.breakpoints.up('sm')]: {
-    backgroundColor: theme.palette.secondary.light,
-  },
-  [theme.breakpoints.up('md')]: {
-    backgroundColor: theme.palette.secondary.main,
-  },
-  [theme.breakpoints.up('lg')]: {
-    backgroundColor: theme.palette.secondary.dark,
-  },
 }));
 
 const Register = () => {
@@ -70,9 +54,9 @@ const Register = () => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
   const masterStore = useAppSelector((state) => state.master);
+  const [successRegister, setSuccessRegister] = React.useState('');
 
-
-  const validateInputs =  () => {
+  const validateInputs = () => {
     let isValid = true;
 
     if (!full_name) {
@@ -96,12 +80,10 @@ const Register = () => {
       setEmailError(true);
       setEmailErrorMessage(t('email_invalid'));
       isValid = false;
-    }  else {
-        setEmailError(false);
-        setEmailErrorMessage('');
-      }
-    
-
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage('');
+    }
     if (!password) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -118,8 +100,8 @@ const Register = () => {
     return isValid;
   };
 
-  const handleRegister =  async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Ngăn chặn hành động mặc định
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default action
 
     const valid = validateInputs();
 
@@ -128,38 +110,52 @@ const Register = () => {
         full_name,
         email,
         password,
-
       };
 
-      requestApi('auth/register', 'POST', registerData)
-        .then((res: any) => {
-          if (res.success) {
-            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTER_LOGIN}`);
-          } else {
-            setEmailError(true)
-            setEmailErrorMessage(t('user_with_email_already_exists'))
-            // setErrorRegister(res.message)
-          }
-        })
-        .catch((err: any) => {
-          console.error('Registration failed:', err.response?.data || err.message);
-          // Handle registration failure (e.g., show error message)
-        });
+      try {
+        const res: any = await requestApi('auth/register', 'POST', registerData);
+
+        if (res.success) {
+          setSuccessRegister(t('register_success'));
+          localStorage.setItem('userId', res.userId); // Store userId
+          console.log('userId stored in localStorage:', res.userId);
+          setTimeout(() => {
+            router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTE_SEND_OTP}`);
+          }, 1000);
+        } else if (res.errorCode === 'USER_EXISTS') {
+          setSuccessRegister('');
+          setErrorRegister(t('email_already_registered')); // Show error message for existing user
+        } else {
+          setErrorRegister(res.message); // Show other error messages if available
+          setSuccessRegister('');
+        }
+      } catch (err: any) {
+        console.error('Registration failed:', err.response?.data || err.message);
+        setErrorRegister(t('registration_failed')); // Show a generic error message in case of failure
+      }
     }
   };
+
+
   const renderRegister = () => {
     if (masterStore.isAuth) {
       router.replace(`/${locale}`);
     } else {
       return (
-        <SignUpContainer direction="column" justifyContent="space-between">
-          <Stack sx={{ justifyContent: 'center', height: '100dvh', p: 2 }}>
-            <Card variant="outlined">
+        <ReponsiveContainer direction="column" justifyContent="space-between">
+          <Stack
+            sx={{
+              justifyContent: "center",
+              height: "90dvh",
+              p: 1,
+            }}
+          >
+            <CustomCard variant="outlined">
               <Image src={logo} alt='author' width={50} height={50} />
               <Typography component="h1" variant="h4" sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
                 {t('register')}
               </Typography>
-              <Box component="form" onSubmit={handleRegister} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box component="form" onSubmit={handleRegister} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <FormControl>
                   <FormLabel htmlFor="full_name">{t('input_name')}</FormLabel>
                   <TextField
@@ -184,7 +180,7 @@ const Register = () => {
                       setEmailErrorMessage(''); // Clear error message when user changes input
                     }}
                     error={emailError}
-                    helperText={emailErrorMessage} // Hiển thị thông báo lỗi
+                    helperText={emailErrorMessage} // Display error message
                   />
                 </FormControl>
 
@@ -204,11 +200,15 @@ const Register = () => {
                     helperText={passwordErrorMessage}
                   />
                 </FormControl>
-                {errorRegister && <p className='text-red-600 text-center'>{errorRegister}</p>}
+
+                {/* Conditionally render error/success messages */}
+                {errorRegister && <p className="text-red-600 text-center">{errorRegister}</p>}
+                {successRegister && <p className="text-black-600 text-center">{successRegister}</p>}
 
                 <Button type="submit" fullWidth variant="contained">
                   {t('register')}
                 </Button>
+
                 <Typography sx={{ textAlign: 'center' }}>
                   {(t('have_account'))}{' '}
                   <Link href={`/${locale}/${_GLOBAL.ROUTER_LOGIN}`} className="text-blue-600 underline">
@@ -216,9 +216,9 @@ const Register = () => {
                   </Link>
                 </Typography>
               </Box>
-            </Card>
+            </CustomCard>
           </Stack>
-        </SignUpContainer>
+        </ReponsiveContainer>
       );
     }
   };

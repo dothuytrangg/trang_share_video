@@ -75,8 +75,8 @@ const Profile= () => {
     await requestApi('users/profile','GET').then((res: any) => {
       console.log('res user', res);
       if (res.success) {
-              // setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
-              setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/avatars/'+  res.data.avatar})
+              setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
+              // setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/avatars/'+  res.data.avatar})
               setVideos(res.data.videos);
               
             // setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
@@ -442,7 +442,7 @@ const Profile= () => {
               <CardMedia
                 sx={{ height: 140 }}
                 // image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                image={`${_ENV.NEXT_URL_LOCAL}/videos/${video.thumbnail}`} 
+                image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`} 
                 title="green iguana"
               />
               <CardContent  sx={{ height: 140 }}>

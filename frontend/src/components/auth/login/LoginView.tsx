@@ -38,23 +38,6 @@ import CustomCard from "@/util/customCard";
 
 // import NavBar from './NavBar';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignSelf: "center",
-  width: "100%",
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  [theme.breakpoints.up("sm")]: {
-    width: "450px",
-  },
-  boxShadow:
-    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
-  ...theme.applyStyles("dark", {
-    boxShadow:
-      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
-  }),
-}));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: "auto",
@@ -92,7 +75,6 @@ const LoginView = () => {
     if (!oneTime) {
       console.log('locale: ', locale);
       const action = query.get("action");
-      // console.log('action',action);
       if (action == "logout") {
         dispatch(logout());
         dispatch(updateLocalStorage());
@@ -102,7 +84,6 @@ const LoginView = () => {
       } else {
         console.log('locale: ', locale);
         router.push(`/${locale}`)
-        // setApprove(false)
       }
 
       oneTime = true;
@@ -136,11 +117,11 @@ const LoginView = () => {
       setEmailError(true);
       setEmailErrorMessage(t("email_invalid"));
       isValid = false;
-    } else{
+    } else {
       setEmailError(false);
       setEmailErrorMessage('');
     }
-//----------------------------password-----------------------------------------
+    //----------------------------password-----------------------------------------
     if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty'));
@@ -182,8 +163,6 @@ const LoginView = () => {
 
   const renderLogin = () => {
     if (!approve) {
-    
-    
 
     } else {
       return (
@@ -191,14 +170,13 @@ const LoginView = () => {
           <Stack
             sx={{
               justifyContent: "center",
-              height: "100dvh",
+              height: "90dvh",
               p: 2,
             }}
           >
             <CustomCard variant="outlined">
               <Image
                 src={logo}
-                className="m-auto"
                 alt="Picture of the author"
                 width={50}
                 height={50}
@@ -265,10 +243,7 @@ const LoginView = () => {
                     color={passwordError ? "error" : "primary"}
                   />
                 </FormControl>
-                <ForgotPassword open={open} handleClose={handleClose} />
-                {errorLogin != "" && (
-                  <p className="text-red-600 text-center">{errorLogin}</p>
-                )}
+
                 <Button
                   type="submit"
                   fullWidth
@@ -277,6 +252,18 @@ const LoginView = () => {
                 >
                   {t("login")}
                 </Button>
+                <Typography sx={{ textAlign: "center" }}>
+                  {t('forgot_password')}
+                  <span>
+                    <Link
+                      className="text-blue-600 underline"
+                      href={`/${locale}/${_GLOBAL.ROUTER_FORGOT_PASSWORD}`}
+                    >
+                      {t('reset')}
+                    </Link>
+                  </span>
+                </Typography>
+
                 <Typography sx={{ textAlign: "center" }}>
                   {t('signin_login_question')}
                   <span>

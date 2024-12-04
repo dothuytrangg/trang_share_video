@@ -3,7 +3,8 @@ import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 
 export class ChangePasswordDto {
 
-
+    @IsNotEmpty()
+    old_password: string;
     @IsNotEmpty()
     @MinLength(6, {
         message: 'Password is too short',
@@ -11,7 +12,6 @@ export class ChangePasswordDto {
     @MaxLength(16, {
         message: 'Password is too long',
     })
-
     password: string;
 
     @IsNotEmpty()

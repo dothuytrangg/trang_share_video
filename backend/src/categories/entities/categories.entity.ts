@@ -1,6 +1,6 @@
 
 
-import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
 import moment from 'moment-timezone';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn, BeforeInsert, BeforeUpdate, Unique } from 'typeorm';
@@ -18,6 +18,9 @@ export class Category {
   @IsNotEmpty({ message: "Category name isn't empty."})
   @MaxLength(30, {
     message: 'Category name must be less than 30 characters.',
+  })
+  @Matches(/^[a-zA-Z]+$/, {
+    message: 'Category name must contain only alphabetic characters.',
   })
   name: string;
 

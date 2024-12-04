@@ -132,14 +132,39 @@ export class UsersService {
     return response;
   }
 
-
   async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<any> {
-    let response = common_response
-
+    let response = common_response;
     try {
+      console.log('Requested ID:', id);
+
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
+      console.log("user",user)
+
+      if (!user) {
+        response.success = false;
+        response.message = 'User not found.';
+        return response;
+      }
+
+      const passwordMatch = await bcrypt.compare(changePasswordDto.old_password, user.password);
+      if (!passwordMatch) {
+        response.success = false;
+        response.message = 'Incorrect old password.';
+        return response;
+      }
+
       // Ensure password and confirm_password match
       if (changePasswordDto.password !== changePasswordDto.confirm_password) {
-        response.message = 'Password and confirm password do not match.'
+        response.message = 'Password and confirm password do not match.';
+        return response;
+      }
+
+      // Check if the new password is the same as the old one
+      if (changePasswordDto.old_password === changePasswordDto.password) {
+        response.success = false;
+        response.message = 'New password cannot be the same as the old password.';
         return response;
       }
 
@@ -164,6 +189,7 @@ export class UsersService {
 
     return response;
   }
+
 
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {

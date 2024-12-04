@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 
 export class UpdateUserDto{
@@ -11,6 +11,9 @@ export class UpdateUserDto{
       })
     @MaxLength(50, {
         message: 'name is too long',
+    })
+    @Matches(/^[a-zA-Z]+$/, {
+        message: 'Category name must contain only alphabetic characters.',
     })
     full_name: string;
     @IsNotEmpty()

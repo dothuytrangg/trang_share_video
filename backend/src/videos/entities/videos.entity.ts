@@ -1,9 +1,10 @@
 
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { LikePlaylist } from 'src/playlist-like/entities/likeplaylist.entity';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Video {
@@ -64,5 +65,8 @@ export class Video {
 
   @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.video)
   videoDetail: VideoDetail[]
+
+  @OneToMany(() => LikePlaylist, (likePlaylist) => likePlaylist.video)
+  likePlaylists: LikePlaylist[];
   
 }

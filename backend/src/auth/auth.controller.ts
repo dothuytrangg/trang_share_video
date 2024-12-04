@@ -1,8 +1,11 @@
-import { Body, ConflictException, Controller, Get, HttpException, HttpStatus, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UnprocessableEntityException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';//loi
 import { AuthService } from './auth.service';
 import { User } from 'src/users/entities/users.entity';
 import { LoginUserDto } from './dto/login-user.dto';
+import { VerifyDto } from 'src/auth/dto/verify-user.dto';
+import { ForgotPasswordDto } from 'src/auth/dto/forgotPassword.dto';
+import { ResetPasswordDto } from 'src/auth/dto/resetPassword.dto';
 
 
 
@@ -39,6 +42,34 @@ export class AuthController {
         return this.authService.refreshToken(refresh_token);
     }
 
+    @Post('verify-otp')
+    @UsePipes(ValidationPipe)
+    async verifyOtp(@Body() verifyDto: VerifyDto) {
+        const { userId, token } = verifyDto;
+        const isValid = await this.authService.verifyEmail(userId, token);
+        console.log("verification", verifyDto);
+        console.log("isValid", isValid);    
+
+        if (!isValid) {
+            throw new UnprocessableEntityException('Invalid OTP or OTP has expired');
+        }
+
+        return { success: 'OTP verified successfully' };
+    }
+
+    @Post('forgot-password')
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+        return this.authService.forgotPassword(forgotPasswordDto.email);
+    }
+
+    @Post('reset-password/:token')
+    async resetPassword(
+        @Param('token') resetToken: string,
+        @Body() resetPasswordDto: ResetPasswordDto,
+    ) {
+        const { newPassword, newConfirmPassword } = resetPasswordDto;
+        return this.authService.resetPassword(resetToken, newPassword, newConfirmPassword);
+    }
 
 
 }

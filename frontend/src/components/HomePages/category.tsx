@@ -2,6 +2,7 @@
 import { Button } from "@mui/material";
 import requestApi from "../../../helpers/api";
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function Category({ onCategorySelect }: { onCategorySelect: (id: string) => void }) {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,8 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
   const [lastPage, setLastPage] = useState(1);
   const [index, setIndex] = useState("");
   const [indexId, setIndexId] = useState("");
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
   var ranonce = false;
   useEffect(() => {
     if (!ranonce) {
@@ -61,7 +64,7 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
           size="small"
           onClick={() => onCategorySelect(indexId)}
         >
-          {index}
+         {t('all')}
         </Button>
 
       )
