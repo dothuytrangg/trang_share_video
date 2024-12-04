@@ -1,14 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector để lấy thông tin từ Redux
 import Grid from "@mui/material/Grid";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { _ENV } from "@/contstants";
 import { useLocale, useTranslations } from "next-intl";
 import { changeTheme } from "@/stores/features/masterSlice";
+import { useRouter } from "next/navigation";
 
 const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVideoData: any[]; videoData: any, categoryId: any }) => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
+  const router = useRouter();
 
   // Sử dụng useSelector để lấy thông tin về theme từ Redux store
   const theme = useSelector((state: any) => state.master.theme); // Tham chiếu đến theme trong masterSlice
@@ -19,6 +21,13 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
   const handleChangeTheme = () => {
     dispatch(changeTheme()); // Gọi action thay đổi theme
   };
+
+
+  const handleOnClick = (videoId: string) => {
+  
+    router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
+  };
+
 
   return (
     <Grid
@@ -79,10 +88,18 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
                   lineHeight: 1.4,
                 }}
               >
-                {video.video.name}
+               {video.video.name.length > 50 ? (
+                    <Tooltip title={video.video.name}>
+                      <span onClick={() => handleOnClick(video.video.id)} className="cursor-pointer hover:text-blue-600">{`${video.video.name.substring(0, 50)}...`}</span>
+                    </Tooltip>
+                  ) :
+                    <span onClick={() => handleOnClick(video.video.id)} className="cursor-pointer hover:text-blue-600">{video.video.name}</span>
+                  }
               </Typography>
-              <Button
-                href={`${_ENV.NEXT_URL_PROD}/${locale}/detail/${video.video.id}?categoryId=${categoryId}`}
+              {/* <Button
+                // href={`${_ENV.NEXT_URL_PROD}/${locale}/detail/${video.video.id}?categoryId=${categoryId}`}
+                href="#"
+                onClick={()=>handleOnClick(video.video.id)}
                 target="_blank"
                 sx={{
                   fontSize: "12px",
@@ -96,7 +113,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
                 }}
               >
                 Xem chi tiết
-              </Button>
+              </Button> */}
             </Box>
           </Box>
         ) : null
