@@ -1,11 +1,11 @@
 
-import SearchPage from '@/components/search';
+import LikePlayList from '@/components/playlist-like';
 import { NextPage } from 'next';
 
 interface Props { }
 
 const Page: NextPage<Props> = ({ }) => {
-    return <SearchPage categoryId={''} />
+    return <LikePlayList />
 };
 
 export default Page;

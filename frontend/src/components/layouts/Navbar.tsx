@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete, useMediaQuery } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import { _ENV, _GLOBAL } from "@/contstants";
 import requestApi from "../../../helpers/api";
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -80,13 +81,14 @@ export default function Navbar() {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [password, setPassword] = useState("");
   const [confirm_password, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] =useState(false)
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false)
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState("")
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // const dispatch = useAppDispatch();
-
+  const [oldPassword, setOldPassword] = useState("");
+  const [oldPasswordError, setOldPasswordError] = useState(false);
+  const [oldPasswordErrorMessage, setOldPasswordErrorMessage] = useState("");
   useEffect(() => {
     setIsLogin(masterStore.is_login)
     setLoading(masterStore.loading)
@@ -192,11 +194,11 @@ export default function Navbar() {
       isValid = false;
     } else if (name.value.length < 3) {
       setNameError(true);
-      setNameErrorMessage(t("name_least_3"));
+      setNameErrorMessage(t("name_video_must_more_than_3_characters"));
       isValid = false;
     } else if (name.value.length > 70) {
       setNameError(true);
-      setNameErrorMessage(t("name_more_70"));
+      setNameErrorMessage(t("name_video_must_least_than_70_characters"));
       isValid = false;
     } else {
       setNameError(false);
@@ -210,11 +212,11 @@ export default function Navbar() {
       isValid = false;
     } else if (description.value.length < 10) {
       setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_least_10"));
+      setDescriptionErrorMessage(t("description_video_must_more_than_10_characters"));
       isValid = false;
     } else if (description.value.length > 300) {
       setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_more_300"));
+      setDescriptionErrorMessage(t("description_video_must_least_than_300_characters"));
       isValid = false;
     } else {
       setDescriptionError(false);
@@ -244,22 +246,19 @@ export default function Navbar() {
     return isValid;
   };
   const renderButtonThreeDot = () => {
-    if (isMobile) {
-      return (
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
-          onClick={handleClick}
-          color="inherit"
-        >
-          <MoreVertOutlinedIcon/>
-        </IconButton>
-      );
+    if (!isLogin) {
+      return <IconButton
+        size="large"
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleClick}
+        color="inherit"
+      >
+        <MoreVertOutlinedIcon />
+      </IconButton>
     }
-  };
-
+  }
   const handleLogout = () => {
     dispatch(logout())
     dispatch(updateLocalStorage())
@@ -279,6 +278,7 @@ export default function Navbar() {
       const file = event.target.files[0];
       setThumbnailFile(file);
       setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+      setThumbnailError(false)
     }
   };
 
@@ -287,6 +287,7 @@ export default function Navbar() {
       const file = event.target.files[0];
       setVideoFile(file);
       console.log(file);
+      setVideoError(false)
 
     }
   };
@@ -345,7 +346,6 @@ export default function Navbar() {
       console.log('No file selected for thumbnail or video');
     }
   };
-};
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -368,44 +368,42 @@ export default function Navbar() {
       </Button>
     } else {
       return (
+
         <Box>
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button
-            onClick={() => setOpenAddDialog(true)}
-            variant="outlined"
-            style={{ width: 20, height: 35, margin: 10 }}
-            startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}
-          >
+          <Button onClick={() => setOpenAddDialog(true)} variant="outlined" style={{ width: 20, height: 35, margin: 10 }} startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}>
+          </Button>
+          <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
+            ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25 }} />)
+            : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
+            {masterStore.user.name}
           </Button>
 
-          {/* Chỉ hiển thị Button có avatar khi không phải mobile */}
-          {!isMobile && (
-            <Button onClick={handleClick} variant="outlined" startIcon={
-              profileAvatar
-                ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25 }} />)
-                : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
-              {masterStore.user.name}
-            </Button>
-          )}
-        </Box>
-      );
 
+
+        </Box>
+      )
 
     }
-  }
 
+
+  }
 
   const updatePasswordValidateInputs = () => {
     let isValid = true;
 
+    //kiểm tra trường old_password
+    if(!oldPassword){
+      setOldPasswordError(true)
+      setOldPasswordErrorMessage(t("password_not_empty"))
+      isValid = false;
+    }
     // Kiểm tra trường password
     if (!password) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_not_empty')); // Mật khẩu không được để trống
       isValid = false;
     } else if (password.length < 6) {
-
-    if (!password.value) {
       setPasswordError(true);
       setPasswordErrorMessage(t('password_least_6')); // Mật khẩu phải có ít nhất 6 ký tự
       isValid = false;
@@ -417,7 +415,6 @@ export default function Navbar() {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
-
 
     // Kiểm tra trường confirm_password
     if (!confirm_password) {
@@ -445,13 +442,18 @@ export default function Navbar() {
   };
 
 
+
   const handleUpdatePassword = (userId: number) => {
     const valid: boolean = updatePasswordValidateInputs();
 
     if (valid) {
 
-      const userData_update = { password };
-
+      const userData_update = {
+        old_password: oldPassword,
+        password,
+        confirm_password
+      };
+      console.log('User data for password update:', userData_update);
 
       requestApi(`users/change-password/${userId}`, "PUT", userData_update)
         .then((res: any) => {
@@ -488,16 +490,6 @@ export default function Navbar() {
       id: `${category.id}`
     }));
 
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // Hàm gọi API tìm kiếm
-  const handleSearch = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchTerm.length >= 1) {
-      // Chuyển hướng đến trang tìm kiếm với từ khóa
-      router.push(`/search?query=${searchTerm}`);
-    }
-  };
-
 
 
 
@@ -516,12 +508,12 @@ export default function Navbar() {
               router.replace(`/${locale}`)
             }} src={logo} alt="Picture of the author" width={70} height={50}></Image>
           </Typography>
-          
           <Box sx={{ flexGrow: 0.5 }} />
+
           <TextField
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleSearch} // Lắng nghe phím Ente
+            onKeyDown={handleSearch}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="end">
@@ -530,8 +522,8 @@ export default function Navbar() {
               ),
             }}
             size="small"
-            placeholder={t('search') + "..."}
             style={{ width: 500 }}
+            placeholder={t('search') + "..."}
 
           />
 
@@ -546,8 +538,8 @@ export default function Navbar() {
             aria-expanded={open ? 'true' : undefined}
           >
           </IconButton>
-          
-          {renderButtonThreeDot()} 
+          {/* 
+          {renderButtonThreeDot()} */}
 
           <Menu
             anchorEl={anchorEl}
@@ -601,7 +593,7 @@ export default function Navbar() {
                 fullWidth
                 variant="outlined"
                 placeholder={t("name_video")}
-                sx={{ mb: 2 }}
+                style={{ marginBottom: 20 }}
               />
 
               {/* Input for Video Description */}
@@ -619,15 +611,14 @@ export default function Navbar() {
                 multiline
                 rows={3}
                 InputProps={{ style: { resize: 'vertical' } }}
-                sx={{ mb: 2 }}
+                style={{ marginBottom: 20 }}
               />
-
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {/* Thumbnail Box */}
+                <Grid item xs={6} >
+                  {/* Khung chứa ảnh*/}
                   <Box
                     sx={{
-                      width: { xs: '100%', sm: '250px' },
+                      width: '250px',
                       height: '150px',
                       border: '2px dashed #3f51b5',
                       borderRadius: '8px',
@@ -636,7 +627,7 @@ export default function Navbar() {
                       justifyContent: 'center',
                       overflow: 'hidden',
                       backgroundColor: '#f0f0f0',
-                      mt: 2
+                      marginTop: 2
                     }}
                   >
                     {thumbnailPreview ? (
@@ -653,63 +644,77 @@ export default function Navbar() {
                       <span style={{ color: '#999' }}>{t('thumbnail')}</span>
                     )}
                   </Box>
-                  {thumbnailError && (
-                    <span style={{ color: 'red', display: 'block' }}>
-                      {thumbnailErrorMessage}
-                    </span>
-                  )}
-                </Grid>
 
-                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 3 }}>
+                  <span style={{ color: 'red', display: 'block' }}>
+                    {thumbnailError ? (thumbnailErrorMessage) : ("")}
+                  </span>
+
+
+                </Grid>
+                <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <Grid item style={{
+
+                    display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight: "30px"
+                  }}>
                     <Autocomplete
                       multiple
                       options={categoryData}
                       getOptionLabel={(option) => option.label}
-                      value={categoryOptions}
-                      onChange={(event, newValue: any) => setCategoryOptions(newValue)}
+                      value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                      onChange={(event, newValue: any) => {
+                        setCategoryOptions(newValue),
+                          categoryOptions.length != null && (
+                            setOptionError(false),
+                            setOptionErrorMessage("")
+                          )
+                      }} // Cập nhật state khi thay đổi
                       renderInput={(params) => (
                         <TextField {...params}
                           label={t('add_to_category')}
                           error={optionError}
                           helperText={optionErrorMessage} />
                       )}
-                      filterOptions={(options, state) =>
-                        options.filter(option =>
-                          option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                      filterOptions={(options) =>
+                        // Lọc ra các option chưa được chọn
+                        options.filter(
+                          (option) =>
+                            !categoryOptions.some(
+                              (selectedOption: any) => selectedOption.id === option.id
+                            )
                         )
                       }
-                      sx={{ width: { xs: '100%', sm: 300 } }}
+                      style={{ width: 300 }}
+
+
                     />
+
+
                   </Grid>
 
-                  <Grid item sx={{ mt: 9, justifyContent: "flex-end", display: "flex" }}>
-                    {videoError ? (
-                      <span style={{ color: 'red', display: 'block' }}>
-                        {videoErrorMessage}
-                      </span>
-                    ) : (
-                      videoFile && (
-                        <span style={{ color: 'black', display: 'block' }}>
-                          {videoFile.name}
-                        </span>
-                      )
-                    )}
+                  <Grid item style={{ marginTop: '75px', justifyContent: "flex-end", display: "flex" }}>
+
+                    {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                      {videoErrorMessage}
+                    </span>) : (<span style={{ color: 'black', display: 'block' }}>
+                      {videoFile && (videoFile.name)}
+                    </span>)}
                   </Grid>
                 </Grid>
 
-                {/* Thumbnail Button */}
-                <Grid item xs={12} sm={6}>
+                {/* </Grid> */}
+
+
+                {/* Cột nút chọn ảnh Thumbnail */}
+                <Grid item xs={6}>
                   <Button
                     variant="contained"
                     color="primary"
                     component="label"
                     startIcon={<PhotoCameraIcon />}
-                    sx={{
+                    style={{
                       color: '#fff',
                       fontWeight: 'bold',
-                      p: 1,
-                      width: { xs: '100%', sm: 'auto' }
+                      padding: '8px 16px',
                     }}
                   >
                     {t('Choose_thumbnail')}
@@ -720,19 +725,19 @@ export default function Navbar() {
                       accept="image/*"
                     />
                   </Button>
+
                 </Grid>
 
-                {/* Video Button */}
-                <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                {/* Cột nút chọn video */}
+                <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     variant="contained"
                     color="secondary"
                     component="label"
                     startIcon={<VideoLibraryIcon />}
-                    sx={{
-                      p: 1,
+                    style={{
+                      padding: '8px 16px',
                       fontWeight: 'bold',
-                      width: { xs: '100%', sm: 'auto' }
                     }}
                   >
                     {t('upload_video')}
@@ -744,8 +749,12 @@ export default function Navbar() {
                     />
                   </Button>
                 </Grid>
+
+
               </Grid>
+
             </DialogContent>
+
             {/* Dialog Actions */}
             <DialogActions>
               <Button onClick={() => setOpenAddDialog(false)}>{t("btnCancel")}</Button>
@@ -753,18 +762,18 @@ export default function Navbar() {
             </DialogActions>
           </Dialog>
           <Dialog
-        open={openUpdateDialog}
-        onClose={() => setOpenUpdateDialog(false)}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault(); 
-            // console.log('user id',masterStore.user.id);
-            handleUpdatePassword(masterStore.user.id);
-       
-          },
-        }}
-      >
+            open={openUpdateDialog}
+            onClose={() => setOpenUpdateDialog(false)}
+            PaperProps={{
+              component: 'form',
+              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault();
+                // console.log('user id',masterStore.user.id);
+                handleUpdatePassword(masterStore.user.id);
+
+              },
+            }}
+          >
             <DialogTitle>{t("change_password")}</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -772,11 +781,27 @@ export default function Navbar() {
               </DialogContentText>
 
               <TextField
+                error={oldPasswordError}
+                helperText={oldPasswordErrorMessage}
+                onChange={(val) => setOldPassword(val.target.value)}
+                value={oldPassword}
+                margin="dense"
+                id="oldPassword"
+                name="oldPassword"
+                label={t("password")}
+                type="password"
+                fullWidth
+                variant="standard"
+              />
+
+
+
+              <TextField
                 autoFocus
-                error={passwordError} 
-                helperText={passwordErrorMessage} 
+                error={passwordError}
+                helperText={passwordErrorMessage}
                 onChange={(val) => {
-                  setPassword(val.target.value);  
+                  setPassword(val.target.value);
                 }}
                 value={password}
                 margin="dense"
@@ -806,59 +831,6 @@ export default function Navbar() {
               />
             </DialogContent>
 
-        <DialogActions>
-          <Button onClick={()=>setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
-          <Button type="submit" >{t("btnUpdate")}</Button>
-        </DialogActions>
-      </Dialog>
-          
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={4000}
-                onClose={() => setOpenSnackbar(false)}
-               >
-                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-                  {snackbarMessage}
-                </Alert>
-              </Snackbar>
-            open={openUpdateDialog}
-            onClose={() => setOpenUpdateDialog(false)}
-            PaperProps={{
-              component: 'form',
-              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                event.preventDefault();
-                // console.log('user id',masterStore.user.id);
-                handleUpdatePassword(masterStore.user.id);
-
-              },
-            }}
-          >
-            <DialogTitle>{t("change_password")}</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                {t("update_text")}
-              </DialogContentText>
-
-              <TextField
-                autoFocus
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                onChange={(val) => {
-                  setPassword(val.target.value);
-                }}
-                value={password}
-                margin="dense"
-                id="password"
-                name="password"
-                label={t("password")}
-                type="password"
-                fullWidth
-                variant="standard"
-
-              />
-
-
-            </DialogContent>
             <DialogActions>
               <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
               <Button type="submit" >{t("btnUpdate")}</Button>

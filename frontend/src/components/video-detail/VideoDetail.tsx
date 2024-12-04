@@ -27,12 +27,15 @@ import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import Forward10Icon from "@mui/icons-material/Forward10";
 import Replay10Icon from "@mui/icons-material/Replay10";
+import { useSelector } from 'react-redux';
+
 
 
 
 const VideoDetail = () => {
   const router = useRouter();
   const { videoId } = useParams();
+
   const searchParams = useSearchParams(); // Dùng để lấy query params
   const categoryId = searchParams.get("categoryId"); // Lấy categoryId từ URL
   const [videoData, setVideoData] = useState<any>(null);
@@ -40,6 +43,8 @@ const VideoDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true); // Điều khiển ẩn/hiện nút
   // const [userData, setUserData] = useState([]);
+  const [likes, setLikes] = useState([])
+
   var ranonce = false;
   useEffect(() => {
     if (!ranonce) {
@@ -57,7 +62,8 @@ const VideoDetail = () => {
 
   const fetchVideoDetail = async () => {
 
-    await requestApi(`videos/${videoId}`, 'GET').then((res: any) => {
+    await requestApi(`videos/${videoId}`, 'GET')
+    .then((res: any) => {
       // console.log('res one',res)
       if (res.success) {
 
@@ -74,6 +80,42 @@ const VideoDetail = () => {
 
   };
 
+  const handleLike = () => {
+    // Bật trạng thái loading khi bắt đầu thao tác
+   // setLoading(true);
+
+    // Gọi API profile để lấy thông tin người dùng (userId)
+    requestApi('users/profile', 'GET')
+      .then((userResponse: any) => {
+        if (userResponse.success) {
+          const userId = userResponse.data.id;  // Lấy userId từ thông tin trả về
+
+          console.log("videoId", videoId);
+          console.log("userId", userId);
+
+          // Gọi API để like video
+          return requestApi(`playlist-like/${userId}/${videoId}`, 'POST');
+        } else {
+          console.error("Không thể lấy thông tin người dùng");
+          return Promise.reject("Không thể lấy thông tin người dùng");
+        }
+      })
+      .then((likeResponse: any) => {
+        // Kiểm tra kết quả từ API like
+        if (likeResponse.success) {
+          setLikes(likeResponse.data);  // Cập nhật lại số lượt thích
+        } else {
+          console.error("Không thể like video");
+        }
+      })
+      .catch((err: any) => {
+        console.error("Lỗi khi thực hiện like:", err);
+      })
+      .finally(() => {
+        // Tắt trạng thái loading khi thao tác hoàn thành
+       // setLoading(false);
+      });
+  };
 
 
 
@@ -309,7 +351,7 @@ const handleZoom = (zoomIn: boolean) => {
             </Button>
           </Box>
           <Box className={styles.videoButton}>
-            <Button startIcon={<ThumbUpOutlinedIcon />}>{videoData.likes}</Button>
+            <Button startIcon={<ThumbUpOutlinedIcon />} onClick={handleLike}>{videoData.likes}</Button>
             <Button startIcon={<ThumbDownOutlinedIcon />}>{videoData.dislike}</Button>
             <Button startIcon={<ShareOutlinedIcon />}>Chia sẻ</Button>
             <IconButton><MoreHorizIcon /></IconButton>

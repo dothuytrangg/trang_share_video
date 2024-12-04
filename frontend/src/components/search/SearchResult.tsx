@@ -45,7 +45,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         setLoading(true);
         setError(null);
         try {
-            const res: any = await requestApi(`videos/key?search=${searchTerm}&page=${page}`, 'GET');
+            const res: any = await requestApi(`videos/key?search=${searchTerm}`, 'GET');
             if (res.success) {
                 setVideos(res.data);
                 setTotalPages(Math.ceil(res.total / res.items_per_page)); // Tính tổng số trang
@@ -87,11 +87,6 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handlePaginationChange = (event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
-        fetchVideos(query, page); // Gọi API cho trang mới
     };
 
     if (loading) {
@@ -141,17 +136,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
                     ))}
                 </Grid>
             )}
-
-            {/* Phân trang */}
-            <Stack spacing={2} alignItems="center" sx={{ mt: 3 }}>
-                <Pagination
-                    count={totalPages}
-                    page={currentPage}
-                    onChange={handlePaginationChange}
-                    color="primary"
-                    size="large"
-                />
-            </Stack>
+          
         </React.Fragment>
     );
 }
