@@ -51,7 +51,8 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
     >
       {proposeVideoData.map((video: any) =>
         video.video.url !== videoData.url ? (
-          <Box
+          video.video.status !== 'confirming' &&(
+            <Box
             key={video.video.id}
             sx={{
               display: "flex",
@@ -116,6 +117,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
               </Button> */}
             </Box>
           </Box>
+          )
         ) : null
       )}
     </Grid>

@@ -1,12 +1,12 @@
 "use client";
-import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme, useTheme, Tooltip } from "@mui/material";
+import { CSSObject, List, ListItem, ListItemButton, ListItemText, styled, Theme, useTheme, Tooltip, useMediaQuery } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
 import MuiDrawer from "@mui/material/Drawer";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores/hookStore";
-import { changeTheme, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
+import { changeTheme, closeDrawer, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import PlaylistPlay from "@mui/icons-material/PlaylistPlay";
 import History from "@mui/icons-material/History";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -15,9 +15,10 @@ import { _GLOBAL } from "@/contstants";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import CategoryIcon from '@mui/icons-material/Category';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VideoLibraryOutlined } from "@mui/icons-material";
 const drawerWidth = 200;
+
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -64,8 +65,15 @@ export default function Sidebar() {
   const router = useRouter();
   const locale = useLocale();
   const query = useSearchParams();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // const [widthSideBar, setWidthSideBar] = useState(300)
 
+  useEffect(() => {
+    if (isMobile && open) {
+      dispatch(closeDrawer());
+    }
+  }, [isMobile, open, dispatch]);
+  
   const handleToggleTheme = () => {
     console.log("theme: ", theme);
     dispatch(changeTheme());
@@ -83,6 +91,10 @@ export default function Sidebar() {
     router.replace(`/${locale}/playlist-history`);
     
       
+  }
+
+  const handleLikePlayList =() => {
+    router.replace(`/${locale}/playlist-like`) 
   }
 
   const textTheme = () => {
@@ -190,7 +202,7 @@ export default function Sidebar() {
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist_history")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
 
-          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemButton onClick={handleLikePlayList} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("playlist_liked")} placement="right-start">
               <ThumbUpOffAltIcon></ThumbUpOffAltIcon>
             </Tooltip>
