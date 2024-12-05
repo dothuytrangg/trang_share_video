@@ -11,6 +11,7 @@ import validator from 'validator';
 import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Video } from 'src/videos/entities/videos.entity';
+import { Verification } from 'src/verification/entities/verification.entity';
 
 
 @Injectable()
@@ -18,7 +19,9 @@ export class UsersService {
 
     constructor(@InjectRepository(User) private userRepository:Repository<User>,
                @InjectRepository(VideoDetail) private videoDetailRepository:Repository<VideoDetail>,
-               @InjectRepository(Video) private videoRepository:Repository<Video>
+               @InjectRepository(Video) private videoRepository:Repository<Video>,
+               @InjectRepository(Verification) private verifyRepository:Repository<Verification>
+
     ){}
 
     // async findAll():Promise<User[]>{
@@ -219,6 +222,8 @@ export class UsersService {
       let response = common_response;
      try {
 
+     
+      await this.verifyRepository.delete({userId:id})
       await this.videoDetailRepository.delete({ user: { id } });
       await this.videoRepository.delete({ user: { id } });
       let deleteUser  = await this.userRepository.delete(id);
