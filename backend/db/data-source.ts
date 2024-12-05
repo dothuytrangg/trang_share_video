@@ -12,7 +12,7 @@ export const dataSourceOptions :DataSourceOptions = {
     migrations: ['dist/db/migrations/*.js'],
     synchronize:true,
     timezone: '+7:00', // Set to UTC+7 for Ho Chi Minh City
-    logging: true
+    // logging: true
 } 
 
 console.log('dataSourceOptions: ', dataSourceOptions);

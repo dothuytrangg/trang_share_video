@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import requestApi from '../../../helpers/api';
 import { ReponsiveContainer } from '@/util/reponsiveUtil';
 import CustomCard from '@/util/customCard';
+import { useTranslations } from 'next-intl';
 
 // const Card = styled(MuiCard)(({ theme }) => ({
 //     display: 'flex',
@@ -64,7 +65,8 @@ const SendOTP = () => {
     const [otpError, setOtpError] = useState(true);
     const [otpErrorMessage, setOtpErrorMessage] = useState('');
     const [isSendingOtp, setIsSendingOtp] = useState(false);
-
+    const t = useTranslations('HomePage');
+    const [successOtp, setSuccessOtp] = React.useState('');
 
     const handleOtpChange = (index: number, value: string) => {
         if (value.length <= 1) {
@@ -113,7 +115,7 @@ const SendOTP = () => {
 
             if (!parsedUserId) {
                 setOtpError(true);
-                setOtpErrorMessage("User ID is missing. Please try registering again.");
+                setOtpErrorMessage(t("user_not_found"));
                 return;
             }
 
@@ -123,8 +125,9 @@ const SendOTP = () => {
                         localStorage.removeItem('userId'); // Optionally clear userId after successful verification
                         router.push('/login'); // Redirect to the login page
                     } else {
+                        // Trường hợp OTP không hợp lệ
                         setOtpError(true);
-                        setOtpErrorMessage(res.message); // Display error message from the backend
+                        setOtpErrorMessage(res.message || t('otp_invalid')); 
                     }
                 })
                 .catch((error: any) => {
@@ -142,7 +145,7 @@ const SendOTP = () => {
         try {
             const userId = localStorage.getItem('userId');
             await requestApi('auth/resend-otp', 'POST', { userId });
-            alert("OTP has been resent!");
+            setSuccessOtp(t('otp_success'));
         } catch (error) {
             console.error("Error resending OTP:", error);
             alert("Failed to resend OTP. Please try again.");
@@ -167,13 +170,13 @@ const SendOTP = () => {
                         variant="h4"
                         sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
                     >
-                        Send OTP
+                        {t('verify_otp')}
                     </Typography>
                     <Typography
                         component="p"
                         variant="body2"
                         sx={{ width: '100%' }}
-                    >We have sent a notification to your Email, please enter the code to continue.</Typography>
+                    >{t("otp_notification_email")}</Typography>
 
                     <Box
                         component="form"
@@ -187,7 +190,7 @@ const SendOTP = () => {
                         }}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="otp">Your OTP</FormLabel>
+                            {/* <FormLabel htmlFor="otp">Your OTP</FormLabel> */}
                             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
                                 {otp.map((digit, index) => (
                                     <OtpInput
@@ -212,7 +215,7 @@ const SendOTP = () => {
                             )}
                         </FormControl>
                         <FormControl>
-                            <p style={{ textAlign: "center" }}>Haven't received it yet?</p>
+                            {/* <p style={{ textAlign: "center" }}>Haven't received it yet?</p> */}
                             {/* <Button
                                 variant="text"
                                 onClick={handleSubmit}

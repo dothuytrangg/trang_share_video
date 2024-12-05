@@ -294,14 +294,14 @@ export class VideosService {
     let response = common_response;
     const keyword = query.search || '';
 
-    console.log('Searching for videos with keyword:', keyword);
+    // console.log('Searching for videos with keyword:', keyword);
 
    
     const searchConditions = [
       { name: Like(`%${keyword}%`) },
-      { description: Like(`%${keyword}%`) },
-      { url: Like(`%${keyword}%`) },
-      { slug: Like(`%${keyword}%`) },
+      // { description: Like(`%${keyword}%`) },
+      // { url: Like(`%${keyword}%`) },
+      // { slug: Like(`%${keyword}%`) },
     ];
 
     const res = await this.videoRepository.find({

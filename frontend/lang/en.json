@@ -161,8 +161,13 @@
     "posted_date":"Posted date",
     "views":"views",
     "current_password":"Your password",
-    "password_incorrect": "Password incorrect"
+    "password_incorrect": "Password incorrect",
 
+
+    "otp_success":"OTP success",
+    "verify_otp":"Verify OTP",
+    "otp_invalid":"OTP invalid",
+    "name_must_string":"Name must be a string"
 
 
     

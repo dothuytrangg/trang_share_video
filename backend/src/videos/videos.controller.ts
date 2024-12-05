@@ -32,7 +32,6 @@ export class VideosController {
     
     @Get("key")
     searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
-        console.log("sssss")
         return this.videoService.searchVideo(query)
     }
 

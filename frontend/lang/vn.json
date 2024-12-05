@@ -165,7 +165,12 @@
         "posted_date":"Ngày đăng",
          "views":"lượt xem",
          "current_password":"Mật khẩu của bạn",
-         "password_incorrect":"Mật khẩu không chính xác"
+         "password_incorrect":"Mật khẩu không chính xác",
+         
+         "otp_success":"Xác thực OTP thành công",
+        "verify_otp":"Xác thực OTP",
+        "otp_invalid":"Mã OTP không hợp lệ",
+        "name_must_string":"Tên phải là chuỗi"
 
         
 

@@ -150,7 +150,12 @@ const ListVideo = () => {
       
         let isValid = true;
       
-      
+        const regex = /^[a-zA-Z\s]+$/; 
+        if (!regex.test(name.value)) {
+          setNameError(true);
+          setNameErrorMessage(t('name_must_string'));
+          isValid = false;
+        }
         if (!name.value) {
           setNameError(true);
           setNameErrorMessage(t("name_required"));
