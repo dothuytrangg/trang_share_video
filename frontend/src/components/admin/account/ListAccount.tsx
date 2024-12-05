@@ -482,7 +482,8 @@ const handleOpenDeleteDialog = (user: any) => {
               <TableBody>
                   {
                     users.map((user: any) => (
-                      <TableRow key={user.id}>
+                       masterStore.user.id !== user.id && (
+                        <TableRow key={user.id}>
                         <TableCell>{user.id}</TableCell>
                         <TableCell >{user.full_name}</TableCell>
                         <TableCell >{user.email}</TableCell>
@@ -504,6 +505,7 @@ const handleOpenDeleteDialog = (user: any) => {
                         </TableCell>
                       
                       </TableRow>
+                       )
                     ))
                   
                   }

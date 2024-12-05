@@ -16,7 +16,8 @@ const initialState = {
   isAdmin:false,
   isAuth:false,
   user: {
-    avatar:''
+    avatar:'',
+    id:''
   },
 };
 
