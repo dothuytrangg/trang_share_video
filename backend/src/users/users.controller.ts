@@ -76,7 +76,7 @@ export class UsersController {
         storage:storageConfig('avatars'),
         fileFilter:(req,file,cb)=>{
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg','.webp'];
+            const allowedExtArr = ['.jpg','.png','.jpeg','.webp','.PNG','.JPG','JPEG'];
             if(!allowedExtArr.includes(ext)){
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
