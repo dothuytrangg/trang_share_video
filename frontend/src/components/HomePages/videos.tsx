@@ -25,7 +25,11 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("HomePage");
+  const [hasReachedHalf, setHasReachedHalf] = useState(false);
   var flag = false;
+
+  
+ 
   
   const handleOnClick = (videoId: string) => {
     router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
@@ -56,6 +60,14 @@ export default function Videos({ categoryId }: { categoryId: string }) {
       }
     };
 
+    // Hàm chuyển đổi giây thành định dạng HH:mm:ss
+   const formatDuration = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -68,30 +80,36 @@ export default function Videos({ categoryId }: { categoryId: string }) {
             <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }} >
             <Card sx={{ mx: 2, my: 1, width: 1 }} >
               <CardMedia
-                sx={{ height: 140 }}
+                sx={{ height: 170 }}
                 image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
                 title={video.name}
               />
-              <CardContent sx={{ height: 140 }}>
-                <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                  {video.name.length > 50 ? (
-                    <Tooltip title={video.name}>
-                      <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
-                    </Tooltip>
-                  ) :
-                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                  }
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {video.description.length > 100 ? (
-                    <Tooltip title={video.description}>
-                      <span>{`${video.description.substring(0, 100)}...`}</span>
-                    </Tooltip>
-                  ) : (
-                    video.description
-                  )}
-                </Typography>
-              </CardContent>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: 140 }}>
+            <div>
+              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                {video.name.length > 50 ? (
+                  <Tooltip title={video.name}>
+                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
+                  </Tooltip>
+                ) : (
+                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                )}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{marginBottom:'10px'}}>
+                {video.description.length > 40 ? (
+                  <Tooltip title={video.description}>
+                    <span>{`${video.description.substring(0, 40)}...`}</span>
+                  </Tooltip>
+                ) : (
+                  video.description
+                )}
+              </Typography>
+            </div>
+            <Typography  variant="body2"  sx={{ marginTop: 'auto', textAlign: 'right'}}>
+             {t('duration')}: {formatDuration(video.timeout)}
+            </Typography>
+          </CardContent>
+
             </Card>
           </Grid>
           )

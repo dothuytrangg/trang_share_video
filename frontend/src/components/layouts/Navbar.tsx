@@ -90,11 +90,15 @@ export default function Navbar() {
   const [oldPassword, setOldPassword] = useState("");
   const [oldPasswordError, setOldPasswordError] = useState(false);
   const [oldPasswordErrorMessage, setOldPasswordErrorMessage] = useState("");
+  var flag = false;
 
   useEffect(() => {
+   if(!flag){
     setIsLogin(masterStore.is_login)
-     setLoading(masterStore.loading)
-     loadAllCategory();
+    setLoading(masterStore.loading)
+    loadAllCategory();
+    flag = true
+   }
      console.log('masterStore navbar: ', masterStore);
 
 
@@ -563,7 +567,7 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           >
             <MenuItem className="px-5" onClick={handleProfile}>{t('profile')}</MenuItem>
             <MenuItem onClick={()=>setOpenUpdateDialog(true)}>{t('change_password')}</MenuItem>
-            <MenuItem onClick={handleClose}>{t('setting')}</MenuItem>
+            {/* <MenuItem onClick={handleClose}>{t('setting')}</MenuItem> */}
             <MenuItem onClick={handleChangeLanguage}>{locale == _GLOBAL.EN ? t('vn') : t('en')}</MenuItem>
             <MenuItem onClick={handleLogout}>{t('logout')}</MenuItem>
           </Menu>

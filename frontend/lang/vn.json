@@ -170,7 +170,8 @@
          "otp_success":"Xác thực OTP thành công",
         "verify_otp":"Xác thực OTP",
         "otp_invalid":"Mã OTP không hợp lệ",
-        "name_must_string":"Tên phải là chuỗi"
+        "name_must_string":"Tên phải là chuỗi",
+         "duration":"Thời lượng"
 
         
 

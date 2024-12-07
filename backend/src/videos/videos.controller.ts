@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { readFileSync, unlink } from 'fs';
 import { storageConfig } from 'helpers/config';
@@ -12,6 +12,9 @@ import { FilterVideoDto } from 'src/videos/dto/filter-video.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { VideosService } from 'src/videos/videos.service';
+import { promisify } from 'util';
+import * as ffmpeg from 'fluent-ffmpeg';
+import getVideoDurationInSeconds from 'get-video-duration';
 
 @Controller('videos')
 export class VideosController {
@@ -49,7 +52,16 @@ export class VideosController {
     
 
    
-
+    async  getVideoDuration(videoPath: string): Promise<number> {
+        try {
+            const duration = await getVideoDurationInSeconds(videoPath);
+            console.log(`Video duration: ${duration} seconds`);
+            return duration;
+        } catch (error) {
+            console.error('Error getting video duration:', error);
+            throw new Error('Failed to extract video duration');
+        }
+    }
     
         
     @UseGuards(AuthGuard)
@@ -88,7 +100,7 @@ export class VideosController {
 
 
 
-    create(@Req() req:any,@Body() createVideoDto:CreateVideoDto, @UploadedFiles() files: { thumbnail?: Express.Multer.File[]; url?: Express.Multer.File[] }){
+    async create(@Req() req:any,@Body() createVideoDto:CreateVideoDto, @UploadedFiles() files: { thumbnail?: Express.Multer.File[]; url?: Express.Multer.File[] }){
         const userId = req.user_data.id;
         if (!Array.isArray(createVideoDto.categories)) {
             createVideoDto.categories = [createVideoDto.categories];
@@ -150,10 +162,17 @@ export class VideosController {
          }).catch((e=>{
  
          }))
+         const videoDuration = await this.getVideoDuration(video.path);
      
          
-        return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename,createVideoDto.categories);
+        return this.videoService.create(createVideoDto,userId,thumbnail.filename,video.filename,createVideoDto.categories,videoDuration);
     }
+
+    @Patch(':id/view')
+    async incrementViews(@Param('id') id: string) {
+      return this.videoService.incrementViews(Number(id));
+    }
+
 
     @UseGuards(AuthGuard)
     @UsePipes(ValidationPipe)

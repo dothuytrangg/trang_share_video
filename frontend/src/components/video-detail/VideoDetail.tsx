@@ -30,6 +30,7 @@ import Replay10Icon from "@mui/icons-material/Replay10";
 import { useSelector } from "react-redux";
 import { format } from "date-fns";
 import { useLocale, useTranslations } from "next-intl";
+import { Flag } from "@mui/icons-material";
 
 
 
@@ -46,6 +47,7 @@ const VideoDetail = () => {
   const theme = useSelector((state: any) => state.master.theme); 
   const locale = useLocale();
   const t = useTranslations("HomePage");
+  const [hasReachedHalf, setHasReachedHalf] = useState(false);
     
   // const [userData, setUserData] = useState([]);
   // var ranonce = false;
@@ -94,11 +96,19 @@ const VideoDetail = () => {
     resetControlsTimeout();
   
     // Hàm xử lý cập nhật tiến trình video
+    var flag = false;
     const handleTimeUpdate = () => {
       if (video) {
         const currentTime = video.currentTime;
         const duration = video.duration;
         setProgress((currentTime / duration) * 100);
+          // Kiểm tra nếu đã xem đến 1/2 và chưa gửi yêu cầu
+          if (!flag&&!hasReachedHalf && currentTime >= duration / 2) {
+            setHasReachedHalf(true); // Đánh dấu đã xem qua 1/2
+            updateViewCount(); // Gọi hàm tăng lượt xem
+            flag = true
+          }
+         
       }
     };
   
@@ -114,6 +124,19 @@ const VideoDetail = () => {
     };
   }, [videoId, categoryId,videoData]); // Dependencies chỉ cần là các tham số ảnh hưởng đến logic
   
+  const updateViewCount = async () => {
+  
+      await requestApi(`videos/${videoId}/view`, "PATCH").then((res:any)=>{
+         if(res.success){
+          console.log("View count updated successfully");
+         }else{
+          console.error("Failed to update view count");
+         }
+      }).catch((err:any)=>{
+        console.error("Error updating view count:", err);
+      })
+   
+  };
 
   const fetchVideoDetail = async () => {
 
