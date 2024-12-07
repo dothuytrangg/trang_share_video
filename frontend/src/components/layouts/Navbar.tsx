@@ -47,6 +47,7 @@ export default function Navbar() {
   const locale = useLocale();
   const logo = "/image/logo_text.png";
   const theme = useTheme();
+  const themeMaster = useSelector((state: any) => state.master.theme);
   const dispatch = useAppDispatch();
   // const open = useAppSelector((state) => state.master.drawer) as boolean;
   const masterStore = useAppSelector((state: any) => state.master);
@@ -89,31 +90,35 @@ export default function Navbar() {
   const [oldPassword, setOldPassword] = useState("");
   const [oldPasswordError, setOldPasswordError] = useState(false);
   const [oldPasswordErrorMessage, setOldPasswordErrorMessage] = useState("");
+
   useEffect(() => {
     setIsLogin(masterStore.is_login)
     setLoading(masterStore.loading)
     loadAllCategory();
+    console.log('masterStore navbar: ', masterStore);
+
 
     //  setProfileAvatar(masterStore.user.avatar);
+    // setProfileAvatar(res.data.avatar);
+    // if (!loading) {
+    //   requestApi('users/profile','GET').then((res:any)=>{
+    //     console.log('res profile',res);
+    //      if(res.success){
+    //       console.log('masterStore: ', masterStore);
 
-    if (!loading) {
-      requestApi('users/profile', 'GET').then((res: any) => {
-        console.log('res profile', res);
-        if (res.success) {
-          setProfileAvatar(res.data.avatar);
-          setLoading(true)
-        }
+    //          setLoading(true)
+    //      }
 
-      }
+    //   }
 
-      ).catch((err) => {
-        console.log('err', err);
-      })
+    //   ).catch((err)=>{
+    //    console.log('err',err);
+    //   })
 
-      setLoading(true)
-    }
+    //    setLoading(true)
+    //  }
 
-    console.log('masterStore: ', masterStore);
+
   }, [masterStore])
 
   const loadAllCategory = async () => {
@@ -363,18 +368,21 @@ export default function Navbar() {
 
   const renderButtonAcction = () => {
     if (!isLogin) {
-      return <Button onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
+      return <Button sx={{ color: themeMaster === "light" ? '#111' : '#fff', borderColor: themeMaster === "light" ? '#111' : '#fff' }} onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
         {t('login')}
       </Button>
     } else {
       return (
 
-        <Box>
+        <Box >
           {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button onClick={() => setOpenAddDialog(true)} variant="outlined" style={{ width: 20, height: 35, margin: 10 }} startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}>
+          <Button onClick={() => setOpenAddDialog(true)} variant="outlined" style={{ width: 20, height: 35, margin: 10 }} sx={{ color: themeMaster === "light" ? '#111' : '#fff', borderColor: themeMaster === "light" ? '#111' : '#fff' }} startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }}
+
+
+          />}>
           </Button>
-          <Button onClick={handleClick} variant="outlined" startIcon={profileAvatar
-            ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${profileAvatar}`} sx={{ width: 25, height: 25 }} />)
+          <Button onClick={handleClick} variant="outlined" sx={{ color: themeMaster === "light" ? '#111' : '#fff', borderColor: themeMaster === "light" ? '#111' : '#fff' }} startIcon={profileAvatar
+            ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} sx={{ width: 25, height: 25 }} />)
             : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
             {masterStore.user.name}
           </Button>
@@ -389,49 +397,50 @@ export default function Navbar() {
 
   }
 
+
   const updatePasswordValidateInputs = () => {
     let isValid = true;
 
-    //kiểm tra trường old_password
-    if(!oldPassword){
+
+    if (!oldPassword) {
       setOldPasswordError(true)
       setOldPasswordErrorMessage(t("password_not_empty"))
       isValid = false;
     }
-    // Kiểm tra trường password
+
     if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_not_empty')); // Mật khẩu không được để trống
+      setPasswordErrorMessage(t('password_not_empty'));
       isValid = false;
     } else if (password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_least_6')); // Mật khẩu phải có ít nhất 6 ký tự
+      setPasswordErrorMessage(t('password_least_6'));
       isValid = false;
     } else if (password.length > 16) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_more_16')); // Mật khẩu không được quá 16 ký tự
+      setPasswordErrorMessage(t('password_more_16'));
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
 
-    // Kiểm tra trường confirm_password
+
     if (!confirm_password) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('confirm_password_not_empty')); // Xác nhận mật khẩu không được để trống
+      setConfirmPasswordErrorMessage(t('confirm_password_not_empty'));
       isValid = false;
     } else if (confirm_password.length < 6) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_least_6')); // Xác nhận mật khẩu phải có ít nhất 6 ký tự
+      setConfirmPasswordErrorMessage(t('password_least_6'));
       isValid = false;
     } else if (confirm_password.length > 16) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_more_16')); // Xác nhận mật khẩu không được quá 16 ký tự
+      setConfirmPasswordErrorMessage(t('password_more_16'));
       isValid = false;
     } else if (password !== confirm_password) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_not_match')); // Mật khẩu không khớp
+      setConfirmPasswordErrorMessage(t('password_not_match'));
       isValid = false;
     } else {
       setConfirmPasswordError(false);
@@ -777,9 +786,8 @@ export default function Navbar() {
             <DialogTitle>{t("change_password")}</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                {t("update_text")}
+                {/* {t("update_text")} */}
               </DialogContentText>
-
               <TextField
                 error={oldPasswordError}
                 helperText={oldPasswordErrorMessage}
@@ -793,8 +801,6 @@ export default function Navbar() {
                 fullWidth
                 variant="standard"
               />
-
-
 
               <TextField
                 autoFocus

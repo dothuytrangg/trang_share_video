@@ -13,7 +13,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useEffect, useState } from "react";
 import requestApi from "../../../helpers/api";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { _ENV } from "@/contstants";
 
@@ -22,31 +22,75 @@ export default function LikePlayList() {
     const [videos, setVideos] = useState([]); // Lưu danh sách video yêu thích
     const router = useRouter();
     const locale = useLocale();
+    const [likes, setLikes] = useState<number>(0);
+    const { videoId } = useParams();
+
+
+
 
     const handleOnClick = (videoId: string) => {
         router.push(`/${locale}/detail/${videoId}`);
     };
- const handleRemoveLike = async (videoId: number) => {
-    // Kiểm tra xem videoId có trong danh sách yêu thích không
-    requestApi(`playlist-like/remove/${videoId}`, "DELETE")
-    .then((res: any) => {
-        console.log("Xóa video yêu thích:", res);
-        if (res.success) {
-            // Nếu xóa thành công thì tải lại danh sách video yêu thích
-            loadLikedVideos();
-        }
-    })
-}
+    const handleRemoveLike = async (videoId: number) => {
+        // Kiểm tra xem videoId có trong danh sách yêu thích không
+        requestApi(`playlist-like/remove/${videoId}`, "DELETE")
+            .then((res: any) => {
+                console.log("Xóa video yêu thích:", res);
+                if (res.success) {
+                    // Nếu xóa thành công thì tải lại danh sách video yêu thích
+                    // loadLikedVideos();
+                }
+            })
+    }
 
     useEffect(() => {
         loadLikedVideos();
     }, []);
 
+    const handleLike = () => {
+        // Bật trạng thái loading khi bắt đầu thao tác
+        setLoading(true);
+
+        // Gọi API profile để lấy thông tin người dùng (userId)
+        requestApi('users/profile', 'GET')
+            .then((userResponse: any) => {
+                if (userResponse.success) {
+                    const userId = userResponse.data.id;  // Lấy userId từ thông tin trả về
+
+                    console.log("videoId", videoId);
+                    console.log("userId", userId);
+
+                    // Gọi API để like video
+                    return requestApi(`playlist-like/${userId}/${videoId}`, 'POST');
+                } else {
+                    console.error("Không thể lấy thông tin người dùng");
+                    return Promise.reject("Không thể lấy thông tin người dùng");
+                }
+            })
+            .then((likeResponse: any) => {
+                // Kiểm tra kết quả từ API like
+                if (likeResponse.success) {
+                    setLikes(likeResponse.data);  // Cập nhật lại số lượt thích
+                } else {
+                    console.error("Không thể like video");
+                }
+            })
+            .catch((err: any) => {
+                console.error("Lỗi khi thực hiện like:", err);
+            })
+            .finally(() => {
+                // Tắt trạng thái loading khi thao tác hoàn thành
+                setLoading(false);
+            });
+    };
+
+
     const loadLikedVideos = async () => {
         try {
             const res: any = await requestApi("playlist-like/videos", "GET");
+            console.log("Dữ liệu từ API:", res); // Xem chi tiết dữ liệu trả về
             if (res.success) {
-                const extractedVideos = res.data.map((item: any) => item.video); // Lấy riêng video
+                const extractedVideos = res.data.map((item: any) => item.video);
                 setVideos(extractedVideos);
             }
         } catch (error) {

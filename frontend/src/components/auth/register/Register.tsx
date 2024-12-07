@@ -58,8 +58,13 @@ const Register = () => {
 
   const validateInputs = () => {
     let isValid = true;
-
-    if (!full_name) {
+    const regex = /^[a-zA-Z\s]+$/; 
+    if (!regex.test(full_name)) {
+      setNameError(true);
+      setNameErrorMessage(t('name_must_string'));
+      isValid = false;
+    }
+    else if (!full_name) {
       setNameError(true);
       setNameErrorMessage(t('name'));
       isValid = false;
@@ -119,9 +124,7 @@ const Register = () => {
           setSuccessRegister(t('register_success'));
           localStorage.setItem('userId', res.userId); // Store userId
           console.log('userId stored in localStorage:', res.userId);
-          setTimeout(() => {
             router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTE_SEND_OTP}`);
-          }, 1000);
         } else if (res.errorCode === 'USER_EXISTS') {
           setSuccessRegister('');
           setErrorRegister(t('email_already_registered')); // Show error message for existing user

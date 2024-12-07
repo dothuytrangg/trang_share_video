@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import requestApi from "../../../helpers/api";
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 
 export default function Category({ onCategorySelect }: { onCategorySelect: (id: string) => void }) {
   const [categories, setCategories] = useState([]);
@@ -14,7 +14,7 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Trạng thái để theo dõi category được chọn
   const locale = useLocale();
   const t = useTranslations("HomePage");
-  const theme = useTheme();  // Sử dụng theme để nhận diện chế độ sáng/tối
+  const theme = useSelector((state: any) => state.master.theme);
   var ranonce = false;
 
   useEffect(() => {
@@ -32,6 +32,11 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
         setLastPage(res.lastPage);
         setIndex(res.pinnedCategory.name);
         setIndexId(res.pinnedCategory.id);
+         // Chọn mặc định nút đầu tiên
+         if (res.data.length > 0) {
+          setSelectedCategory(res.pinnedCategory.id);
+          onCategorySelect(res.pinnedCategory.id); // Gửi callback với danh mục đầu tiên
+        }
       }
     }).catch((err: any) => {
       console.error(err);
@@ -44,12 +49,11 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
         <Button
           sx={{
             ml: 1, pr: 1, textTransform: "none", mt: 2,
-            backgroundColor: selectedCategory === indexId ? 'black' : 'inherit', // Nền đen khi chọn
-            color: selectedCategory === indexId ? 'white' : 'inherit', // Chữ trắng khi chọn
-            '&:hover': {
-              backgroundColor: theme.palette.mode === 'light' ? 'black' : 'black', // Nền đen khi hover trong cả 2 chế độ
-              color: 'white', // Chữ trắng khi hover
-            },
+            backgroundColor: selectedCategory === indexId  ? (theme === "light"?'#121212' : '#fff'):'', // Màu khi chọn
+            // '&:hover': {
+            //   backgroundColor: selectedCategory === indexId ? 'primary.dark' : 'lightgray', // Màu khi hover
+            // },
+            color:selectedCategory === indexId  ? (theme === "light"?'#fff' : '#121212'):'',
           }}
           color="inherit"
           variant="contained"
@@ -74,16 +78,11 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
           key={id}
           sx={{
             ml: 1, pr: 1, textTransform: "none", mt: 2,
-            backgroundColor: selectedCategory === category.id ? 'black' : 'inherit', // Nền đen khi chọn
-            color: selectedCategory === category.id
-              ? 'white'
-              : theme.palette.mode === 'light'
-                ? 'black' // Chữ đen khi chưa chọn trong light mode
-                : 'white', // Chữ trắng khi chưa chọn trong dark mode
-            '&:hover': {
-              backgroundColor: theme.palette.mode === 'light' ? 'black' : 'black', // Nền đen khi hover trong cả 2 chế độ
-              color: 'white', // Chữ trắng khi hover
-            },
+            backgroundColor: selectedCategory === category.id  ? (theme === "light"?'#121212' : '#fff'):'', // Màu khi chọn
+            // '&:hover': {
+            //   backgroundColor: selectedCategory === category.id ? 'primary.dark' : 'Gray', // Màu khi hover
+            // },
+            color:selectedCategory ===  category.id  ? (theme === "light"?'#fff' : '#121212'):'',
           }}
           color="inherit"
           variant="contained"

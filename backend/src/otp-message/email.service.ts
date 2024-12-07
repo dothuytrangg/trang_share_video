@@ -48,7 +48,9 @@ export class EmailService {
     async sendPasswordResetEmail(to: string, token: string) {
         const resetLink = `${process.env.NEXT_URL_PROD}/vn/reset_password?token=${token}`; 
         const mailOptions = {
-            from: this.configService.get('MAIL_SENDER_NAME_DEFAULT'),
+            from: `"${this.configService.get('MAIL_SENDER_NAME_DEFAULT')}" <no-reply@yourdomain.com>`,
+
+
 
             to: to,
             subject: 'Password Reset Request',
@@ -56,7 +58,6 @@ export class EmailService {
         };
       //  console.log(mailOptions)
         console.log('MAIL_SENDER_NAME_DEFAULT:', this.configService.get('MAIL_SENDER_NAME_DEFAULT'));
-        console.log("resetLink:", resetLink);
 
         await this.mailTransport.sendMail(mailOptions);
     }

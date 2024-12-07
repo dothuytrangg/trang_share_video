@@ -31,7 +31,7 @@ export class VideosController {
 
 
     @Get("key")
-    searchVideo(@Query() query:FilterVideoDto): Promise<Video[]>{
+    searchVideo(@Query() query:string): Promise<Video[]>{
         return this.videoService.searchVideo(query)
     }
 
@@ -66,15 +66,15 @@ export class VideosController {
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null,false);
             }else{
-                // const fileSize = parseInt(req.headers['content-length']);
-                // if(fileSize > 1024 * 1024 * 100 ){
-                //     req.fileValidationError = 'File size is too large.Accepted size is less than';
-                //     cb(null,false);
+                const fileSize = parseInt(req.headers['content-length']);
+                if(fileSize > 1024 * 1024 * 1024 * 10 ){
+                    req.fileValidationError = 'File size is too large. Accepted size is less than 10GB.';
+                    cb(null,false);
                    
-                // }else {
+                }else {
                     //  console.log(ext)
                     cb(null, true);
-                //   }
+                  }
             }
 
         }

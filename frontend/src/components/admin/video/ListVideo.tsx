@@ -1,6 +1,6 @@
 import { _ENV, _GLOBAL } from "@/contstants";
 import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
-import { Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Pagination, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, ButtonGroup, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Pagination, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -83,46 +83,49 @@ const ListVideo = () => {
 
 
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  let [errorCreate, setErrorCreate] = useState("");
-  const [nameError, setNameError] = useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = useState("");
-  const [descriptionError, setDescriptionError] = useState(false);
-  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-  const [optionError, setOptionError] = useState(false);
-  const [optionErrorMessage, setOptionErrorMessage] = useState("");
-  const [thumbnailError, setThumbnailError] = useState(false);
-  const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState("");
-  const [videoError, setVideoError] = useState(false);
-  const [videoErrorMessage, setVideoErrorMessage] = useState("");
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [status, setStatus] = useState("confirming");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    let [errorCreate, setErrorCreate] = useState("");
+    let [errorCreateMessage, setErrorCreateMessage] = useState("");
+    const [nameError, setNameError] = useState(false);
+    const [nameErrorMessage, setNameErrorMessage] = useState("");
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+    const [optionError, setOptionError] = useState(false);
+    const [optionErrorMessage, setOptionErrorMessage] = useState("");
+    const [thumbnailError, setThumbnailError] = useState(false);
+    const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState("");
+    const [videoError, setVideoError] = useState(false);
+    const [videoErrorMessage, setVideoErrorMessage] = useState("");
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [status, setStatus] = useState("confirming");
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [urlVideo, setUrlVideo] = useState<string | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      console.log(event.target.files);
-      const file = event.target.files[0];
-      setThumbnailFile(file);
-      setThumbnailPreview(URL.createObjectURL(file));
-    }
-  };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            console.log(event.target.files);
+            const file = event.target.files[0];
+            setThumbnailFile(file);
+            setThumbnailPreview(URL.createObjectURL(file));
+            setThumbnailError(false)
+        }
+    };
 
-  const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setVideoFile(file);
-      console.log(file);
+    const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            setVideoFile(file);
+            setVideoError(false)
+            console.log(file);
 
     }
   };
@@ -139,54 +142,59 @@ const ListVideo = () => {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
 
-    return str;
-  }
-  const validateInputs = () => {
-    const name = document.getElementById("name") as HTMLInputElement;
-    const description = document.getElementById("description") as HTMLInputElement;
-
-    let isValid = true;
-
-
-    if (!name.value) {
-      setNameError(true);
-      setNameErrorMessage(t("name_required"));
-      isValid = false;
-    } else if (name.value.length < 3) {
-      setNameError(true);
-      setNameErrorMessage(t("name_least_3"));
-      isValid = false;
-    } else if (name.value.length > 70) {
-      setNameError(true);
-      setNameErrorMessage(t("name_more_70"));
-      isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage("");
+        return str;
     }
+    const validateInputs = () => {
+        const name = document.getElementById("name") as HTMLInputElement;
+        const description = document.getElementById("description") as HTMLInputElement;
+        const regex = /^[a-zA-Z\s]+$/; 
+        let isValid = true;
+      
+        if(!regex.test(name.value)){
+          setNameError(true);
+          setNameErrorMessage(t("name_must_string"));
+          isValid
+        }
+        else if (!name.value) {
+          setNameError(true);
+          setNameErrorMessage(t("name_required"));
+          isValid = false;
+        } else if (name.value.length < 3) {
+          setNameError(true);
+          setNameErrorMessage(t("name_video_must_more_than_3_characters"));
+          isValid = false;
+        } else if (name.value.length > 70) {
+          setNameError(true);
+          setNameErrorMessage(t("name_video_must_least_than_70_characters"));
+          isValid = false;
+        } else {
+          setNameError(false);
+          setNameErrorMessage("");
+        }
+      
+    
+        if (!description.value) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_required"));
+          isValid = false;
+        } else if (description.value.length < 10) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_video_must_more_than_10_characters"));
+          isValid = false;
+        } else if (description.value.length > 300) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_video_must_least_than_300_characters"));
+          isValid = false;
+        } else {
+          setDescriptionError(false);
+          setDescriptionErrorMessage("");
+        }
 
-
-    if (!description.value) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_required"));
-      isValid = false;
-    } else if (description.value.length < 10) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_least_10"));
-      isValid = false;
-    } else if (description.value.length > 300) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_more_300"));
-      isValid = false;
-    } else {
-      setDescriptionError(false);
-      setDescriptionErrorMessage("");
-    }
-
-    if (categoryOptions.length < 1) {
-      setOptionError(true);
-      setOptionErrorMessage(t('select_at_least_1_category'))
-      isValid = false;
+        if(categoryOptions.length < 1 )
+        {
+            setOptionError(true);
+            setOptionErrorMessage(t("select_at_least_1_category"))
+            isValid = false;
 
     }
     const allowedExtArr = ['.jpg', '.png', '.jpeg', '.webp', '.PNG', '.JPG'];
@@ -231,51 +239,53 @@ const ListVideo = () => {
       console.log(thumbnailFile.type)
       console.log(videoFile)
 
-      requestApi("videos", "POST", formData)
-        .then((res: any) => {
-          if (res.success) {
-            setOpenAddDialog(false);
-            // setThumbnailFile(null);
-            setThumbnailPreview(null);
-            setVideoFile(null);
-            setCategoryOptions([]);
-            setSnackbarMessage(t("create_video_success"));
-            setSnackbarSeverity("success");
-            setOpenSnackbar(true);
-
-            loadVideos(page);
-          } else {
-            setErrorCreate(res.message || t("create_video_failed"));
-            setSnackbarMessage(res.message);
-            setSnackbarSeverity("error");
-            setOpenSnackbar(true);
-          }
-        })
-        .catch((err: any) => {
-          console.error("Create video failed:", err);
-          setSnackbarMessage(t("create_video_occurred"));
-          setSnackbarSeverity("error");
-          setOpenSnackbar(true);
-        });
-    } else {
-      console.log('No file selected for thumbnail or video');
-    }
-  };
+            requestApi("videos", "POST", formData)
+                .then((res: any) => {
+                    if (res.success) {
+                        setOpenAddDialog(false);
+                        // setThumbnailFile(null);
+                        setThumbnailPreview(null);
+                        setVideoFile(null);     
+                        setCategoryOptions([]); 
+                        setSnackbarMessage(t("create_video_success"));
+                        setSnackbarSeverity("success");
+                        setOpenSnackbar(true);
+                        loadVideos(page);
+                      
 
 
+                    } else {
+                        setErrorCreateMessage(res.message || t("create_video_failed"));
+                        setSnackbarMessage(res.message);
+                        setSnackbarSeverity("error");
+                        setOpenSnackbar(true);
+                    }
+                })
+                .catch((err: any) => {
+                    console.error("Create video failed:", err);
+                    setSnackbarMessage(t("create_video_occurred"));
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                });
+        } else {
+            console.log('No file selected for thumbnail or video');
+        }
+    };
 
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
-  const handleOpenUpdateDialog = (video: any) => {
-    console.log('video', video);
-    setSelectedVideo(video);
-    console.log(selectedVideo);
-    setName(video.name);
-    setDescription(video.description);
-    setThumbnailFile(null);
-    // setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
-    setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
-    setStatus(video.status);
-    // console.log('console thumbnail',selectedVideo.thumbnail);
+
+
+    const [selectedVideo, setSelectedVideo] = useState<any>(null);
+    const handleOpenUpdateDialog = (video: any) => {
+        console.log('video', video);
+        setSelectedVideo(video);
+        console.log('ss',selectedVideo);
+        setName(video.name);
+        setDescription(video.description);
+        setThumbnailFile(null);
+        // setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`);
+        setThumbnailPreview(`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`);
+        setStatus(video.status);
+        // console.log('console thumbnail',selectedVideo.thumbnail);
 
     // console.log('thumbnailFile',thumbnailFile);
     setOpenUpdateDialog(true);
@@ -464,30 +474,36 @@ const ListVideo = () => {
       id: `${category.id}`
     }));
 
+    const [filterStatus, setFilterStatus] = useState("all");
+    const filteredVideos = videos.filter((video:any) => {
+      if (filterStatus === "all") return true;
+      return video.status === filterStatus;
+    });
 
-  const renderPage = () => {
-    if (!loading) {
-      return (
-        <div className="grid grid-cols-1 gap-4">
-          <React.StrictMode>
-            <Dialog
-              open={openAddDialog}
-              onClose={() => setOpenAddDialog(false)}
-              PaperProps={{
-                component: 'form',
-                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                  event.preventDefault();
-                  handleCreateVideo();
-                },
-              }}
-              fullWidth
-              maxWidth="sm"
-            >
-              <DialogTitle>{t("addVideo")}</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  {/* {t("addText_category")} */}
-                </DialogContentText>
+  
+    const renderPage = () => {
+        if (!loading) {
+            return (
+                <div className="grid grid-cols-1 gap-4">
+                    <React.StrictMode>
+                        <Dialog
+                            open={openAddDialog}
+                            onClose={() => setOpenAddDialog(false)}
+                            PaperProps={{
+                                component: 'form',
+                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                    event.preventDefault();
+                                    handleCreateVideo();
+                                },
+                            }}
+                            fullWidth
+                            maxWidth="sm"
+                        >
+                            <DialogTitle>{t("addVideo")}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    {/* {t("addText_category")} */}
+                                </DialogContentText>
 
                 {/* Input for Video Name */}
                 <TextField
@@ -506,109 +522,109 @@ const ListVideo = () => {
                   style={{ marginBottom: 20 }}
                 />
 
-                {/* Input for Video Description */}
-                <TextField
-                  error={descriptionError}
-                  helperText={descriptionErrorMessage}
-                  onChange={(val) => setDescription(val.target.value)}
-                  margin="dense"
-                  id="description"
-                  name="description"
-                  label={t("description_text")}
-                  type="text"
-                  fullWidth
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  InputProps={{ style: { resize: 'vertical' } }}
-                  style={{ marginBottom: 20 }}
-                />
-                <Grid container spacing={2}>
-                  <Grid item xs={6} >
-                    {/* Khung chứa ảnh*/}
-                    <Box
-                      sx={{
-                        width: '250px',
-                        height: '150px',
-                        border: '2px dashed #3f51b5',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        backgroundColor: '#f0f0f0',
-                        marginTop: 2
-                      }}
-                    >
-                      {thumbnailPreview ? (
-                        <img
-                          src={thumbnailPreview}
-                          alt="Thumbnail Preview"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                          }}
-                        />
-                      ) : (
-                        <span style={{ color: '#999' }}>{t('thumbnail')}</span>
-                      )}
-                    </Box>
-                    {thumbnailError && (
-                      <span style={{ color: 'red', display: 'block' }}>
-                        {thumbnailErrorMessage}
-                      </span>
-                    )}
+                                {/* Input for Video Description */}
+                                <TextField
+                                    error={descriptionError}
+                                    helperText={descriptionErrorMessage}
+                                    onChange={(val) => setDescription(val.target.value)}
+                                    margin="dense"
+                                    id="description"
+                                    name="description"
+                                    label={t("description_text")}
+                                    type="text"
+                                    fullWidth
+                                    variant="outlined"
+                                    multiline
+                                    rows={3}
+                                    InputProps={{ style: { resize: 'vertical' } }}
+                                    style={{ marginBottom: 20 }}
+                                />
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} >
+                                        {/* Khung chứa ảnh*/}
+                                        <Box
+                                            sx={{
+                                                width: '250px',
+                                                height: '150px',
+                                                border: '2px dashed #3f51b5',
+                                                borderRadius: '8px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                overflow: 'hidden',
+                                                backgroundColor: '#f0f0f0',
+                                                marginTop: 2
+                                            }}
+                                        >
+                                            {thumbnailPreview ? (
+                                                <img
+                                                    src={thumbnailPreview}
+                                                    alt="Thumbnail Preview"
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span style={{ color: '#999' }}>{t('thumbnail')}</span>
+                                            )}
+                                        </Box>
+                                       
+                                            <span style={{ color: 'red', display: 'block'}}>
+                                                {thumbnailError ? (thumbnailErrorMessage):("")}
+                                            </span>
+                                     
 
-                  </Grid>
-                  <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Grid item style={{
-
-                      display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight: "30px"
-                    }}>
-                      <Autocomplete
-                        multiple
-                        options={categoryData}
-                        getOptionLabel={(option) => option.label}
-                        value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
-                        onChange={(event, newValue: any) => setCategoryOptions(newValue)} // Cập nhật state khi thay đổi
-                        renderInput={(params) => (
-                          <TextField {...params}
-                            label={t('add_to_category')}
-                            error={optionError}
-                            helperText={optionErrorMessage} />
-                        )}
-                        filterOptions={(options) =>
-                          // Lọc ra các option chưa được chọn
-                          options.filter(
-                            (option) =>
-                              !categoryOptions.some(
-                                (selectedOption: any) => selectedOption.id === option.id
-                              )
-                          )
-                        }
-                        style={{ width: 300 }}
-
+                                    </Grid>
+                                    <Grid item xs={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Grid item style={{
+              
+                                           display: 'flex', justifyContent: 'flex-end', marginTop: "16px", marginRight:"30px" }}>
+                                                <Autocomplete
+                                                    multiple
+                                                    options={categoryData}
+                                                    getOptionLabel={(option) => option.label}
+                                                    value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                                                    onChange={(event, newValue:any) => {
+                                                      setCategoryOptions(newValue),
+                                                      categoryOptions.length != null &&(
+                                                        setOptionError(false),
+                                                        setOptionErrorMessage("")
+                                                      )
+                                                    }} // Cập nhật state khi thay đổi
+                                                    renderInput={(params) => (
+                                                        <TextField {...params}
+                                                         label={t('add_to_category')}
+                                                         error={optionError}
+                                                         helperText={optionErrorMessage} />
+                                                    )}
+                                                    filterOptions={(options) =>
+                                                      // Lọc ra các option chưa được chọn
+                                                      options.filter(
+                                                          (option) =>
+                                                              !categoryOptions.some(
+                                                                  (selectedOption:any) => selectedOption.id === option.id
+                                                              )
+                                                      )
+                                                  }
+                                                    style={{ width: 300 }}
+                                                    
 
                       />
 
 
                     </Grid>
 
-                    <Grid item style={{ marginTop: '75px', justifyContent: "flex-end", display: "flex" }}>
-                      {videoError ? (
-                        <span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
-                          {videoErrorMessage}
-                        </span>
-                      ) : (
-                        videoFile && (
-                          <span style={{ color: 'black', display: 'block' }}>
-                            {videoFile.name}
-                          </span>
-                        )
-                      )}
-                    </Grid>
-                  </Grid>
+                                        <Grid item style={{ marginTop: '75px', justifyContent:"flex-end", display:"flex" }}>
+
+                                          {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                                                    {videoErrorMessage}
+                                                </span>):(<span style={{ color: 'black', display: 'block' }}>
+                                                        {videoFile &&(videoFile.name)}
+                                                    </span>) }
+                                        </Grid>
+                                    </Grid>
 
                   {/* </Grid> */}
 
@@ -794,10 +810,42 @@ const ListVideo = () => {
             </Snackbar>
             <div className="m-5 mt-20">
 
-              <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
-                <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
-                  {t('addVideo')}
+
+
+   
+
+
+        <TableContainer className='p-5' sx={{ border: 0 }} component={Paper}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+             
+              <Button onClick={() => setOpenAddDialog(true)} variant="outlined" startIcon={<AddIcon />}>
+                {t("addVideo")}
+              </Button>
+
+           
+              <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+                <Button
+                  variant={filterStatus === "all" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("all")}
+                >
+                  {t("all")}
                 </Button>
+                <Button
+                  variant={filterStatus === "confirmed" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("confirmed")}
+                >
+                  {t("Confirmed")}
+                </Button>
+                <Button
+                  variant={filterStatus === "confirming" ? "contained" : "outlined"}
+                  onClick={() => setFilterStatus("confirming")}
+                >
+                  {t("Confirming")}
+                </Button>
+          </Box>
+        </Box>
+
+
 
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
@@ -815,83 +863,81 @@ const ListVideo = () => {
                   </TableHead>
 
                   <TableBody>
-                    {
-                      videos.map((video: any) => (
-                        <TableRow key={video.id}>
-                          <TableCell>{video.id}</TableCell>
-                          <TableCell>
-                            {video.name.length > 20 ? (
-                              <Tooltip title={video.name}>
-                                <span>{`${video.name.substring(0, 20)}...`}</span>
-                              </Tooltip>
-                            ) : (
-                              video.name
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {video.description.length > 20 ? (
-                              <Tooltip title={video.description}>
-                                <span>{`${video.description.substring(0, 20)}...`}</span>
-                              </Tooltip>
-                            ) : (
-                              video.description
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <img
-                              // src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
-                              alt={video.name}
-                              style={{ width: '100px', height: 'auto' }} // Adjust width and height as needed
-                            />
-                          </TableCell>
-                          <TableCell>
-
-                            {video.url ? (
-                              <Tooltip title={video.url}>
-                                {/* <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
+                  {filteredVideos.map((video:any) => (
+                    <TableRow key={video.id}>
+                      <TableCell>{video.id}</TableCell>
+                      <TableCell>
+                        {video.name.length > 20 ? (
+                          <Tooltip title={video.name}>
+                            <span>{`${video.name.substring(0, 20)}...`}</span>
+                          </Tooltip>
+                        ) : (
+                          video.name
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {video.description.length > 20 ? (
+                          <Tooltip title={video.description}>
+                            <span>{`${video.description.substring(0, 20)}...`}</span>
+                          </Tooltip>
+                        ) : (
+                          video.description
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <img
+                          src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                          alt={video.name}
+                          style={{ width: "100px", height: "auto" }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {video.url ? (
+                          <Tooltip title={video.url}>
+                            <Link
+                              href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`}
+                              target="_blank"
+                              rel="noopener"
+                              style={{ textDecoration: "none" }}
+                            >
                               {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
-                            </Link> */}
-                                <Link href={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.url}`} target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>
-                                  {video.url.length > 20 ? `${video.url.substring(0, 20)}...` : video.url}
-                                </Link>
-                              </Tooltip>
-                            ) : (
-                              'N/A'
-                            )}
-                          </TableCell>
+                            </Link>
+                          </Tooltip>
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell>{video.user.full_name}</TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          color={video.status === "confirmed" ? "green" : "#dc143c"}
+                        >
+                          {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{formatDateTime(video.created_at)}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleOpenUpdateDialog(video)}
+                        >
+                          {t("edit")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          style={{ marginLeft: 8 }}
+                          onClick={() => handleOpenDeleteDialog(video)}
+                        >
+                          {t("delete")}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
 
-                          <TableCell>
-                            {video.user.full_name}
-                          </TableCell>
-
-                          <TableCell>
-                            {video.status == 'confirming' ? `${t('Confirming')}` : `${t('Confirmed')}`}
-                          </TableCell>
-                          <TableCell>
-                            {formatDateTime(video.created_at)}
-                          </TableCell>
-
-
-                          <TableCell  >
-                            <Button variant="outlined" color="primary" onClick={() => handleOpenUpdateDialog(video)}  >
-                              {t("edit")}
-                            </Button>
-                            <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={() => handleOpenDeleteDialog(video)}>
-                              {t("delete")}
-                            </Button>
-                            {/* <Button variant="outlined" color="primary" style={{ marginLeft: 8 }} onClick={()=>{setStatus("comfirmed"),console.log(status)}}  >
-                              accept_status
-                            </Button> */}
-
-                          </TableCell>
-
-                        </TableRow>
-                      ))
-
-                    }
-
-                  </TableBody>
                 </Table>
                 <Dialog
                   open={openDeleteDialog}

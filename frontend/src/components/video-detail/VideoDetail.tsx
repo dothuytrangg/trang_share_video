@@ -27,8 +27,12 @@ import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import Forward10Icon from "@mui/icons-material/Forward10";
 import Replay10Icon from "@mui/icons-material/Replay10";
-import { useSelector } from 'react-redux';
-
+import { useSelector } from "react-redux";
+import { format } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 
 
@@ -41,24 +45,82 @@ const VideoDetail = () => {
   const [videoData, setVideoData] = useState<any>(null);
   const [proposeVideoData, setProposeVideoData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showControls, setShowControls] = useState(true); // Điều khiển ẩn/hiện nút
+  const [showControls, setShowControls] = useState(true);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const theme = useSelector((state: any) => state.master.theme); 
+  const locale = useLocale();
+  const t = useTranslations("HomePage");
+  const [likes, setLikes] = useState<number>(0); 
+  const [liked, setLiked] = useState<boolean>(false);
+  
+    
   // const [userData, setUserData] = useState([]);
-  const [likes, setLikes] = useState([])
+  // var ranonce = false;
+  // useEffect(() => {
+  //   if (!ranonce) {
+  //     if (videoId) {
 
-  var ranonce = false;
+  //       fetchVideoDetail();
+  //     }
+  //     if (categoryId) {
+  //       fetchVideoDetailByCategoryId();
+  //     }
+  //     ranonce = true;
+  //   }
+
+  // }, [videoId, categoryId]);
+
+  const isInitialRender = useRef(true);
+
+
+
   useEffect(() => {
-    if (!ranonce) {
+    // Lấy tham chiếu video
+    const video = videoRef.current;
+    // console.log("videoRef.current", videoRef.current);
+  
+    // Cờ để ngăn fetch lại dữ liệu ở lần render đầu tiên
+    if (isInitialRender.current) {
       if (videoId) {
-
         fetchVideoDetail();
       }
       if (categoryId) {
         fetchVideoDetailByCategoryId();
       }
-      ranonce = true;
+      isInitialRender.current = false;
     }
-
-  }, [videoId, categoryId]);
+  
+    // Reset timeout để ẩn controls
+    const resetControlsTimeout = () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+      controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+    };
+  
+    resetControlsTimeout();
+  
+    // Hàm xử lý cập nhật tiến trình video
+    const handleTimeUpdate = () => {
+      if (video) {
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+        setProgress((currentTime / duration) * 100);
+      }
+    };
+  
+    // Gán sự kiện cho video
+    video?.addEventListener("timeupdate", handleTimeUpdate);
+  
+    // Cleanup khi component unmount
+    return () => {
+      video?.removeEventListener("timeupdate", handleTimeUpdate);
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, [videoId, categoryId,videoData]); // Dependencies chỉ cần là các tham số ảnh hưởng đến logic
+  
 
   const fetchVideoDetail = async () => {
 
@@ -80,42 +142,31 @@ const VideoDetail = () => {
 
   };
 
-  const handleLike = () => {
-    // Bật trạng thái loading khi bắt đầu thao tác
-   // setLoading(true);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
-    // Gọi API profile để lấy thông tin người dùng (userId)
-    requestApi('users/profile', 'GET')
-      .then((userResponse: any) => {
-        if (userResponse.success) {
-          const userId = userResponse.data.id;  // Lấy userId từ thông tin trả về
+  const handleLike = async () => {
+    if (isLikeLoading) return; // Tránh nhấn nhiều lần khi đang xử lý
 
-          console.log("videoId", videoId);
-          console.log("userId", userId);
+    setIsLikeLoading(true);
 
-          // Gọi API để like video
-          return requestApi(`playlist-like/${userId}/${videoId}`, 'POST');
-        } else {
-          console.error("Không thể lấy thông tin người dùng");
-          return Promise.reject("Không thể lấy thông tin người dùng");
-        }
-      })
-      .then((likeResponse: any) => {
-        // Kiểm tra kết quả từ API like
+    try {
+      const userResponse: any = await requestApi('users/profile', 'GET');
+      if (userResponse.success) {
+        const userId = userResponse.data.id;
+
+        const likeResponse: any = await requestApi(`playlist-like/${userId}/${videoId}`, 'POST');
         if (likeResponse.success) {
-          setLikes(likeResponse.data);  // Cập nhật lại số lượt thích
-        } else {
-          console.error("Không thể like video");
+          setLikes(likeResponse.data); // Cập nhật số lượng like
+          setLiked(true); // Đánh dấu đã like
         }
-      })
-      .catch((err: any) => {
-        console.error("Lỗi khi thực hiện like:", err);
-      })
-      .finally(() => {
-        // Tắt trạng thái loading khi thao tác hoàn thành
-       // setLoading(false);
-      });
+      }
+    } catch (err) {
+      console.error("Lỗi khi thực hiện like:", err);
+    } finally {
+      setIsLikeLoading(false);
+    }
   };
+
 
 
 
@@ -144,6 +195,28 @@ const VideoDetail = () => {
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+
+
+  // Reset controls timeout
+  const resetControlsTimeout = () => {
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+  };
+
+
+
+  const handleMouseOver = () => {
+    setShowControls(true);
+    resetControlsTimeout();
+  };
+
+  const handleMouseLeave = () => {
+    resetControlsTimeout();
+  };
+
+  
 
  // Toggle play/pause
  const togglePlayPause = () => {
@@ -175,27 +248,12 @@ const handleVolumeChange = (e: Event, value: number | number[]) => {
   }
 };
 
-// Update progress bar
-useEffect(() => {
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100);
-    }
-  };
 
-  const video = videoRef.current;
-  video?.addEventListener("timeupdate", handleTimeUpdate);
-  return () => {
-    video?.removeEventListener("timeupdate", handleTimeUpdate);
-  };
-}, []);
-
-// Seek video
 const handleSeek = (e: Event, value: number | number[]) => {
   const newProgress = Array.isArray(value) ? value[0] : value;
   if (videoRef.current) {
-    videoRef.current.currentTime = (newProgress / 100) * videoRef.current.duration;
-    setProgress(newProgress);
+    videoRef.current.currentTime = (newProgress / 100) * videoRef.current.duration; 
+    setProgress(newProgress); // Đồng bộ trạng thái progress
   }
 };
 
@@ -204,17 +262,36 @@ const toggleFullscreen = () => {
   if (videoRef.current) {
     if (!isFullscreen) {
       videoRef.current.requestFullscreen();
+     
     } else {
       document.exitFullscreen();
+      // setIsFullscreen(false);
+      // setIsFullscreen(!isFullscreen);
     }
-    setIsFullscreen(!isFullscreen);
+    // setIsFullscreen(!isFullscreen);
   }
 };
 
-// Zoom functionality
-const handleZoom = (zoomIn: boolean) => {
-  const newZoom = zoomIn ? zoomLevel + 0.1 : zoomLevel - 0.1;
-  setZoomLevel(Math.max(1, newZoom));
+
+
+const formatTime = (seconds: number): string => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  } else {
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
+};
+const formatDateTime = (isoString: string): string => {
+  try {
+    return format(new Date(isoString), "dd/MM/yyyy HH:mm:ss");
+  } catch (error) {
+    console.error("Invalid date format:", isoString, error);
+    return 'invalid_date';
+  }
 };
 
 
@@ -231,112 +308,138 @@ const handleZoom = (zoomIn: boolean) => {
 
 
   return (
+    
     <Box className={styles.container}>
       <Grid container spacing={3}>
         <Grid item xs={7}>
-          {/* <div className={styles.videoWrapper}>
-          <video
-            className={styles.videoPlayer}
-            src={`${_ENV.NEXT_URL_LOCAL}/videos/${videoData.url}`}
-            autoPlay
-            muted
-            loop
-            playsInline
-          ></video>
-        </div> */}
-          <Box
-      sx={{
-        position: "relative",
-        width: "100%",
-        maxWidth: 800,
-        aspectRatio: "16/9",
-        backgroundColor: "#000",
-        overflow: "hidden",
-      }}
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
-        style={{
-          width: "100%",
-          height: "100%",
-          transform: `scale(${zoomLevel})`,
-          objectFit: "cover",
-        }}
-        onLoadedMetadata={() => {
-          if (videoRef.current) {
-            setDuration(videoRef.current.duration);
-          }
-        }}
-      />
+          <ReponsiveContainer>
+        <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 800,
+              // maxHeight:500,
+              aspectRatio: "16/9",
+              backgroundColor: "#000",
+              overflow: "hidden",
+            }}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Video Element */}
+            <video
+              ref={videoRef}
+              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
+              style={{
+                width: "100%",
+                height: "100%",
+                // transform: `scale(${zoomLevel})`,
+                objectFit: "contain",
+              }}
+              onLoadedMetadata={() => {
+                if (videoRef.current) {
+                  // const videoDuration = videoRef.current.duration;
+                  setDuration(videoRef.current.duration);
+                  // console.log('duration',videoRef.current)
+                }
+              }}
+            />
 
-      {/* Controls */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 10,
-          left: 10,
-          right: 10,
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-          padding: "10px",
-          borderRadius: "5px",
-        }}
-      >
-        {/* Play/Pause */}
-        <IconButton onClick={togglePlayPause} color="inherit">
-          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-        </IconButton>
+            {/* Controls */}
+            {showControls && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 10,
+                  left: 10,
+                  right: 10,
+                  zIndex: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  padding: "10px",
+                  borderRadius: "5px",
+                }}
+              >
+              {/* Play/Pause */}
+              <IconButton onClick={togglePlayPause} 
+              sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}
+              // color="inherit"
+              >
+                {isPlaying ? <PauseIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }} /> : <PlayArrowIcon 
+              sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/>}
+              </IconButton>
 
-        {/* Rewind */}
-        <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)} color="inherit">
-          <Replay10Icon />
-        </IconButton>
+              {/* Rewind */}
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime -= 10)}  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
+                <Replay10Icon />
+              </IconButton>
 
-        {/* Progress */}
-        <Slider
-          value={progress}
-          onChange={handleSeek}
-          aria-labelledby="progress-slider"
-          sx={{ flex: 1, mx: 2 }}
-        />
+              <Slider
+              value={progress}
+              onChange={handleSeek}
+              aria-labelledby="progress-slider"
+              sx={{ flex: 1, mx: 2 }}
+              min={0}
+              max={100}
+              step={1}
+              valueLabelDisplay="on"
+              valueLabelFormat={(value) =>
+                duration > 0 ? formatTime((value / 100) * duration) : "0:00"
+              }
+            />
 
-        {/* Forward */}
-        <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} color="inherit">
-          <Forward10Icon />
-        </IconButton>
+              {/* Forward */}
+              <IconButton onClick={() => videoRef.current && (videoRef.current.currentTime += 10)} 
+                 sx={{
+                  color:theme === "light" ? '#FFF': '#fff'
+                }}>
+                <Forward10Icon />
+              </IconButton>
 
-        {/* Volume */}
-        <IconButton onClick={toggleMute} color="inherit">
-          {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-        </IconButton>
-        <Slider
-          value={volume}
-          onChange={handleVolumeChange}
-          step={0.1}
-          min={0}
-          max={1}
-          sx={{ width: 100 }}
-        />
+              {/* Volume */}
+              <IconButton onClick={toggleMute}  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
+                {isMuted ? <VolumeOffIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/> : <VolumeUpIcon  sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}/>}
+              </IconButton>
+              <Slider
+                value={volume}
+                onChange={handleVolumeChange}
+                step={0.1}
+                min={0}
+                max={1}
+                sx={{ width: 100
+                 }}
+             
+                
+              />
 
-        {/* Fullscreen */}
-        <IconButton onClick={toggleFullscreen} color="inherit">
-          {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-        </IconButton>
+              {/* Fullscreen */}
+              <IconButton onClick={toggleFullscreen} 
+               sx={{
+                color:theme === "light" ? '#FFF': '#fff'
+              }}>
+                {isFullscreen ? <FullscreenExitIcon  /> : <FullscreenIcon />}
+              </IconButton>
 
-        {/* Zoom */}
-        {/* <IconButton onClick={() => handleZoom(true)} color="inherit">
-          <ZoomInIcon />
-        </IconButton>
-        <IconButton onClick={() => handleZoom(false)} color="inherit">
-          <ZoomOutIcon />
-        </IconButton> */}
+         
+            </Box>)}
       </Box>
-    </Box>
+           
 
 
           <h1 className={styles.videoTitle}>{videoData.name}</h1>
@@ -344,39 +447,36 @@ const handleZoom = (zoomIn: boolean) => {
             <Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${videoData.user.avatar}`} alt='akelo' />
             <Box className={styles.channelText}>
               <Typography variant="subtitle1">{videoData.user.full_name}</Typography>
-              <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography>
+              {/* <Typography variant="body2" color="textSecondary">3,89 N người đăng ký</Typography> */}
             </Box>
-            <Button variant="contained" color="primary" className={styles.subscribeButton}>
+            {/* <Button variant="contained" color="primary" className={styles.subscribeButton}>
               Đăng ký
-            </Button>
+            </Button> */}
           </Box>
           <Box className={styles.videoButton}>
-            <Button startIcon={<ThumbUpOutlinedIcon />} onClick={handleLike}>{videoData.likes}</Button>
+            <IconButton onClick={handleLike}>
+              <ThumbUpOutlinedIcon
+                sx={{ color: liked ? "primary.main" : "text.secondary" }}
+              />
+              <Box component="span" sx={{ ml: 1 }}>
+                {videoData.likes}
+              </Box>
+            </IconButton>
+
             <Button startIcon={<ThumbDownOutlinedIcon />}>{videoData.dislike}</Button>
             <Button startIcon={<ShareOutlinedIcon />}>Chia sẻ</Button>
             <IconButton><MoreHorizIcon /></IconButton>
           </Box>
           <Box className={styles.videoInfo}>
-            <Typography variant="body2">{videoData.viewed} views • 3 weeks ago • #16 on Trending for music</Typography>
+            <Typography variant="body2">{videoData.viewed} {t('views')} • 
+             {t('posted_date')}: {formatDateTime(videoData.created_at)}</Typography>
             <Typography variant="body2">
               {videoData.description}
               {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}
             </Typography>
-            <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography>
+            {/* <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography> */}
           </Box>
-
-          <Box style={{ height: "100%", overflow: "hidden" }}>
-            {/* <Typography variant="h6">74,731 Comments</Typography> */}
-            <Button startIcon={<SortIcon />}>Sort by</Button>
-
-            <Box className={styles.addComment}>
-              <Avatar>U</Avatar>
-              <TextField fullWidth placeholder="Add a comment..." variant="standard" />
-              <Button variant="text">Cancel</Button>
-              <Button variant="text" disabled>Comment</Button>
-            </Box>
-          </Box>
-
+          </ReponsiveContainer>
         </Grid>
         <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId} />
 
@@ -384,6 +484,7 @@ const handleZoom = (zoomIn: boolean) => {
       </Grid>
 
     </Box>
+
   );
 };
 

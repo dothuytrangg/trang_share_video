@@ -190,15 +190,13 @@ export class UsersService {
     return response;
   }
 
-
-
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {
-    let response = common_response;
-
-    if (updateUserDto.password) {
-
-      const hashPassword = await this.hashPassword(updateUserDto.password);
-      updateUserDto.password = hashPassword;
+    async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
+      let response = common_response;
+      
+      if (updateUserDto.password) {
+     
+        const hashPassword = await this.hashPassword(updateUserDto.password);
+        updateUserDto.password = hashPassword;
     }
     let updateUser = await this.userRepository.update(id, updateUserDto);
     if (updateUser) {
@@ -270,16 +268,16 @@ export class UsersService {
     return hash;
   }
 
-  async uploadAvatar(id: number, avatar: string): Promise<UpdateResult> {
-    let response = common_response;
-    let upload = await this.userRepository.update(Number(id), { avatar });
-    if (upload) {
-      response.success = true;
+    async uploadAvatar(id:number,avatar:string):Promise<UpdateResult>{
+      let response = common_response;
+      let upload = await this.userRepository.update(Number(id),{avatar});
+      if(upload){
+        response.success = true;
+        return response;
+      }else{
+        response.success = false;
+      }
       return response;
-    } else {
-      response.success = false;
+        
     }
-    return response;
-
-  }
 }

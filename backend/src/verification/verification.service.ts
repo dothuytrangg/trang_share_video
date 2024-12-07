@@ -69,7 +69,7 @@ export class VerificationService {
     async createVerificationToken(userId: number, token: string, expiresAt: Date) {
         const verification = this.tokenRepository.create({
             userId,
-            token, // lưu token gốc, không mã hóa
+            token,  
             expiresAt,
         });
         console.log("Token saved:", token); // In token khi lưu vào DB

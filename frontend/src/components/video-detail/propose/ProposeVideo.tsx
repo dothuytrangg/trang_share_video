@@ -5,6 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { _ENV } from "@/contstants";
 import { useLocale, useTranslations } from "next-intl";
 import { changeTheme } from "@/stores/features/masterSlice";
+import { ReponsiveContainer } from "@/util/reponsiveUtil";
 
 const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVideoData: any[]; videoData: any, categoryId: any }) => {
   const locale = useLocale();
@@ -21,6 +22,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
   };
 
   return (
+    
     <Grid
       item
       xs={5}
@@ -102,6 +104,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
         ) : null
       )}
     </Grid>
+  
   );
 };
 

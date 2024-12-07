@@ -10,7 +10,8 @@ export class Verification {
   @Column()
   userId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User,
+{ onDelete: 'CASCADE' }) // Thêm onDelete
   @JoinColumn({ name: 'userId' }) // Liên kết với cột userId trong bảng User
   user: User;
 

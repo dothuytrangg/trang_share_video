@@ -124,8 +124,12 @@ const ListCategory = () => {
     const name = document.getElementById("name") as HTMLInputElement;
 
     let isValid = true;
-
-    if (!name.value) {
+    const regex = /^[a-zA-Z\s]+$/; 
+    if (!regex.test(name.value)) {
+      setNameError(true);
+      setNameErrorMessage(t('name_must_string'));
+      isValid = false;
+    } else if (!name.value) {
       setNameError(true);
       setNameErrorMessage(t('name'));
       isValid = false;
