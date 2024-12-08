@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { History } from 'src/histories/entities/histories.entity';
 import { Video } from 'src/videos/entities/videos.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Unique } from 'typeorm';
 
@@ -51,6 +52,9 @@ export class User {
   
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
+
+    @OneToMany(() => History, history => history.user)
+    histories: History[];
 
   
 }

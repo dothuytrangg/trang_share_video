@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { History } from 'src/histories/entities/histories.entity';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
@@ -64,5 +65,8 @@ export class Video {
 
   @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.video)
   videoDetail: VideoDetail[]
+
+  @OneToMany(() => History, history => history.video)
+  histories: History[];
   
 }

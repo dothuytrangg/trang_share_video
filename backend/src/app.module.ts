@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { VideosModule } from './videos/videos.module';
 import { VideoDetailsController } from './video-details/video-details.controller';
 import { VideoDetailsModule } from './video-details/video-details.module';
+import { HistoriesModule } from './histories/histories.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { VideoDetailsModule } from './video-details/video-details.module';
     CategoriesModule,
     VideosModule,
     VideoDetailsModule,
+    HistoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -172,6 +172,8 @@ export class VideosController {
     async incrementViews(@Param('id') id: string) {
       return this.videoService.incrementViews(Number(id));
     }
+   
+ 
 
 
     @UseGuards(AuthGuard)

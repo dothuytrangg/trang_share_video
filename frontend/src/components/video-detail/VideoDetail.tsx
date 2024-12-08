@@ -48,6 +48,7 @@ const VideoDetail = () => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
   const [hasReachedHalf, setHasReachedHalf] = useState(false);
+  const masterStore = useAppSelector((state: any) => state.master);
     
   // const [userData, setUserData] = useState([]);
   // var ranonce = false;
@@ -106,6 +107,9 @@ const VideoDetail = () => {
           if (!flag&&!hasReachedHalf && currentTime >= duration / 2) {
             setHasReachedHalf(true); // Đánh dấu đã xem qua 1/2
             updateViewCount(); // Gọi hàm tăng lượt xem
+            if(masterStore.is_login){
+              createHistory()
+            }
             flag = true
           }
          
@@ -137,6 +141,22 @@ const VideoDetail = () => {
       })
    
   };
+
+  const createHistory = async () => {
+  
+    await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
+       if(res.success){
+        console.log("history save successfully");
+       }else{
+        console.error("Failed  save history");
+       }
+    }).catch((err:any)=>{
+      console.error("Error history:", err);
+    })
+ 
+};
+
+
 
   const fetchVideoDetail = async () => {
 

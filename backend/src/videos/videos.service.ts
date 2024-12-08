@@ -333,7 +333,7 @@ export class VideosService {
     return response;
   }
 
-  async incrementViews(videoId: number): Promise<Video> {
+  async incrementViews(videoId: number,userId?:number): Promise<Video> {
     const video = await this.videoRepository.findOne({ where: { id: videoId } });
     if (!video) {
       throw new Error('Video not found');
