@@ -3,14 +3,16 @@ import { useAppSelector } from "@/stores/hookStore";
 import requestApi from "../../../helpers/api";
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, Card, CardContent, CardMedia, Grid, Snackbar, Tooltip, Typography } from "@mui/material";
-import { _ENV } from "@/contstants";
+import { _ENV, _GLOBAL } from "@/contstants";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { AccountCircle, History } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
 const PlaylistHistory = () => {
   const masterStore = useAppSelector((state: any) => state.master);
   const [historyData, setHistoryData] = useState<any>(null);
-
+  const themeMaster = useSelector((state: any) => state.master.theme); 
   const [videos, setVideos] = useState([]); 
   const router = useRouter();
   const locale = useLocale();
@@ -79,9 +81,43 @@ const deleteHistory = async (videoId: string) => {
     return `${hrs}:${mins}:${secs}`;
   };
 
+  const handleRedirectAuthenPage = () => {
+    router.push(`/${locale}/${_GLOBAL.ROUTER_LOGIN}`)
+  }
+
   return (
     !masterStore.is_login ? (
-      <h1>Login</h1>
+      <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        textAlign: 'center',
+        padding: '20px',
+      }}
+    >
+      <History
+       sx={{
+        fontSize: 120, // Tăng kích thước icon
+        color : themeMaster=== "light" ? '#111':'#fff',
+        marginBottom: 2, // Khoảng cách dưới icon
+      }}></History>
+    
+      <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+
+        {t('follow_the_content_you_watched')}
+      </Typography>
+
+      <Typography variant="body1" color="textSecondary" sx={{ marginBottom: 3 }}>
+       {t('you_cannot_view_logs_when_you_are_logged_out')}
+      </Typography>
+
+      <Button sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}} onClick={handleRedirectAuthenPage} variant="outlined" startIcon={<AccountCircle />}>
+      {t('login')}
+      </Button>
+    </Box>
     ) : (
       <React.Fragment>
       <Grid container spacing={2} justifyContent="left">

@@ -172,7 +172,9 @@
         "otp_invalid":"Mã OTP không hợp lệ",
         "name_must_string":"Tên phải là chuỗi",
          "duration":"Thời lượng",
-         "seen":"Đã xem"
+         "seen":"Đã xem",
+         "follow_the_content_you_watched":"Theo dõi nội dung bạn đã xem",
+         "you_cannot_view_logs_when_you_are_logged_out":"Bạn không thể xem nhật ký khi đã đăng xuất."
 
         
 

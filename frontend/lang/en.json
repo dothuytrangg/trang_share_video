@@ -169,7 +169,9 @@
     "otp_invalid":"OTP invalid",
     "name_must_string":"Name must be a string",
     "duration":"Duration",
-    "seen":"Seen"
+    "seen":"Seen",
+    "follow_the_content_you_watched":"Follow the content you watched",
+    "you_cannot_view_logs_when_you_are_logged_out":"You cannot view logs when you are logged out."
     
     
 
