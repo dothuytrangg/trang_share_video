@@ -171,7 +171,8 @@
         "verify_otp":"Xác thực OTP",
         "otp_invalid":"Mã OTP không hợp lệ",
         "name_must_string":"Tên phải là chuỗi",
-         "duration":"Thời lượng"
+         "duration":"Thời lượng",
+         "seen":"Đã xem"
 
         
 

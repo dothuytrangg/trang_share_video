@@ -168,7 +168,8 @@
     "verify_otp":"Verify OTP",
     "otp_invalid":"OTP invalid",
     "name_must_string":"Name must be a string",
-    "duration":"Duration"
+    "duration":"Duration",
+    "seen":"Seen"
     
     
 

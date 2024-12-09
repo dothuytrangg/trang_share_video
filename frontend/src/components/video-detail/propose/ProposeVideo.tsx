@@ -6,27 +6,44 @@ import { _ENV } from "@/contstants";
 import { useLocale, useTranslations } from "next-intl";
 import { changeTheme } from "@/stores/features/masterSlice";
 import { useRouter } from "next/navigation";
+import requestApi from "../../../../helpers/api";
+import { useAppSelector } from "@/stores/hookStore";
 
 const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVideoData: any[]; videoData: any, categoryId: any }) => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
   const router = useRouter();
 
-  // Sử dụng useSelector để lấy thông tin về theme từ Redux store
-  const theme = useSelector((state: any) => state.master.theme); // Tham chiếu đến theme trong masterSlice
 
-  // Thêm một handler để thay đổi theme (nếu bạn muốn cung cấp chức năng chuyển đổi theme)
+  const theme = useSelector((state: any) => state.master.theme); 
+  const masterStore = useAppSelector((state: any) => state.master);
   const dispatch = useDispatch();
 
   const handleChangeTheme = () => {
-    dispatch(changeTheme()); // Gọi action thay đổi theme
+    dispatch(changeTheme()); 
   };
 
 
   const handleOnClick = (videoId: string) => {
-  
+    if(masterStore.is_login){
+      createHistory(videoId)
+    }
     router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
   };
+
+  const createHistory = async (videoId: string) => {
+  
+    await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
+       if(res.success){
+        console.log("history save successfully");
+       }else{
+        console.error("Failed  save history");
+       }
+    }).catch((err:any)=>{
+      console.error("Error history:", err);
+    })
+ 
+};
 
 
   return (

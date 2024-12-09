@@ -4,7 +4,7 @@ import { History } from 'src/histories/entities/histories.entity';
 import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
 import { Video } from 'src/videos/entities/videos.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class HistoriesService {
@@ -88,6 +88,28 @@ async create(videoId: number, userId: number): Promise<any> {
     }
 
     return response;
+}
+
+
+async deleteHistory(videoId: number):Promise<DeleteResult>  {
+  let response = common_response;
+  try {
+  
+    let histories =  await this.historyRepository.delete({video:{id:videoId}});
+    if( histories){
+      response.success = true;
+      response.data = histories
+      return response;
+    }else{
+      response.success = false;
+      
+    }
+      return response;
+    } catch (error) {
+        response.success = false;
+        response.message = error.message || 'An error occurred while deleting the history';
+        return response;
+    }
 }
     
 }

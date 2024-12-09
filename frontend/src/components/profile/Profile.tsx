@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Avatar, IconButton, Button, Typography, Snackbar, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Tooltip, Paper, CardMedia, CardActions, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@mui/material';
+import { Card, CardContent, Avatar, IconButton, Button, Typography, Snackbar, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Tooltip, Paper, CardMedia, CardActions, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Box } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useAppDispatch } from '@/stores/hookStore';
 import requestApi from '../../../helpers/api';
@@ -325,8 +325,30 @@ const Profile= () => {
 
     };
     const handleOnClick = (videoId: string) => {
+      createHistory(videoId)
       router.push(`/${locale}/detail/${videoId}`);
     };
+    
+    const formatDuration = (seconds: number) => {
+      const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const secs = (seconds % 60).toString().padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    };
+
+    const createHistory = async (videoId: string) => {
+  
+      await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
+         if(res.success){
+          console.log("history save successfully");
+         }else{
+          console.error("Failed  save history");
+         }
+      }).catch((err:any)=>{
+        console.error("Error history:", err);
+      })
+   
+  };
 
 
   const renderPage = () => {
@@ -449,53 +471,69 @@ const Profile= () => {
 
                 <div className="grid grid-cols-4 gap-3 mt-4"style={{}}>
                 {
-            videos.map((video:any)=>(
-              <Card key={video.id} sx={{ maxWidth: 345,my:2 }}>
-              <CardMedia
-                sx={{ height: 140 }}
-                // image={`${_ENV.NEXT_URL_RESOURCE}/avatars/${video.thumbnail}`} 
-                image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`} 
-                title="green iguana"
-              />
-              <CardContent  sx={{ height: 140 }}>
-              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                {video.name.length > 50 ? (
-                  <Tooltip title={video.name}>
-                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
-                  </Tooltip>
-                ) :
-                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                }
-              </Typography>
-                <Typography variant="body2" color="text.secondary" >
-                {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
-                </Typography>
+                  videos.map((video:any)=>(
+                    <Card key={video.id} sx={{ maxWidth: 345,my:2 }}>
+                            <CardMedia
+                  sx={{ height: 170, position: 'relative' }} // Thêm position relative để định vị
+                  image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                  title={video.name}
+                >
+                            
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          bottom: 10,
+                          right: 10,
+                          backgroundColor: 'rgba(0, 0, 0, 0.6)', // Nền mờ
+                          color: 'white',
+                          padding: '5px 10px',
+                          borderRadius: '5px',
+                          fontWeight: 'bold',
+                          fontSize: '14px',
+                        }}
+                      >
+                        {formatDuration(video.timeout)} 
+                    </Box>
+                </CardMedia>
+                    <CardContent  sx={{ height: 140 }}>
+                    <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                      {video.name.length > 50 ? (
+                        <Tooltip title={video.name}>
+                          <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
+                        </Tooltip>
+                      ) :
+                        <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                      }
+                    </Typography>
+                      <Typography variant="body2" color="text.secondary" >
+                      {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
+                      </Typography>
 
-               
-              </CardContent>
-         
+                    
+                    </CardContent>
+              
 
-        <CardActions>
-          
-          <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-        color="inherit"
-        variant="contained" size="small" onClick={()=>{handleOpenUpdateDialog(video)}} >{t('edit')}</Button>
-          <Button  sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-        color="inherit"
-        variant="contained" size="small"  onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</Button>
+              <CardActions>
+                
+                <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+              color="inherit"
+              variant="contained" size="small" onClick={()=>{handleOpenUpdateDialog(video)}} >{t('edit')}</Button>
+                <Button  sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+              color="inherit"
+              variant="contained" size="small"  onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</Button>
 
-          {/* Hiển thị trạng thái */}
-          <Typography
-                      variant="body2"
-                      color={video.status === "confirmed" ? "green" : "#dc143c"}
-                      sx={{ mt: 2, fontWeight: "bold"}}
-                      style={{marginLeft:70}}
-                    >
+                {/* Hiển thị trạng thái */}
+                <Typography
+                            variant="body2"
+                            color={video.status === "confirmed" ? "green" : "#dc143c"}
+                            sx={{ mt: 2, fontWeight: "bold"}}
+                            style={{marginLeft:70}}
+                          >
 
-                  {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
-                </Typography>
-      
-          
+                        {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
+                      </Typography>
+            
+                
         </CardActions>
         
   

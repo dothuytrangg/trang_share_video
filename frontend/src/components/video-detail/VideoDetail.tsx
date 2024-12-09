@@ -64,7 +64,7 @@ const VideoDetail = () => {
   //     ranonce = true;
   //   }
 
-  // }, [videoId, categoryId]);
+  // }, [videoId, categoryId]);a
 
   const isInitialRender = useRef(true);
 
@@ -107,9 +107,9 @@ const VideoDetail = () => {
           if (!flag&&!hasReachedHalf && currentTime >= duration / 2) {
             setHasReachedHalf(true); // Đánh dấu đã xem qua 1/2
             updateViewCount(); // Gọi hàm tăng lượt xem
-            if(masterStore.is_login){
-              createHistory()
-            }
+            // if(masterStore.is_login){
+            //   createHistory()
+            // }
             flag = true
           }
          
@@ -142,19 +142,19 @@ const VideoDetail = () => {
    
   };
 
-  const createHistory = async () => {
+//   const createHistory = async () => {
   
-    await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
-       if(res.success){
-        console.log("history save successfully");
-       }else{
-        console.error("Failed  save history");
-       }
-    }).catch((err:any)=>{
-      console.error("Error history:", err);
-    })
+//     await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
+//        if(res.success){
+//         console.log("history save successfully");
+//        }else{
+//         console.error("Failed  save history");
+//        }
+//     }).catch((err:any)=>{
+//       console.error("Error history:", err);
+//     })
  
-};
+// };
 
 
 
@@ -344,13 +344,14 @@ const formatDateTime = (isoString: string): string => {
                 // transform: `scale(${zoomLevel})`,
                 objectFit: "contain",
               }}
+              autoPlay 
               onLoadedMetadata={() => {
                 if (videoRef.current) {
-                  // const videoDuration = videoRef.current.duration;
                   setDuration(videoRef.current.duration);
-                  // console.log('duration',videoRef.current)
                 }
               }}
+              onPlay={() => setIsPlaying(true)} 
+              onPause={() => setIsPlaying(false)} 
             />
 
             {/* Controls */}
