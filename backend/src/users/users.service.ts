@@ -11,6 +11,7 @@ import validator from 'validator';
 import { ChangePasswordDto } from 'src/users/dto/change-password.dto';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Video } from 'src/videos/entities/videos.entity';
+import { Verification } from 'src/verification/entities/verification.entity';
 
 
 @Injectable()
@@ -18,7 +19,9 @@ export class UsersService {
 
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(VideoDetail) private videoDetailRepository: Repository<VideoDetail>,
-    @InjectRepository(Video) private videoRepository: Repository<Video>
+    @InjectRepository(Video) private videoRepository: Repository<Video>,
+    @InjectRepository(Verification) private verifyRepository: Repository<Verification>
+
   ) { }
 
   // async findAll():Promise<User[]>{
@@ -97,40 +100,43 @@ export class UsersService {
     try {
       const hashPassword = await this.hashPassword(createUserDto.password);
 
-      const  user = await this.userRepository.save({...createUserDto,password:hashPassword});
-      if(user){
+      const user = await this.userRepository.save({ ...createUserDto, password: hashPassword });
+      if (user) {
         response.success = true
         response.user = user
-  
 
-      }else{
+
+      } else {
         response.success = false
       }
-      
 
-  
+
+
       // Trả về thành công
       return response;
-    }catch (error) {
-      
-      console.error('Error:', error); 
+    } catch (error) {
+
+      console.error('Error:', error);
       if (error instanceof QueryFailedError) {
         if (error.driverError.code === 'ER_DUP_ENTRY') {
           response.success = false;
-          response.message = `User with email ${createUserDto.email} already exists.`;
-          response.statusCode = 400;
+          response.message = `User with email  ${createUserDto.email} already exists.`
+          response.statusCode = 400
           return response;
+          // throw new BadRequestException(`Category with name  ${createCategoryDto.name} already exists.`);
+
         }
       }
-
-      // For unexpected errors
       response.success = false;
-      response.message = 'An unexpected error occurred.';
-      response.statusCode = 500;
-    }
+      response.message = "An unexpected error occurred."
+      response.statusCode = 500
 
+      // throw new InternalServerErrorException("An unexpected error occurred.");
+
+    }
     return response;
   }
+
 
   async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<any> {
     let response = common_response;
@@ -140,7 +146,7 @@ export class UsersService {
       const user = await this.userRepository.findOne({
         where: { id },
       });
-      console.log("user",user)
+      console.log("user", user)
 
       if (!user) {
         response.success = false;
@@ -190,13 +196,13 @@ export class UsersService {
     return response;
   }
 
-    async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
-      let response = common_response;
-      
-      if (updateUserDto.password) {
-     
-        const hashPassword = await this.hashPassword(updateUserDto.password);
-        updateUserDto.password = hashPassword;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {
+    let response = common_response;
+
+    if (updateUserDto.password) {
+
+      const hashPassword = await this.hashPassword(updateUserDto.password);
+      updateUserDto.password = hashPassword;
     }
     let updateUser = await this.userRepository.update(id, updateUserDto);
     if (updateUser) {
@@ -216,6 +222,8 @@ export class UsersService {
     let response = common_response;
     try {
 
+
+      await this.verifyRepository.delete({ userId: id })
       await this.videoDetailRepository.delete({ user: { id } });
       await this.videoRepository.delete({ user: { id } });
       let deleteUser = await this.userRepository.delete(id);
@@ -268,16 +276,35 @@ export class UsersService {
     return hash;
   }
 
-    async uploadAvatar(id:number,avatar:string):Promise<UpdateResult>{
-      let response = common_response;
-      let upload = await this.userRepository.update(Number(id),{avatar});
-      if(upload){
-        response.success = true;
-        return response;
-      }else{
-        response.success = false;
-      }
+  async uploadAvatar(id: number, avatar: string): Promise<UpdateResult> {
+    console.log('avatar: ', avatar);
+    let response = common_response;
+    let upload = await this.userRepository.update(Number(id), { avatar });
+    let user = await this.userRepository.findOne({
+      where: { id: Number(id) },
+      select: ['id', 'full_name', 'email', 'role', 'avatar', 'status', 'created_at', 'updated_at'],
+    });
+    console.log('upload: ', upload);
+    if (upload && user) {
+      response.success = true;
+      response.user = user;
       return response;
-        
+    } else {
+      response.success = false;
     }
+    return response;
+
+  }
+
+  handleFileValidationError(errorMessage: string) {
+    // let response = {
+    //     success: false,
+    //     message: errorMessage,
+    // };
+    let response = common_response;
+    response.success = false;
+    response.message = errorMessage
+
+    return response;
+  }
 }

@@ -93,33 +93,32 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsLogin(masterStore.is_login)
-    setLoading(masterStore.loading)
-    loadAllCategory();
-    console.log('masterStore navbar: ', masterStore);
+     setLoading(masterStore.loading)
+     loadAllCategory();
+     console.log('masterStore navbar: ', masterStore);
 
 
     //  setProfileAvatar(masterStore.user.avatar);
-    // setProfileAvatar(res.data.avatar);
-    // if (!loading) {
-    //   requestApi('users/profile','GET').then((res:any)=>{
-    //     console.log('res profile',res);
-    //      if(res.success){
-    //       console.log('masterStore: ', masterStore);
-
-    //          setLoading(true)
-    //      }
-
-    //   }
-
-    //   ).catch((err)=>{
-    //    console.log('err',err);
-    //   })
-
-    //    setLoading(true)
-    //  }
-
-
-  }, [masterStore])
+  
+    if (!loading) {
+      requestApi('users/profile','GET').then((res:any)=>{
+        console.log('res profile',res);
+         if(res.success){
+             setProfileAvatar(res.data.avatar);
+             setLoading(true)
+         }
+ 
+      }
+ 
+      ).catch((err)=>{
+       console.log('err',err);
+      })
+      
+       setLoading(true)
+     }
+    
+    console.log('masterStore: ', masterStore);
+    }, [masterStore])
 
   const loadAllCategory = async () => {
     await requestApi(`categories/all`, "GET").then((res: any) => {
@@ -381,11 +380,11 @@ export default function Navbar() {
 
           />}>
           </Button>
-          <Button onClick={handleClick} variant="outlined" sx={{ color: themeMaster === "light" ? '#111' : '#fff', borderColor: themeMaster === "light" ? '#111' : '#fff' }} startIcon={profileAvatar
-            ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} sx={{ width: 25, height: 25 }} />)
-            : (<AccountCircle sx={{ width: 25, height: 25 }} />)}>
-            {masterStore.user.name}
-          </Button>
+           <Button onClick={handleClick} variant="outlined" sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}}  startIcon={profileAvatar
+      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} sx={{ width: 25, height: 25}}/>) 
+      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
+        {masterStore.user.name}
+      </Button>
 
 
 
@@ -401,16 +400,16 @@ export default function Navbar() {
   const updatePasswordValidateInputs = () => {
     let isValid = true;
 
-
-    if (!oldPassword) {
+ 
+    if(!oldPassword){
       setOldPasswordError(true)
       setOldPasswordErrorMessage(t("password_not_empty"))
       isValid = false;
     }
-
+  
     if (!password) {
       setPasswordError(true);
-      setPasswordErrorMessage(t('password_not_empty'));
+      setPasswordErrorMessage(t('password_not_empty')); 
       isValid = false;
     } else if (password.length < 6) {
       setPasswordError(true);
@@ -436,11 +435,11 @@ export default function Navbar() {
       isValid = false;
     } else if (confirm_password.length > 16) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_more_16'));
+      setConfirmPasswordErrorMessage(t('password_more_16')); 
       isValid = false;
     } else if (password !== confirm_password) {
       setConfirmPasswordError(true);
-      setConfirmPasswordErrorMessage(t('password_not_match'));
+      setConfirmPasswordErrorMessage(t('password_not_match')); 
       isValid = false;
     } else {
       setConfirmPasswordError(false);

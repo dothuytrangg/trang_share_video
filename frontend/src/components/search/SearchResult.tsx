@@ -34,7 +34,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         const searchQuery = searchParams.get('query'); // Lấy từ khóa tìm kiếm từ URL
         if (searchQuery) {
             setQuery(searchQuery);
-            fetchVideos(searchQuery); 
+            fetchVideos(searchQuery);
         }
     }, [searchParams]);
 
@@ -43,6 +43,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         setError(null);
         try {
             const res: any = await requestApi(`videos/key?search=${searchTerm}`, 'GET');
+            console.log('search', res)
             if (res.success) {
                 setVideos(res.data);
             } else {
@@ -96,39 +97,39 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
                 </Typography>
             ) : (
                 <Grid container spacing={2} justifyContent="flex-start">
-                        {videos
-                            .filter((video: any) => video.status === 'confirmed') 
-                            .map((video: any) => (
-                        <Grid item xs={12} sm={6} md={3} key={video.id}>
-                            <Card sx={{ maxWidth: '100%' }}>
-                                <CardMedia
-                                    sx={{ height: 140 }}
-                                    image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
-                                    title={video.name}
-                                />
-                                <CardContent sx={{ height: 140 }}>
-                                    <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                                        {video.name.length > 50 ? (
-                                            <Tooltip title={video.name}>
-                                                <span>{`${video.name.substring(0, 50)}...`}</span>
-                                            </Tooltip>
-                                        ) :
-                                            <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                                        }
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {video.description.length > 100 ? (
-                                            <Tooltip title={video.description}>
-                                                <span>{`${video.description.substring(0, 100)}...`}</span>
-                                            </Tooltip>
-                                        ) : (
-                                            video.description
-                                        )}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
+                    {videos
+                        .filter((video: any) => video.status === 'confirmed')
+                        .map((video: any) => (
+                            <Grid item xs={12} sm={6} md={3} key={video.id}>
+                                <Card sx={{ maxWidth: '100%' }}>
+                                    <CardMedia
+                                        sx={{ height: 140 }}
+                                        image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                                        title={video.name}
+                                    />
+                                    <CardContent sx={{ height: 140 }}>
+                                        <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                                            {video.name.length > 50 ? (
+                                                <Tooltip title={video.name}>
+                                                    <span>{`${video.name.substring(0, 50)}...`}</span>
+                                                </Tooltip>
+                                            ) :
+                                                <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                                            }
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {video.description.length > 100 ? (
+                                                <Tooltip title={video.description}>
+                                                    <span>{`${video.description.substring(0, 100)}...`}</span>
+                                                </Tooltip>
+                                            ) : (
+                                                video.description
+                                            )}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
                 </Grid>
             )}
         </React.Fragment>

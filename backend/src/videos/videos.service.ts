@@ -5,7 +5,7 @@ import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { CreateVideoDto } from 'src/videos/dto/create_video.dto';
-import { FilterVideoDto } from 'src/videos/dto/filter-user.dto';
+import { FilterVideoDto } from 'src/videos/dto/filter-video.dto';
 import { UpdateVideoDto } from 'src/videos/dto/update_video.dto';
 import { Video } from 'src/videos/entities/videos.entity';
 import { DeleteResult, Like, QueryFailedError, Repository, UpdateResult } from 'typeorm';
@@ -292,18 +292,18 @@ export class VideosService {
       return response;
   }
 
-  async searchVideo(query: string): Promise<any> {
+  async searchVideo(query: FilterVideoDto): Promise<any> {
     let response = common_response;
     const keyword = query.search || '';
 
-    console.log('Searching for videos with keyword:', keyword);
+    // console.log('Searching for videos with keyword:', keyword);
 
-   
+
     const searchConditions = [
       { name: Like(`%${keyword}%`) },
-      { description: Like(`%${keyword}%`) },
-      { url: Like(`%${keyword}%`) },
-      { slug: Like(`%${keyword}%`) },
+      // { description: Like(`%${keyword}%`) },
+      // { url: Like(`%${keyword}%`) },
+      // { slug: Like(`%${keyword}%`) },
     ];
 
     const res = await this.videoRepository.find({
@@ -317,11 +317,11 @@ export class VideosService {
       relations: ['user'],
     });
 
-    
+
     if (res.length > 0) {
       response.success = true;
       response.data = res;
-      response.total = res.length;  
+      response.total = res.length;
       return response;
     } else {
       response.success = false;
@@ -330,6 +330,7 @@ export class VideosService {
 
     return response;
   }
+    
 
       
 }

@@ -76,8 +76,8 @@ export class UsersController {
         storage: storageConfig('avatars'),
         fileFilter: (req, file, cb) => {
             const ext = extname(file.originalname);
-            const allowedExtArr = ['.jpg','.png','.jpeg','.webp'];
-            if(!allowedExtArr.includes(ext)){
+            const allowedExtArr = ['.jpg', '.png', '.jpeg', '.webp', '.PNG', '.JPG', 'JPEG'];
+            if (!allowedExtArr.includes(ext)) {
                 req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
                 cb(null, false);
             } else {
@@ -98,12 +98,17 @@ export class UsersController {
 
         // console.log("upload avavar");
         // console.log('user data',req.user_data)
-        console.log(file)
+        console.log("eeee", file)
 
-        if(req.fileValidationError){
-            throw new BadRequestException(req.fileValidationError )
+        if (req.fileValidationError) {
+
+            return this.userService.handleFileValidationError(req.fileValidationError);
         }
-        if(!file){
+
+        // if(req.fileValidationError){
+        //     throw new BadRequestException(req.fileValidationError )
+        // }
+        if (!file) {
             throw new BadRequestException('File is required');
         }
         let fileName = file.filename;

@@ -7,7 +7,7 @@ import requestApi from '../../../helpers/api';
 import { _ENV } from '@/contstants';
 import { useLocale, useTranslations } from 'next-intl';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
-import { updateLocalStorage } from '@/stores/features/masterSlice';
+import { masterSlice, setProfleAvatar, updateLocalStorage } from '@/stores/features/masterSlice';
 import { useRouter } from 'next/navigation';
 
 const Profile= () => {
@@ -46,25 +46,27 @@ const Profile= () => {
   const handleUploadAvatar = () =>{
     let formData = new FormData();
     formData.append('avatar',profileData.file);
-    requestApi('users/upload-avatar','POST',formData,'json','multipart/form-data').then((res:any) =>{
-      console.log('res',res);
-      if(res.success){
+    console.log("start")
+    requestApi('users/upload-avatar','POST',formData,'json','multipart/form-data').then((resProfile:any) =>{
+      console.log('res avatar',resProfile);
+      if(resProfile.success){
          console.log('upload success !!')
-         setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
-         dispatch(updateLocalStorage({...res}));
+         setProfileData({...resProfile.user,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  resProfile.user.avatar})
+         dispatch(setProfleAvatar(resProfile.user.avatar));
+         dispatch(updateLocalStorage({...resProfile}));
          loadUser();
          setSnackbarMessage("upload avatar successfully");
          setSnackbarSeverity("success");
          setOpenSnackbar(true);
       }else{
-          setSnackbarMessage(res.message ? (`${locale}`=== 'en'?'Only accept image files with extensions .jpg, .png, .jpeg, webp'
-            :'Chỉ chấp nhận file ảnh có đuôi .jpg,.png,.jpeg,webp'):res.message);
+          setSnackbarMessage(resProfile.message ? (`${locale}`=== 'en'?'Only accept image files with extensions .jpg, .png, .jpeg, webp'
+            :'Chỉ chấp nhận file ảnh có đuôi .jpg,.png,.jpeg,webp'):resProfile.message);
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
       }
     }).catch((err:any)=>{
        console.log('err',err);
-        setSnackbarMessage(("upload avatar failed"));
+        setSnackbarMessage("upload avatar failed");
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
     })

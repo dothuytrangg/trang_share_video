@@ -15,7 +15,10 @@ const initialState = {
   access_token: "",
   isAdmin:false,
   isAuth:false,
-  user: "",
+  user: {
+    avatar:'',
+    id:''
+  },
 };
 
 export const masterSlice = createSlice({
@@ -33,6 +36,10 @@ export const masterSlice = createSlice({
       }
       state.isAuth = true;
       console.log('state master: ', state);
+    },
+    setProfleAvatar : (state,action) =>{
+      state.user.avatar = action.payload
+      console.log('state.user.avatar: ', state.user.avatar);
     },
     setIsAdmin : (state,action) =>{
       state.isAdmin = action.payload
@@ -83,17 +90,17 @@ export const masterSlice = createSlice({
     updateLocalStorage: (state: any) => {
      secureLocalStorage.setItem("master", JSON.stringify(state));
     },
-    logout: (state) => {
+    logout: (state:any) => {
       state.is_login = false;
       state.isAdmin = false;
       state.isAuth = false;
-      state.user = "";
+      state.user = initialState;
       state.access_token = "";
     },
   },
 });
 
-export const { changeTheme, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage, loginSuccess, logout, closeDrawer,setIsAdmin, setIsAuth } =
+export const { changeTheme,setProfleAvatar, toggleDrawer, changeLanguage, initialBootState, updateLocalStorage, loginSuccess, logout, closeDrawer,setIsAdmin, setIsAuth } =
   masterSlice.actions;
 
 export default masterSlice.reducer;

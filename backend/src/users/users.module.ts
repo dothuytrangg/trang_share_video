@@ -6,9 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { Video } from 'src/videos/entities/videos.entity';
+import { Verification } from 'src/verification/entities/verification.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,VideoDetail,Video]),ConfigModule],
+  imports:[TypeOrmModule.forFeature([User,VideoDetail,Video,Verification]),ConfigModule],
   providers: [UsersService],
   exports: [UsersService],
   controllers: [UsersController],

@@ -1,15 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector để lấy thông tin từ Redux
 import Grid from "@mui/material/Grid";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { _ENV } from "@/contstants";
 import { useLocale, useTranslations } from "next-intl";
 import { changeTheme } from "@/stores/features/masterSlice";
-import { ReponsiveContainer } from "@/util/reponsiveUtil";
+import { useRouter } from "next/navigation";
 
 const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVideoData: any[]; videoData: any, categoryId: any }) => {
   const locale = useLocale();
   const t = useTranslations("HomePage");
+  const router = useRouter();
 
   // Sử dụng useSelector để lấy thông tin về theme từ Redux store
   const theme = useSelector((state: any) => state.master.theme); // Tham chiếu đến theme trong masterSlice
@@ -21,8 +22,14 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
     dispatch(changeTheme()); // Gọi action thay đổi theme
   };
 
+
+  const handleOnClick = (videoId: string) => {
+
+    router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
+  };
+
+
   return (
-    
     <Grid
       item
       xs={5}
@@ -44,47 +51,56 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
     >
       {proposeVideoData.map((video: any) =>
         video.video.url !== videoData.url ? (
-          <Box
-            key={video.video.id}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: 2,
-              padding: 1,
-              backgroundColor: theme === "light" ? "#f9f9f9" : "#333", // Điều chỉnh màu nền của video item
-              borderRadius: "8px",
-              boxShadow: theme === "light" ? "0 2px 4px rgba(0,0,0,0.1)" : "0 2px 4px rgba(0,0,0,0.3)", // Thêm hiệu ứng shadow tùy theo theme
-            }}
-          >
-            {/* Thumbnail */}
+          video.video.status !== 'confirming' && (
             <Box
-              component="img"
-              src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.video.thumbnail}`}
-              alt={video.video.name}
+              key={video.video.id}
               sx={{
-                width: 120,
-                height: 80,
-                objectFit: "cover",
+                display: "flex",
+                alignItems: "center",
+                marginBottom: 2,
+                padding: 1,
+                backgroundColor: theme === "light" ? "#f9f9f9" : "#333", // Điều chỉnh màu nền của video item
                 borderRadius: "8px",
-                marginRight: 2,
+                boxShadow: theme === "light" ? "0 2px 4px rgba(0,0,0,0.1)" : "0 2px 4px rgba(0,0,0,0.3)", // Thêm hiệu ứng shadow tùy theo theme
               }}
-            />
-
-            {/* Tên video */}
-            <Box>
-              <Typography
-                variant="subtitle1"
+            >
+              {/* Thumbnail */}
+              <Box
+                component="img"
+                src={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.video.thumbnail}`}
+                alt={video.video.name}
                 sx={{
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  color: theme === "light" ? "#333" : "#fff", // Thay đổi màu chữ theo theme
-                  lineHeight: 1.4,
+                  width: 120,
+                  height: 80,
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginRight: 2,
                 }}
-              >
-                {video.video.name}
-              </Typography>
-              <Button
-                href={`${_ENV.NEXT_URL_PROD}/${locale}/detail/${video.video.id}?categoryId=${categoryId}`}
+              />
+
+              {/* Tên video */}
+              <Box>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    color: theme === "light" ? "#333" : "#fff", // Thay đổi màu chữ theo theme
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {video.video.name.length > 50 ? (
+                    <Tooltip title={video.video.name}>
+                      <span onClick={() => handleOnClick(video.video.id)} className="cursor-pointer hover:text-blue-600">{`${video.video.name.substring(0, 50)}...`}</span>
+                    </Tooltip>
+                  ) :
+                    <span onClick={() => handleOnClick(video.video.id)} className="cursor-pointer hover:text-blue-600">{video.video.name}</span>
+                  }
+                </Typography>
+                {/* <Button
+                // href={`${_ENV.NEXT_URL_PROD}/${locale}/detail/${video.video.id}?categoryId=${categoryId}`}
+                href="#"
+                onClick={()=>handleOnClick(video.video.id)}
                 target="_blank"
                 sx={{
                   fontSize: "12px",
@@ -98,13 +114,13 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
                 }}
               >
                 Xem chi tiết
-              </Button>
+              </Button> */}
+              </Box>
             </Box>
-          </Box>
+          )
         ) : null
       )}
     </Grid>
-  
   );
 };
 
