@@ -32,13 +32,43 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
     const masterStore = useAppSelector((state: any) => state.master);
 
 
+    // useEffect(() => {
+    //     const searchQuery = searchParams.get('query'); // Lấy từ khóa tìm kiếm từ URL
+    //     if (searchQuery) {
+    //         setQuery(searchQuery);
+    //         fetchVideos(searchQuery); 
+    //     }
+    // }, [searchParams]);
+
+
     useEffect(() => {
-        const searchQuery = searchParams.get('query'); // Lấy từ khóa tìm kiếm từ URL
-        if (searchQuery) {
-            setQuery(searchQuery);
-            fetchVideos(searchQuery); 
-        }
-    }, [searchParams]);
+        const initializeData = async () => {
+            setLoading(true);
+            setError(null);
+    
+            try {
+                    const searchQuery = searchParams.get('query'); // Lấy từ khóa tìm kiếm từ URL
+                    if (searchQuery) {
+                        setQuery(searchQuery);
+                        fetchVideos(searchQuery); 
+                    
+                } else if (categoryId) {
+                   
+                    loadVideoDetails();
+       
+                }
+
+            } catch (error) {
+                console.error(error);
+                setError('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        initializeData();
+    }, [categoryId, searchParams]);
+    
 
     const fetchVideos = async (searchTerm: string) => {
         setLoading(true);
@@ -80,14 +110,14 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
     })
  
 };
-    useEffect(() => {
-        if (!flag) {
-            loadVideoDetails();
-            flag = true;
-        }
+    // useEffect(() => {
+    //     if (!flag) {
+    //         loadVideoDetails();
+    //         flag = true;
+    //     }
 
 
-    }, [categoryId]);
+    // }, [categoryId]);
     const loadVideoDetails = async () => {
 
         try {
