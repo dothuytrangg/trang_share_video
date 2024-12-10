@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FilterVideoDetailDto } from 'src/video-details/dto/filter-video-detail.to';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
 import { VideoDetailsService } from 'src/video-details/video-details.service';
 
@@ -18,8 +19,8 @@ export class VideoDetailsController {
 
    
     @Get(':id')
-    findAll(@Param('id') id:string):Promise<VideoDetail>{
-        return this.videoDetailService. findAllByCategoryId(Number(id));
+    findAll(@Param('id') id:string,@Query() query:FilterVideoDetailDto):Promise<VideoDetail>{
+        return this.videoDetailService. findAllByCategoryId(Number(id),query);
     }
 
     // @Get(':id')

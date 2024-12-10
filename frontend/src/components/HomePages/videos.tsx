@@ -7,6 +7,8 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Pagination,
+  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -43,21 +45,24 @@ export default function Videos({ categoryId }: { categoryId: string }) {
 
   useEffect(() => {
    if(!flag){
-    loadVideoDetails();
+    loadVideoDetails(page);
     flag = true;
    }
 
    
   }, [categoryId]);
-    const loadVideoDetails = async () => {
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const loadVideoDetails = async (pageSelected: number) => {
       
       try {
-        const res: any = await requestApi(`video-details/${categoryId}`, "GET");
+        const res: any = await requestApi(`video-details/${categoryId}?page=${pageSelected}&items_per_page=9&search`, "GET");
         console.log('res',res)
         if (res.success) {
           setVideoDetails(res.data);
           const extractedVideos = res.data.map((detail: any) => detail.video); 
           setVideos(extractedVideos);
+          setLastPage(res.lastPage);
         }
       } catch (error) {
         console.error(error);
@@ -65,6 +70,12 @@ export default function Videos({ categoryId }: { categoryId: string }) {
         setLoading(false);
       }
     };
+
+    
+    const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+      loadVideoDetails(value);
+  };
 
     
   const createHistory = async (videoId: string) => {
@@ -88,6 +99,8 @@ export default function Videos({ categoryId }: { categoryId: string }) {
     const secs = (seconds % 60).toString().padStart(2, '0');
     return `${hrs}:${mins}:${secs}`;
   };
+
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -149,9 +162,28 @@ export default function Videos({ categoryId }: { categoryId: string }) {
  
           </CardContent>
         </Card>
+
       </Grid>
     )
   ))}
+  <Stack
+          spacing={2}
+          sx={{
+            position: "relative",
+            bottom: 0,
+            width: "100%",
+          }}
+        >
+          <Pagination
+            style={{ margin: 10 }}
+            count={lastPage}
+            page={page}
+            onChange={handleChange}
+            variant="outlined"
+            color="primary"
+          />
+        </Stack>
+      
 </React.Fragment>
 
   );
