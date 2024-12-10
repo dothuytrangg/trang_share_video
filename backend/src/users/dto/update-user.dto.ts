@@ -13,7 +13,7 @@ export class UpdateUserDto{
         message: 'name is too long',
     })
     full_name: string;
-    @IsNotEmpty()
+    // @IsNotEmpty()
     password: string;
     
    
