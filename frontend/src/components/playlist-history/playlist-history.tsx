@@ -42,7 +42,7 @@ const PlaylistHistory = () => {
     if(masterStore.is_login){
       createHistory(videoId)
     }
-    router.push(`/${locale}/detail/${videoId}`);
+    router.push(`/${locale}/detail/${videoId}?categoryId=1`);
   };
 
   const createHistory = async (videoId: string) => {

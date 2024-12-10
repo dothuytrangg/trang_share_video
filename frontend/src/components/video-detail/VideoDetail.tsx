@@ -354,7 +354,31 @@ const formatDateTime = (isoString: string): string => {
               onPause={() => setIsPlaying(false)} 
             />
 
-            {/* Controls */}
+          
+            {showControls && (
+              <IconButton
+                onClick={togglePlayPause}
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 20,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "#fff",
+                  width: "90px",
+                  height: "90px",
+                  borderRadius: "50%",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  },
+                }}
+              >
+                {isPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+              </IconButton>
+            )}
+
+  
             {showControls && (
               <Box
                 sx={{
@@ -371,12 +395,12 @@ const formatDateTime = (isoString: string): string => {
                   borderRadius: "5px",
                 }}
               >
-              {/* Play/Pause */}
+          
               <IconButton onClick={togglePlayPause} 
               sx={{
                 color:theme === "light" ? '#FFF': '#fff'
               }}
-              // color="inherit"
+         
               >
                 {isPlaying ? <PauseIcon  sx={{
                 color:theme === "light" ? '#FFF': '#fff'
@@ -462,12 +486,12 @@ const formatDateTime = (isoString: string): string => {
               Đăng ký
             </Button> */}
           </Box>
-          <Box className={styles.videoButton}>
+          {/* <Box className={styles.videoButton}>
             <Button startIcon={<ThumbUpOutlinedIcon />}>{videoData.likes}</Button>
             <Button startIcon={<ThumbDownOutlinedIcon />}>{videoData.dislike}</Button>
             <Button startIcon={<ShareOutlinedIcon />}>Chia sẻ</Button>
-            <IconButton><MoreHorizIcon /></IconButton>
-          </Box>
+            <IconButton></IconButton>
+          </Box> */}
           <Box className={styles.videoInfo}>
             <Typography variant="body2">{videoData.viewed} {t('views')} • 
              {t('posted_date')}: {formatDateTime(videoData.created_at)}</Typography>
@@ -475,11 +499,11 @@ const formatDateTime = (isoString: string): string => {
               {videoData.description}
               {/* <a href="#">http://GagaMars.lnk.to/DieWithASmile</a> */}
             </Typography>
-            {/* <Typography variant="body2">Directed by Daniel Ramos & Bruno Mar...</Typography> */}
+         
           </Box>
 
-          <Box style={{ height: "100%", overflow: "hidden" }}>
-            {/* <Typography variant="h6">74,731 Comments</Typography> */}
+          {/* <Box style={{ height: "100%", overflow: "hidden" }}>
+            <Typography variant="h6">74,731 Comments</Typography>
             <Button startIcon={<SortIcon />}>Sort by</Button>
 
             <Box className={styles.addComment}>
@@ -488,7 +512,7 @@ const formatDateTime = (isoString: string): string => {
               <Button variant="text">Cancel</Button>
               <Button variant="text" disabled>Comment</Button>
             </Box>
-          </Box>
+          </Box> */}
 
         </Grid>
         <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId} />
