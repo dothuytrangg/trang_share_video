@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hookStore";
 import { changeLanguage, initialBootState, logout, toggleDrawer, updateLocalStorage } from "@/stores/features/masterSlice";
 import InputAdornment from '@mui/material/InputAdornment';
 import Image from "next/image";
-import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete } from "@mui/material";
+import { Button, InputBase, Menu, MenuItem, Box, TextField, Grid, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Snackbar, Alert, Autocomplete, Backdrop, CircularProgress } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import React, { useEffect, useState } from "react";
@@ -190,71 +190,122 @@ export default function Navbar() {
 
     return str;
   }
+  const validThumbnailExtensions = [".jpg", ".jpeg", ".png", ".webp", ".JPG", ".PNG"];
+  const validVideoExtensions = [".webm", ".mp4", ".mov"];
+  
   const validateInputs = () => {
-    const name = document.getElementById("name") as HTMLInputElement;
-    const description = document.getElementById("description") as HTMLInputElement;
+      const name = document.getElementById("name") as HTMLInputElement;
+      const description = document.getElementById("description") as HTMLInputElement;
   
-    let isValid = true;
+      let isValid = true;
   
+      // Kiểm tra tên video
+      if (!name.value) {
+          setNameError(true);
+          setNameErrorMessage(t("name_required"));
+          isValid = false;
+      } else if (name.value.length < 3) {
+          setNameError(true);
+          setNameErrorMessage(t("name_video_must_more_than_3_characters"));
+          isValid = false;
+      } else if (name.value.length > 70) {
+          setNameError(true);
+          setNameErrorMessage(t("name_video_must_least_than_70_characters"));
+          isValid = false;
+      } else {
+          setNameError(false);
+          setNameErrorMessage("");
+      }
   
-    if (!name.value) {
-      setNameError(true);
-      setNameErrorMessage(t("name_required"));
-      isValid = false;
-    } else if (name.value.length < 3) {
-      setNameError(true);
-      setNameErrorMessage(t("name_video_must_more_than_3_characters"));
-      isValid = false;
-    } else if (name.value.length > 70) {
-      setNameError(true);
-      setNameErrorMessage(t("name_video_must_least_than_70_characters"));
-      isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage("");
-    }
+      // Kiểm tra mô tả
+      if (!description.value) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_required"));
+          isValid = false;
+      } else if (description.value.length < 10) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_video_must_more_than_10_characters"));
+          isValid = false;
+      } else if (description.value.length > 300) {
+          setDescriptionError(true);
+          setDescriptionErrorMessage(t("description_video_must_least_than_300_characters"));
+          isValid = false;
+      } else {
+          setDescriptionError(false);
+          setDescriptionErrorMessage("");
+      }
   
-
-    if (!description.value) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_required"));
-      isValid = false;
-    } else if (description.value.length < 10) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_video_must_more_than_10_characters"));
-      isValid = false;
-    } else if (description.value.length > 300) {
-      setDescriptionError(true);
-      setDescriptionErrorMessage(t("description_video_must_least_than_300_characters"));
-      isValid = false;
-    } else {
-      setDescriptionError(false);
-      setDescriptionErrorMessage("");
-    }
-
-    if(categoryOptions.length < 1 )
-    {
-        setOptionError(true);
-        setOptionErrorMessage(t('select_at_least_1_category'))
-        isValid = false;
-
-    }
+      // Kiểm tra danh mục
+      if (categoryOptions.length < 1) {
+          setOptionError(true);
+          setOptionErrorMessage(t("select_at_least_1_category"));
+          isValid = false;
+      }
   
-   
-    if (!thumbnailFile) {
-      setThumbnailError(true)
-      setThumbnailErrorMessage(t("thumbnail_required"))
-      isValid = false;
-    }
-
-    if (!videoFile) {
-      setVideoError(true)
-      setVideoErrorMessage(t("video_required"))
-      isValid = false;
-    }
+      // Kiểm tra thumbnail
+      if (!thumbnailFile) {
+          setThumbnailError(true);
+          setThumbnailErrorMessage(t("thumbnail_required"));
+          isValid = false;
+      } else if (!isValidExtension(thumbnailFile.name, validThumbnailExtensions)) {
+          setThumbnailError(true);
+          setThumbnailErrorMessage(t("thumbnail_invalid_extension"));
+          isValid = false;
+      } else {
+          setThumbnailError(false);
+          setThumbnailErrorMessage("");
+      }
   
-    return isValid;
+      // Kiểm tra video
+      if (!videoFile) {
+          setVideoError(true);
+          setVideoErrorMessage(t("video_required"));
+          isValid = false;
+      } else if (!isValidExtension(videoFile.name, validVideoExtensions)) {
+          setVideoError(true);
+          setVideoErrorMessage(t("video_invalid_extension"));
+          isValid = false;
+      } else {
+          setVideoError(false);
+          setVideoErrorMessage("");
+      }
+  
+      return isValid;
   };
+  
+  // Kiểm tra định dạng file
+  const isValidExtension = (filename: string, validExtensions: string[]) => {
+      const extension = filename.slice(filename.lastIndexOf("."));
+      return validExtensions.includes(extension);
+  };
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files && event.target.files[0]) {
+          const file = event.target.files[0];
+          if (!isValidExtension(file.name, validThumbnailExtensions)) {
+              setThumbnailError(true);
+              setThumbnailErrorMessage(t("thumbnail_invalid_extension"));
+              return;
+          }
+          setThumbnailFile(file);
+          setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
+          setThumbnailError(false);
+      }
+  };
+  
+  const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files && event.target.files[0]) {
+          const file = event.target.files[0];
+          if (!isValidExtension(file.name, validVideoExtensions)) {
+              setVideoError(true);
+              setVideoErrorMessage(t("video_invalid_extension"));
+              return;
+          }
+          setVideoFile(file);
+          setVideoError(false);
+      }
+  };
+  
   const renderButtonThreeDot = () => {
     if (!isLogin) {
       return <IconButton
@@ -282,79 +333,59 @@ export default function Navbar() {
   
 
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-        console.log(event.target.files);
-        const file = event.target.files[0];
-        setThumbnailFile(file);
-        setThumbnailPreview(URL.createObjectURL(file)); // Tạo URL để hiển thị ảnh
-        setThumbnailError(false)
-    }
-};
 
-const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        setVideoFile(file);
-        console.log(file);
-        setVideoError(false)
+const [isUploading, setIsUploading] = React.useState(false);
+const handleCreateVideo = (): void => {
+  const valid: boolean = validateInputs();
 
-    }
-};
+  if (valid && thumbnailFile && videoFile) {
+      setIsUploading(true); 
+      const slug = slugify(name);
+      const formData = new FormData();
 
+      formData.append("thumbnail", thumbnailFile);
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("slug", slug);
+      formData.append("url", videoFile);
+      categoryOptions.forEach((category: any) => {
+          formData.append("categories[]", category.id);
+      });
 
-
-  
-  const handleCreateVideo = (): void => {
-    const valid: boolean = validateInputs();
-
-    if (valid && thumbnailFile && videoFile) {
-        const slug = slugify(name);
-        const formData = new FormData();
-
-
-        formData.append("thumbnail", thumbnailFile);
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("slug", slug);
-        formData.append("url", videoFile);
-        categoryOptions.forEach((category:any) => {
-            formData.append("categories[]", category.id);
-        });
-        
-        // formData.append("categories", JSON.stringify(categoryOptions.filter((category: any) => category.name !=='All').map((category:any) => category.id)));
-        console.log(thumbnailFile)
-        console.log(videoFile)
-
-        requestApi("videos", "POST", formData)
-            .then((res: any) => {
-                if (res.success) {
-                    setOpenAddDialog(false);
-                    // setThumbnailFile(null);
-                    setThumbnailPreview(null);
-                    setVideoFile(null);     
-                    setCategoryOptions([]); 
+      requestApi("videos", "POST", formData)
+          .then((res: any) => {
+              if (res.success) {
+                  setOpenAddDialog(false);
+                  setSnackbarMessage(t("create_video_success"));
+                  if(masterStore.is_admin){
                     setSnackbarMessage(t("create_video_success"));
-                    setSnackbarSeverity("success");
-                    setOpenSnackbar(true);
-
-                    // loadVideos(page);
-                } else {
-                    setErrorCreate(res.message || t("create_video_failed"));
-                    setSnackbarMessage(res.message || t("create_video_failed"));
-                    setSnackbarSeverity("error");
-                    setOpenSnackbar(true);
-                }
-            })
-            .catch((err: any) => {
-                console.error("Create video failed:", err);
-                setSnackbarMessage(t("create_video_occurred"));
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
-            });
-    } else {
-        console.log('No file selected for thumbnail or video');
-    }
+                  }else{
+                    setSnackbarMessage(t("create_video_success_user"));
+                  }
+                  setSnackbarSeverity("success");
+                  setOpenSnackbar(true);
+                  setThumbnailFile(null);
+                  setThumbnailPreview(null);
+                  setVideoFile(null);
+                  setCategoryOptions([]);
+              } else {
+                  setSnackbarMessage(res.message || t("create_video_failed"));
+                  setSnackbarSeverity("error");
+                  setOpenSnackbar(true);
+              }
+          })
+          .catch((err: any) => {
+              console.error("Create video failed:", err);
+              setSnackbarMessage(t("create_video_occurred"));
+              setSnackbarSeverity("error");
+              setOpenSnackbar(true);
+          })
+          .finally(() => {
+              setIsUploading(false); // Ẩn trạng thái tải lên
+          });
+  } else {
+      console.log("No file selected for thumbnail or video");
+  }
 };
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -575,18 +606,18 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           {renderButtonAcction()}
 
           <Dialog
-                            open={openAddDialog}
-                            onClose={() => setOpenAddDialog(false)}
-                            PaperProps={{
-                                component: 'form',
-                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                                    event.preventDefault();
-                                    handleCreateVideo();
-                                },
-                            }}
-                            fullWidth
-                            maxWidth="sm"
-                        >
+            open={openAddDialog && !isUploading} // Ẩn dialog nếu đang tải lên
+            onClose={() => setOpenAddDialog(false)}
+            PaperProps={{
+                component: "form",
+                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                    event.preventDefault();
+                    handleCreateVideo();
+                },
+            }}
+            fullWidth
+            maxWidth="sm"
+            >
                             <DialogTitle>{t("addVideo")}</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
@@ -774,6 +805,13 @@ const handleFileVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                                 <Button type="submit">{t("add")}</Button>
                             </DialogActions>
                 </Dialog>
+                <Backdrop
+                    sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={isUploading}
+                >
+                    <CircularProgress color="inherit" />
+                    <span style={{ marginLeft: "10px" }}>{t("uploading")}</span>
+                </Backdrop>
           <Dialog
         open={openUpdateDialog}
         onClose={() => setOpenUpdateDialog(false)}

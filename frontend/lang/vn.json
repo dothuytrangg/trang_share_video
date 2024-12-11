@@ -174,7 +174,11 @@
          "duration":"Thời lượng",
          "seen":"Đã xem",
          "follow_the_content_you_watched":"Theo dõi nội dung bạn đã xem",
-         "you_cannot_view_logs_when_you_are_logged_out":"Bạn không thể xem nhật ký khi đã đăng xuất."
+         "you_cannot_view_logs_when_you_are_logged_out":"Bạn không thể xem nhật ký khi đã đăng xuất.",
+         "uploading":"Video đang tải lên,vui lòng đợi...",
+         "thumbnail_invalid_extension":"chọn đuôi file jpg.png.jpeg.webp",
+         "video_invalid_extension":"chọn đuôi file .mp4.mov.webm",
+          "create_video_success_user":"Video tải lên thành công ,vui lòng đợi xác nhận"
 
         
 

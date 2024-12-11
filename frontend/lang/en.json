@@ -171,7 +171,11 @@
     "duration":"Duration",
     "seen":"Seen",
     "follow_the_content_you_watched":"Follow the content you watched",
-    "you_cannot_view_logs_when_you_are_logged_out":"You cannot view logs when you are logged out."
+    "you_cannot_view_logs_when_you_are_logged_out":"You cannot view logs when you are logged out.",
+    "uploading":"Video is uploading, please wait...",
+    "thumbnail_invalid_extension":"Select the file types .jpg .png .jpeg .webp",
+    "video_invalid_extension":"Select the file types .mp4.mov.webm",
+    "create_video_success_user":"Video uploaded successfully, please wait for confirmation"
     
     
 
