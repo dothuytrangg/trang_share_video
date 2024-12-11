@@ -356,12 +356,7 @@ const handleCreateVideo = (): void => {
           .then((res: any) => {
               if (res.success) {
                   setOpenAddDialog(false);
-                  setSnackbarMessage(t("create_video_success"));
-                  if(masterStore.is_admin){
-                    setSnackbarMessage(t("create_video_success"));
-                  }else{
-                    setSnackbarMessage(t("create_video_success_user"));
-                  }
+                  !masterStore.isAdmin? setSnackbarMessage(t("create_video_success_user")):setSnackbarMessage(t("create_video_success"));
                   setSnackbarSeverity("success");
                   setOpenSnackbar(true);
                   setThumbnailFile(null);

@@ -86,6 +86,7 @@
         "update_user_success": "Cập nhật tài khoản thành công!",
         "update_user_failed": "Cập nhật tài khoản không thành công!",
         "update_user_occerred": "Đã xảy ra lỗi khi cập nhật tài khoản",
+        "update_password_success":"Cập nhật mật khẩu thành công!",
 
         "delete_video_success": "Xóa video thành công!",
         "delete_video_failed": "Xóa video không thành công",

@@ -82,6 +82,7 @@
     "update_user_success": "User updated successfully!",
     "update_user_failed": "Failed to update user",
     "update_user_occerred": "An error occurred while update the user",
+    "update_password_success":"Password updated successfully!",
 
       
 
