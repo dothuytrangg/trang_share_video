@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/categories/entities/categories.entity';
+import { History } from 'src/histories/entities/histories.entity';
 import { common_response } from 'src/ultils/common';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
@@ -15,7 +16,9 @@ export class VideosService {
     constructor(@InjectRepository(Video) private videoRepository:Repository<Video>,
                 @InjectRepository(User) private userRepository: Repository<User>,
                 @InjectRepository(VideoDetail) private videoDetailRepository: Repository<VideoDetail>,
-                @InjectRepository(Category) private categoryRepository: Repository<Category>
+                @InjectRepository(Category) private categoryRepository: Repository<Category>,
+                @InjectRepository(History) private historyRepository: Repository<History>
+
                 
                 
               )
@@ -261,8 +264,9 @@ export class VideosService {
         let response = common_response;
     
         try {
-           
+            await this.historyRepository.delete({ video: { id } });
             await this.videoDetailRepository.delete({ video: { id } });
+           
     
             const deleteResult = await this.videoRepository.delete(id);
     
@@ -303,9 +307,9 @@ export class VideosService {
    
     const searchConditions = [
       { name: Like(`%${keyword}%`) },
-      // { description: Like(`%${keyword}%`) },
-      // { url: Like(`%${keyword}%`) },
-      // { slug: Like(`%${keyword}%`) },
+      { description: Like(`%${keyword}%`) },
+      { url: Like(`%${keyword}%`) },
+      { slug: Like(`%${keyword}%`) },
     ];
 
     const res = await this.videoRepository.find({
