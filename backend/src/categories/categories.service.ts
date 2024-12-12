@@ -34,7 +34,7 @@ export class CategoriesService {
   }
   async findAll(query:FilterCategoryDto):Promise<any>{
     let response = common_response;
-    const items_per_page = Number(query.items_per_page) || 10;
+    const items_per_page = Number(query.items_per_page) || 15;
     const page = Number(query.page) || 1;
     const skip = (page - 1)* items_per_page;
     const keyword = query.search || '';

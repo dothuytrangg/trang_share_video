@@ -72,7 +72,7 @@
     "create_category_failed":"Category created failed",
     "create_category_occerred": "An error occurred while creating the category.",
     "update_user_text": "To add a new user, please enter the user name below. We will update your list immediately after submission.",
-
+    "update_caterogy_success":"Category updated successfully!",
     "delete_user_success": "User deleted successfully!",
     "delete_user_failed": "Failed to delete user",
     "delete_user_occerred": "An error occurred while deleting the user.",
