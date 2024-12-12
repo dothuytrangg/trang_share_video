@@ -358,7 +358,7 @@ const formatDateTime = (isoString: string): string => {
             />
 
           
-            {showControls && (
+            {/* {showControls && (
               <IconButton
                 onClick={togglePlayPause}
                 sx={{
@@ -379,7 +379,7 @@ const formatDateTime = (isoString: string): string => {
               >
                 {isPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
               </IconButton>
-            )}
+            )} */}
 
   
             {showControls && (

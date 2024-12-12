@@ -406,21 +406,40 @@ const handleCreateVideo = (): void => {
     } else {
       return (
         
-        <Box >
-          {/* <img src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} ></img> */}
-          <Button onClick={()=>setOpenAddDialog(true)} variant="outlined" style={{width:20,height:35,margin:10}}   sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}} startIcon={<VideoCallOutlined style={{width:30,height:30}}
-        
-         
-          />}>
+        <Box sx={{ display: 'flex', flexDirection: isMobile ? 'row' : 'row', alignItems: 'center' }}>
+          <Button
+            onClick={() => setOpenAddDialog(true)}
+            variant="outlined"
+            sx={{
+              width: 20,
+              height: 35,
+              margin: 1,
+              color: themeMaster === "light" ? '#111' : '#fff',
+              borderColor: themeMaster === "light" ? '#111' : '#fff'
+            }}
+            startIcon={<VideoCallOutlined style={{ width: 30, height: 30 }} />}
+          />
+          <Button
+            onClick={handleClick}
+            variant="outlined"
+            sx={{
+              color: themeMaster === 'light' ? '#111' : '#fff',
+              borderColor: themeMaster === 'light' ? '#111' : '#fff',
+              marginLeft: isMobile ? 1 : 0,
+            }}
+            startIcon={
+              profileAvatar ? (
+                <Avatar
+                  src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`}
+                  sx={{ width: 25, height: 25 }}
+                />
+              ) : (
+                <AccountCircle sx={{ width: 25, height: 25 }} />
+              )
+            }
+          >
+            {!isMobile && masterStore.user.name}
           </Button>
-           <Button onClick={handleClick} variant="outlined" sx={{color : themeMaster=== "light" ? '#111':'#fff',borderColor:themeMaster=== "light" ? '#111':'#fff'}}  startIcon={profileAvatar
-      ? (<Avatar src={`${_ENV.NEXT_URL_RESOURCE}/avatars/${masterStore.user.avatar}`} sx={{ width: 25, height: 25}}/>) 
-      :(<AccountCircle sx={{ width: 25, height: 25}} />)}>
-        {masterStore.user.name}
-      </Button>
-
-      
-      
         </Box>
       )
       
@@ -654,21 +673,21 @@ const handleCreateVideo = (): void => {
                 InputProps={{ style: { resize: 'vertical' } }}
                 style={{ marginBottom: 20 }}
               />
-              <Grid container spacing={2} sx={{ flexDirection: isMobile ? 'column' : 'row' }}>                
+                <Grid container spacing={2} sx={{ flexDirection: isMobile ? 'column' : 'row' }}>
                 <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   {/* Khung chứa ảnh*/}
                   <Box
                     sx={{
-                      width: '250px',
-                      height: '150px',
+                      width: isMobile ? '100%' : '250px', 
+                      height: isMobile ? '200px' : '150px', 
                       border: '2px dashed #3f51b5',
                       borderRadius: '8px',
                       display: 'flex',
-                      alignItems: 'center',
                       justifyContent: 'center',
                       overflow: 'hidden',
                       backgroundColor: '#f0f0f0',
-                      marginTop: 2
+                      marginTop: 2,
+                      alignItems: isMobile ? 'stretch' : 'center'
                     }}
                   >
                     {thumbnailPreview ? (
@@ -678,7 +697,8 @@ const handleCreateVideo = (): void => {
                         style={{
                           width: '100%',
                           height: '100%',
-                          objectFit: 'cover'
+                          objectFit: 'cover',
+                          
                         }}
                       />
                     ) : (
@@ -699,56 +719,42 @@ const handleCreateVideo = (): void => {
                   sx={{
                     flexDirection: 'column',
                     display: 'flex',
-                    alignItems: isMobile ? 'stretch' : 'flex-end',  // Đảm bảo dàn thẳng khi trên mobile
-                    marginTop: isMobile ? '16px' : '100px',  // Thêm khoảng cách trên cho mobile và desktop
-                    width: '100%'  // Đảm bảo chiều rộng đầy đủ khi trên mobile
+                    alignItems: isMobile ? 'stretch' : 'flex-end',
+                    marginTop: isMobile ? '16px' : '100px',
+                    width: isMobile ? '100%' : '80%', // Chiều rộng lớn hơn trên desktop
                   }}
                 >
                   <Autocomplete
                     multiple
                     options={categoryData}
                     getOptionLabel={(option) => option.label}
-                    value={categoryOptions} // Giá trị hiện tại (các mục đã chọn)
+                    value={categoryOptions}
                     onChange={(event, newValue: any) => {
                       setCategoryOptions(newValue);
                       if (categoryOptions.length !== null) {
                         setOptionError(false);
                         setOptionErrorMessage('');
                       }
-                    }} // Cập nhật state khi thay đổi
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         label={t('add_to_category')}
                         error={optionError}
                         helperText={optionErrorMessage}
-                        sx={{ width: '100%' }}  // Đảm bảo TextField chiếm hết chiều rộng
+                        sx={{ width: '100%' }}
                       />
                     )}
-                    filterOptions={(options) =>
-                      // Lọc ra các option chưa được chọn
-                      options.filter(
-                        (option) =>
-                          !categoryOptions.some(
-                            (selectedOption: any) => selectedOption.id === option.id
-                          )
-                      )
-                    }
+                    sx={{
+                      width: '100%', 
+                      maxWidth: '600px',
+                      position: 'relative', 
+                      top: isMobile ? '-16px' : '-80px'
+                    }}
                   />
                 </Grid>
 
-
-                  <Grid item style={{ marginTop: '1px', justifyContent: "flex-end", display: "flex" }}>
-
-                    {/* {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
-                      {videoErrorMessage}
-                    </span>) : (<span style={{ color: 'black', display: 'block' }}>
-                      {videoFile && (videoFile.name)}
-                    </span>)} */}
-                  </Grid>
                 </Grid>
-
-                {/* </Grid>
 
 
                 {/* Cột nút chọn ảnh Thumbnail */}

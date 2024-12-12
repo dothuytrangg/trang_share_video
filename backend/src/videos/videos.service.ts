@@ -310,6 +310,7 @@ export class VideosService {
       { description: Like(`%${keyword}%`) },
       { url: Like(`%${keyword}%`) },
       { slug: Like(`%${keyword}%`) },
+      
     ];
 
     const res = await this.videoRepository.find({
