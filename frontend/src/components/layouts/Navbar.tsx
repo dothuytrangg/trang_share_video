@@ -620,7 +620,7 @@ const handleCreateVideo = (): void => {
        
           {renderButtonAcction()}
 
-                <Dialog
+             <Dialog
             open={openAddDialog && !isUploading} // Ẩn dialog nếu đang tải lên
             onClose={() => setOpenAddDialog(false)}
             PaperProps={{
@@ -633,7 +633,7 @@ const handleCreateVideo = (): void => {
             fullWidth
             maxWidth="sm"
             >
-                   <DialogTitle>{t("addVideo")}</DialogTitle>
+            <DialogTitle>{t("addVideo")}</DialogTitle>
             <DialogContent>
               <DialogContentText>
                 {/* {t("addText_category")} */}
@@ -673,7 +673,7 @@ const handleCreateVideo = (): void => {
                 InputProps={{ style: { resize: 'vertical' } }}
                 style={{ marginBottom: 20 }}
               />
-                <Grid container spacing={2} sx={{ flexDirection: isMobile ? 'column' : 'row' }}>
+              <Grid container spacing={2} sx={{ flexDirection: isMobile ? 'column' : 'row' }}>
                 <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   {/* Khung chứa ảnh*/}
                   <Box
@@ -754,7 +754,19 @@ const handleCreateVideo = (): void => {
                   />
                 </Grid>
 
+
+
+                <Grid item style={{ marginTop: '1px', justifyContent: "flex-end", display: "flex" }}>
+
+                  {/* {videoError ? (<span style={{ color: 'red', display: 'block', paddingTop: "18px" }}>
+                      {videoErrorMessage}
+                    </span>) : (<span style={{ color: 'black', display: 'block' }}>
+                      {videoFile && (videoFile.name)}
+                    </span>)} */}
                 </Grid>
+              </Grid>
+
+              {/* </Grid>
 
 
                 {/* Cột nút chọn ảnh Thumbnail */}
@@ -830,6 +842,7 @@ const handleCreateVideo = (): void => {
               </Grid>
 
             </DialogContent>
+
 
             {/* Dialog Actions */}
             <DialogActions>
