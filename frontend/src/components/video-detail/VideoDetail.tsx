@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import requestApi from "../../../helpers/api";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Box, Grid, Typography, Avatar, Button, IconButton, TextField, Slider } from '@mui/material';
+import { Box, Grid, Typography, Avatar, Button, IconButton, TextField, Slider, useMediaQuery } from '@mui/material';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -49,6 +49,8 @@ const VideoDetail = () => {
   const t = useTranslations("HomePage");
   const [hasReachedHalf, setHasReachedHalf] = useState(false);
   const masterStore = useAppSelector((state: any) => state.master);
+  const isMobile = useMediaQuery('(max-width:600px)');
+
     
   // const [userData, setUserData] = useState([]);
   // var ranonce = false;
@@ -318,14 +320,14 @@ const formatDateTime = (isoString: string): string => {
 
 
   return (
-    <Box className={styles.container}>
+    <Box  sx={{ padding: 2 }}>
       <Grid container spacing={3}>
-        <Grid item xs={7}>
+        <Grid item xs={12} md={8}>
         <Box
             sx={{
               position: "relative",
               width: "100%",
-              maxWidth: 800,
+              maxWidth: isMobile ? '100%' : '800px',
               // maxHeight:500,
               aspectRatio: "16/9",
               backgroundColor: "#000",
@@ -336,6 +338,7 @@ const formatDateTime = (isoString: string): string => {
           >
             {/* Video Element */}
             <video
+
               ref={videoRef}
               src={`${_ENV.NEXT_URL_RESOURCE}/videos/${videoData.url}`}
               style={{
@@ -515,7 +518,9 @@ const formatDateTime = (isoString: string): string => {
           </Box> */}
 
         </Grid>
-        <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId} />
+        <Grid item xs={12} md={4} sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <ProposeVideo proposeVideoData={proposeVideoData} videoData={videoData} categoryId={categoryId} />
+        </Grid>
 
 
       </Grid>

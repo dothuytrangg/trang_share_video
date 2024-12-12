@@ -140,7 +140,7 @@ export class VideosController {
             if(res.status == 201){
                 // remove
                unlink(thumbnail.path,(err)=>{
-                if (err) throw err;
+                // if (err) throw err;
                
                });
             }

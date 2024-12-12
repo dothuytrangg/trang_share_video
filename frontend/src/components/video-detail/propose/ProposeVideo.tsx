@@ -49,7 +49,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
   return (
     <Grid
       item
-      xs={5}
+      xs={12}
       sx={{
         maxHeight: "calc(100vh - 120px)",
         overflowY: "auto",
