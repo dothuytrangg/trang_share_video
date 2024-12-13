@@ -176,7 +176,9 @@
     "uploading":"Video is uploading, please wait...",
     "thumbnail_invalid_extension":"Select the file types .jpg .png .jpeg .webp",
     "video_invalid_extension":"Select the file types .mp4.mov.webm",
-    "create_video_success_user":"Video uploaded successfully, please wait for confirmation"
+    "create_video_success_user":"Video uploaded successfully, please wait for confirmation",
+    "edit_profile":"Edit"
+    
     
     
 

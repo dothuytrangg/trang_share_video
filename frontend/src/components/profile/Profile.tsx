@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Avatar, IconButton, Button, Typography, Snackbar, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Tooltip, Paper, CardMedia, CardActions, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Box } from '@mui/material';
+import { Card, CardContent, Avatar, IconButton, Button, Typography, Snackbar, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Tooltip, Paper, CardMedia, CardActions, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Box, Grid, useMediaQuery } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useAppDispatch } from '@/stores/hookStore';
 import requestApi from '../../../helpers/api';
@@ -22,6 +22,7 @@ const Profile= () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const isMobile = useMediaQuery('(max-width:600px)');
   const router = useRouter();
 
   const handleImageChange = (event:any) => {
@@ -354,95 +355,94 @@ const Profile= () => {
   const renderPage = () => {
     if (!loading) {
       return (
-        <div className="grid grid-cols-1 gap-4">
-          <React.StrictMode>
+        <React.Fragment>
 
-                        <Dialog
-                          open={openUpdateDialog}
-                            onClose={() => handleCloseUpdateDialog()}
-                            PaperProps={{
-                                component: 'form',
-                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                                    event.preventDefault();
-                                    handleUpdateVideo(selectedVideo.id, selectedVideo.thumbnail);
+            <Dialog
+              open={openUpdateDialog}
+              onClose={() => handleCloseUpdateDialog()}
+              PaperProps={{
+                component: 'form',
+                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                  event.preventDefault();
+                  handleUpdateVideo(selectedVideo.id, selectedVideo.thumbnail);
 
-                                },
-                            }}
-                        >
-                            <DialogTitle>{t("update_video")}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    {/* {t("update_caterogy_text")} */}
-                                </DialogContentText>
-                                <TextField
-                                    autoFocus
-                                    error={nameError}
-                                    helperText={nameErrorMessage}
-                                    onChange={(val) => {
-                                        setName(val.target.value);
-                                    }}
-                                    value={name}
-                                    margin="dense"
-                                    id="name"
-                                    name="name"
-                                    label={t("name_video")}
-                                    type="text"
-                                    fullWidth
-                                    variant="standard"
-                                    placeholder={t("name_video")}
-                                />
-                                <TextField
-                                    autoFocus
-                                    error={descriptionError}
-                                    helperText={descriptionErrorMessage}
-                                    onChange={(val) => {
-                                        setDescription(val.target.value);
-                                    }}
-                                    value={description}
-                                    margin="dense"
-                                    id="description"
-                                    name="description"
-                                    label={t("description_text")}
-                                    type="text"
-                                    fullWidth
-                                    variant="standard"
-                                />
+                },
+              }}
+            >
+              <DialogTitle>{t("update_video")}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {/* {t("update_caterogy_text")} */}
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  error={nameError}
+                  helperText={nameErrorMessage}
+                  onChange={(val) => {
+                    setName(val.target.value);
+                  }}
+                  value={name}
+                  margin="dense"
+                  id="name"
+                  name="name"
+                  label={t("name_video")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  placeholder={t("name_video")}
+                />
+                <TextField
+                  autoFocus
+                  error={descriptionError}
+                  helperText={descriptionErrorMessage}
+                  onChange={(val) => {
+                    setDescription(val.target.value);
+                  }}
+                  value={description}
+                  margin="dense"
+                  id="description"
+                  name="description"
+                  label={t("description_text")}
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                />
 
-                                <Button variant="outlined" component="label">
-                                    {t('Choose_thumbnail')}
-                                    <input
-                                        type="file"
-                                        hidden
-                                        // accept="image/*"
-                                        onChange={handleFileChange}
+                <Button variant="outlined" component="label">
+                  {t('Choose_thumbnail')}
+                  <input
+                    type="file"
+                    hidden
+                    // accept="image/*"
+                    onChange={handleFileChange}
 
 
-                                    />
-                                </Button>
-                                {thumbnailPreview && (
-                                    <img
-                                        src={thumbnailPreview}
-                                        alt="Thumbnail preview"
-                                        style={{ marginTop: 10, width: '60%', height: 'auto', maxHeight: '200px' }}
-                                    />
-                                )}
-                         
+                  />
+                </Button>
+                {thumbnailPreview && (
+                  <img
+                    src={thumbnailPreview}
+                    alt="Thumbnail preview"
+                    style={{ marginTop: 10, width: '60%', height: 'auto', maxHeight: '200px' }}
+                  />
+                )}
 
 
 
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
-                                <Button type="submit" >{t("btnUpdate")}</Button>
-                            </DialogActions>
-                        </Dialog>
-            <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 2 }}>
+
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenUpdateDialog(false)}>{t("btnCancel")}</Button>
+                <Button type="submit" >{t("btnUpdate")}</Button>
+              </DialogActions>
+            </Dialog>
+          <Card sx={{ maxWidth: 345, textAlign: 'center', padding: 4, marginBottom: 4 }}>
               <CardContent>
                 <Typography variant="h5" gutterBottom>
                   {t('profile')}
                 </Typography>
                 <Avatar
-                  src={profileData.avatar ? profileData.avatar :""}
+                  src={profileData.avatar ? profileData.avatar : ""}
                   alt="Profile Picture"
                   sx={{ width: 100, height: 100, margin: '0 auto 16px' }}
                 />
@@ -452,9 +452,9 @@ const Profile= () => {
                   id="avatar-upload"
                   type="file"
                   onChange={handleImageChange}
-                  
+
                 />
-              
+
                 <label htmlFor="avatar-upload">
                   <IconButton color="primary" component="span">
                     <PhotoCamera />
@@ -465,20 +465,19 @@ const Profile= () => {
                 </Typography>
                 <Button onClick={handleUploadAvatar} variant="outlined" color="primary" >{t('update')}</Button>
               </CardContent>
-              </Card>
+            </Card>
 
-                                    
 
-                <div className="grid grid-cols-4 gap-3 mt-4"style={{}}>
-                {
-                  videos.map((video:any)=>(
-                    <Card key={video.id} sx={{ maxWidth: 345,my:2 }}>
-                            <CardMedia
-                  sx={{ height: 170, position: 'relative' }} // Thêm position relative để định vị
-                  image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
-                  title={video.name}
-                >
-                            
+
+            <Grid container spacing={2}>
+              {videos.map((video: any) => (
+                <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }}>
+                  <Card sx={{ flexDirection: isMobile ? 'row' : 'row', alignItems: 'center' }}>
+                    <CardMedia
+                      sx={{ height: 170, position: 'relative' }}
+                      image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+                      title={video.name}
+                    >
                       <Box
                         sx={{
                           position: 'absolute',
@@ -492,77 +491,71 @@ const Profile= () => {
                           fontSize: '14px',
                         }}
                       >
-                        {formatDuration(video.timeout)} 
-                    </Box>
-                </CardMedia>
-                    <CardContent  sx={{ height: 140 }}>
-                    <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                      {video.name.length > 50 ? (
-                        <Tooltip title={video.name}>
-                          <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
-                        </Tooltip>
-                      ) :
-                        <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                      }
-                    </Typography>
+                        {formatDuration(video.timeout)}
+                      </Box>
+                    </CardMedia>
+                    <CardContent sx={{ height: 140 }}>
+                      <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                        {video.name.length > 40 ? (
+                          <Tooltip title={video.name}>
+                            <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 40)}...`}</span>
+                          </Tooltip>
+                        ) :
+                          <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
+                        }
+                      </Typography>
                       <Typography variant="body2" color="text.secondary" >
-                      {video.description.length > 100 ? `${video.description.substring(0,100)}...`:video.description}
+                      <Tooltip title={video.description}>
+                        {video.description.length > 80 ? `${video.description.substring(0, 80)}...` : video.description}
+                      </Tooltip>
                       </Typography>
 
-                    
+
                     </CardContent>
-              
 
-              <CardActions>
-                
-                <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-              color="inherit"
-              variant="contained" size="small" onClick={()=>{handleOpenUpdateDialog(video)}} >{t('edit')}</Button>
-                <Button  sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
-              color="inherit"
-              variant="contained" size="small"  onClick={()=>handleDeleteVideo(video.id)}>{t('delete')}</Button>
 
-                {/* Hiển thị trạng thái */}
-                <Typography
-                            variant="body2"
-                            color={video.status === "confirmed" ? "green" : "#dc143c"}
-                            sx={{ mt: 2, fontWeight: "bold"}}
-                            style={{marginLeft:70}}
-                          >
+                    <CardActions>
+
+                      <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+                        color="inherit"
+                        variant="contained" size="small" onClick={() => { handleOpenUpdateDialog(video) }} >{t('edit_profile')}</Button>
+                      <Button sx={{ ml: 1, pr: 1, textTransform: "none", mt: 2 }}
+                        color="inherit"
+                        variant="contained" size="small" onClick={() => handleDeleteVideo(video.id)}>{t('delete')}</Button>
+
+                      {/* Hiển thị trạng thái */}
+                      <Typography
+                        variant="body2"
+                        color={video.status === "confirmed" ? "green" : "#dc143c"}
+                        sx={{ mt: 2, fontWeight: "bold" }}
+                        style={{ marginLeft: 70 }}
+                      >
 
                         {video.status === "confirmed" ? t("Confirmed") : t("Confirming")}
                       </Typography>
-            
-                
-        </CardActions>
-        
-  
-      </Card>
-      
-      ))
-       
-     }
-      {/* <Stack spacing={2}>
-          <Pagination style={{ margin: 10 }} count={lastPage} page={page} onChange={handleChange} variant="outlined" color="primary" />
 
-      </Stack> */}
-    {/* {renderItemExample()} */}
-      
 
-   
-        </div>
-        <Snackbar
-                open={openSnackbar}
-                autoHideDuration={4000}
+                    </CardActions>
+
+
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+
+            <Snackbar
+              open={openSnackbar}
+              autoHideDuration={4000}
+              onClose={() => setOpenSnackbar(false)}
+            >
+              <Alert
                 onClose={() => setOpenSnackbar(false)}
-               >
-                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-                  {snackbarMessage}
-                </Alert>
-              </Snackbar>
-
-          </React.StrictMode>
-        </div>
+                severity={snackbarSeverity}
+              >
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
+          </React.Fragment>
       );
     }
   };

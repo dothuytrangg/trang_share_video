@@ -179,7 +179,9 @@
          "uploading":"Video đang tải lên,vui lòng đợi...",
          "thumbnail_invalid_extension":"chọn đuôi file jpg.png.jpeg.webp",
          "video_invalid_extension":"chọn đuôi file .mp4.mov.webm",
-          "create_video_success_user":"Video tải lên thành công ,vui lòng đợi xét duyệt"
+          "create_video_success_user":"Video tải lên thành công ,vui lòng đợi xét duyệt",
+          "edit_profile":"Sửa"
+        
         
 
 
