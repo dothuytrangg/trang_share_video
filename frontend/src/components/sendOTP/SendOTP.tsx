@@ -111,7 +111,7 @@ const SendOTP = () => {
             const otpCode = otp.join(''); // Concatenate OTP digits
             const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
             const parsedUserId = userId ? parseInt(userId, 10) : null; // Convert userId to a number if it exists
-            console.log('Parsed userId:', parsedUserId); // Log the parsed userId
+            // console.log('Parsed userId:', parsedUserId); // Log the parsed userId
 
             if (!parsedUserId) {
                 setOtpError(true);

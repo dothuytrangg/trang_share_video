@@ -134,7 +134,7 @@ const VideoDetail = () => {
   
       await requestApi(`videos/${videoId}/view`, "PATCH").then((res:any)=>{
          if(res.success){
-          console.log("View count updated successfully");
+          // console.log("View count updated successfully");
          }else{
           console.error("Failed to update view count");
          }

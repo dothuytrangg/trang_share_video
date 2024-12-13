@@ -75,7 +75,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
         setError(null);
         try {
             const res: any = await requestApi(`videos/key?search=${searchTerm}`, 'GET');
-            console.log('search',res)
+            // console.log('search',res)
             if (res.success) {
                 setVideos(res.data);
             } else {
@@ -101,7 +101,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
   
     await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
        if(res.success){
-        console.log("history save successfully");
+        // console.log("history save successfully");
        }else{
         console.error("Failed  save history");
        }
@@ -122,7 +122,7 @@ export default function SearchPage({ categoryId }: { categoryId: string }) {
 
         try {
             const res: any = await requestApi(`video-details/${categoryId}`, "GET");
-            console.log('res', res)
+            // console.log('res', res)
             if (res.success) {
                 setVideoDetails(res.data);
                 const extractedVideos = res.data.map((detail: any) => detail.video);

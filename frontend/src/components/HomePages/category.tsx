@@ -26,7 +26,7 @@ export default function Category({ onCategorySelect }: { onCategorySelect: (id: 
 
   const loadCategories = async (pageSelected: number) => {
     await requestApi(`categories?page=${pageSelected}&items_per_page=10&search`, "GET").then((res: any) => {
-      console.log('res category homePage', res);
+      // console.log('res category homePage', res);
       if (res.success) {
         setCategories(res.data);
         setLastPage(res.lastPage);

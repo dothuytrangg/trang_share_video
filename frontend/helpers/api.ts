@@ -40,7 +40,7 @@ export default function requestApi(
         const authStore = JSON.parse(
           secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
         );
-        console.log("authStore: ", authStore);
+        // console.log("authStore: ", authStore);
         if (authStore) {
           if (authStore.access_token) {
             config.headers["Authorization"] = "Bearer " + authStore.access_token;
@@ -62,8 +62,9 @@ export default function requestApi(
       if (error.response?.status === 401 || error.response?.status === 403) {
         const authStore = JSON.parse(
           secureLocalStorage.getItem(_GLOBAL.LOCAL_STOREAGE) as string
+          
         );
-        console.log('authStore: ', authStore);
+        // console.log('authStore: ', authStore);
         // window.location.href = `/${authStore.lang}/${_GLOBAL.ROUTER_LOGIN}?action=logout`;
       }
       return { success: false };

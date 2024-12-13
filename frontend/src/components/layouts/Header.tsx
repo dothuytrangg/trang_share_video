@@ -49,7 +49,7 @@ export default function RootLayout({
 
     const publicPathnameRegex = RegExp(excludePattern, "i");
  
-    console.log('searchQueryParams: ', searchQueryParams);
+   
     // return;
     let isAdminPage = publicPathnameRegex.test(pathname);
  

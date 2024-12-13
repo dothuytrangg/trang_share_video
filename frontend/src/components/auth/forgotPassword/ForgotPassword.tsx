@@ -42,7 +42,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('Email submitted:', email); // Debugging line
+    // console.log('Email submitted:', email); // Debugging line
     requestApi('auth/forgot-password', 'POST', { email })
       .then((res: any) => {
         if (res.success) {

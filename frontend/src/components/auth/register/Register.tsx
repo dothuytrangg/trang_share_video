@@ -99,7 +99,7 @@ const Register = () => {
         if (res.success) {
           setSuccessRegister(t('register_success'));
           localStorage.setItem('userId', res.userId); // Store userId
-          console.log('userId stored in localStorage:', res.userId);
+          // console.log('userId stored in localStorage:', res.userId);
           setTimeout(() => {
             router.replace(`/${masterStore.lang}/${_GLOBAL.ROUTE_SEND_OTP}`);
           }, 1000);

@@ -47,7 +47,7 @@ const ListVideo = () => {
     const [lastPage, setLastPage] = useState(1);
     const loadVideos = async (pageSelected: number) => {
         await requestApi(`videos?page=${pageSelected}&items_per_page=5&search`, "GET").then((res: any) => {
-            console.log('res videos', res);
+            // console.log('res videos', res);
             if (res.success) {
                 setVideos(res.data);
                 setLastPage(res.lastPage);
@@ -124,7 +124,7 @@ const ListVideo = () => {
             const file = event.target.files[0];
             setVideoFile(file);
             setVideoError(false)
-            console.log(file);
+            // console.log(file);
 
         }
     };
@@ -152,9 +152,9 @@ const ListVideo = () => {
 
     const [selectedVideo, setSelectedVideo] = useState<any>(null);
     const handleOpenUpdateDialog = (video: any) => {
-        console.log('video', video);
+        // console.log('video', video);
         setSelectedVideo(video);
-        console.log('ss',selectedVideo);
+        // console.log('ss',selectedVideo);
         setName(video.name);
         setDescription(video.description);
         setThumbnailFile(null);
@@ -233,18 +233,18 @@ const ListVideo = () => {
     
       const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
         const valid: boolean = validateUpdateInputs();
-        console.log(valid)
+       
         
       
         if (valid && thumbnail) {
           
       
-          console.log('hehhh');
+        
       
           const slug = slugify(name);
           const formData = new FormData();
           if (thumbnailFile) {
-            console.log('thumbnail',thumbnailFile);
+            
             
             formData.append("thumbnail", thumbnailFile); 
           } else {
@@ -257,7 +257,7 @@ const ListVideo = () => {
           formData.append("slug", slug);
           // formData.append("url", videoFile);
           
-          console.log('form data',formData);
+         
          
           // requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
       
@@ -286,8 +286,8 @@ const ListVideo = () => {
               setOpenSnackbar(true);
             });
         }else{
-          console.log('id',VideoId)
-          console.log('update error')
+          // console.log('id',VideoId)
+          // console.log('update error')
         }
       };
       
@@ -297,7 +297,7 @@ const ListVideo = () => {
 
 
   const handleOpenDeleteDialog = (video: any) => {
-    console.log("Category selected:", video); // Log để kiểm tra giá trị
+    // console.log("Category selected:", video); // Log để kiểm tra giá trị
     setSelectedVideo(video);
     setOpenDeleteDialog(true);
   };
@@ -310,7 +310,7 @@ const ListVideo = () => {
   
           if (res.success) {
             loadVideos(page)
-            console.log("Video deleted:", res);
+            // console.log("Video deleted:", res);
             setSnackbarMessage(t("delete_video_success"));
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
@@ -628,7 +628,7 @@ const formatDateTime = (isoString: string): string => {
                           <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
                           <Button
                             onClick={() => {
-                              console.log("Selected Category ID:", selectedVideo?.id); // Log để kiểm tra
+                              // console.log("Selected Category ID:", selectedVideo?.id); 
                               if (selectedVideo?.id) {
                                 handleDeleteVideo(selectedVideo.id);
                               }

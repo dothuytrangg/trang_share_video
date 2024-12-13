@@ -73,7 +73,7 @@ const LoginView = () => {
   var oneTime = false;
   useEffect(() => {
     if (!oneTime) {
-      console.log('locale: ', locale);
+      // console.log('locale: ', locale);
       const action = query.get("action");
       if (action == "logout") {
         dispatch(logout());
@@ -82,7 +82,7 @@ const LoginView = () => {
       } else if (!masterStore.isAuth) {
         setApprove(true)
       } else {
-        console.log('locale: ', locale);
+        // console.log('locale: ', locale);
         router.push(`/${locale}`)
       }
 
@@ -97,10 +97,10 @@ const LoginView = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    // console.log({
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
   };
 
   const validateInputs = () => {

@@ -100,35 +100,14 @@ export default function Navbar() {
     loadAllCategory();
     flag = true
    }
-     console.log('masterStore navbar: ', masterStore);
-
-
-    //  setProfileAvatar(masterStore.user.avatar);
-    // setProfileAvatar(res.data.avatar);
-    // if (!loading) {
-    //   requestApi('users/profile','GET').then((res:any)=>{
-    //     console.log('res profile',res);
-    //      if(res.success){
-    //       console.log('masterStore: ', masterStore);
-            
-    //          setLoading(true)
-    //      }
- 
-    //   }
- 
-    //   ).catch((err)=>{
-    //    console.log('err',err);
-    //   })
-      
-    //    setLoading(true)
-    //  }
+     
     
     
     }, [masterStore])
 
     const loadAllCategory = async () => {
       await requestApi(`categories/all`, "GET").then((res: any) => {
-          console.log('res category all', res);
+        
           if (res.success) {
             setCategories(res.data)
           }
@@ -513,11 +492,10 @@ const handleCreateVideo = (): void => {
         password,
         confirm_password
       };
-      console.log('User data for password update:', userData_update);
+     
 
       requestApi(`users/change-password/${userId}`, "PUT", userData_update)
         .then((res: any) => {
-          console.log('res update password', res)
           if (res.success) {
             //  loadUsers(page);
             //  console.log('res update password',res)

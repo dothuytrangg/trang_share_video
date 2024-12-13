@@ -35,7 +35,7 @@ const ProposeVideo = ({ proposeVideoData, videoData, categoryId }: { proposeVide
   
     await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
        if(res.success){
-        console.log("history save successfully");
+        // console.log("history save successfully");
        }else{
         console.error("Failed  save history");
        }

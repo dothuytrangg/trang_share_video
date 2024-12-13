@@ -75,14 +75,12 @@ export default function Sidebar() {
   }, [isMobile, open, dispatch]);
   
   const handleToggleTheme = () => {
-    console.log("theme: ", theme);
     dispatch(changeTheme());
     dispatch(updateLocalStorage());
   };
 
   const redirectHome = () => {
     const action = query.get("action");
-    // console.log('action',action);
     router.replace(`/${locale}/`);
     
   };

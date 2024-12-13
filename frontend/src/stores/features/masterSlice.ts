@@ -26,7 +26,7 @@ export const masterSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      console.log("action: ", action);
+      // console.log("action: ", action);
       state.access_token = action.payload.token;
       state.user = action.payload.user;
       state.is_login = true;
@@ -35,11 +35,11 @@ export const masterSlice = createSlice({
         state.isAdmin = true;
       }
       state.isAuth = true;
-      console.log('state master: ', state);
+      // console.log('state master: ', state);
     },
     setProfleAvatar : (state,action) =>{
       state.user.avatar = action.payload
-      console.log('state.user.avatar: ', state.user.avatar);
+      // console.log('state.user.avatar: ', state.user.avatar);
     },
     setIsAdmin : (state,action) =>{
       state.isAdmin = action.payload

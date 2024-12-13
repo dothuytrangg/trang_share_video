@@ -57,7 +57,7 @@ export default function Videos({ categoryId }: { categoryId: string }) {
       
       try {
         const res: any = await requestApi(`video-details/${categoryId}?page=${pageSelected}&items_per_page=8`, "GET");
-        console.log('res',res)
+        // console.log('res',res)
         if (res.success) {
           setVideoDetails(res.data);
           const extractedVideos = res.data.map((detail: any) => detail.video); 
@@ -82,7 +82,7 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   
     await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
        if(res.success){
-        console.log("history save successfully");
+        // console.log("history save successfully");
        }else{
         console.error("Failed  save history");
        }

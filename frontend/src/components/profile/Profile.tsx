@@ -47,11 +47,11 @@ const Profile= () => {
   const handleUploadAvatar = () =>{
     let formData = new FormData();
     formData.append('avatar',profileData.file);
-    console.log("start")
+    // console.log("start")
     requestApi('users/upload-avatar','POST',formData,'json','multipart/form-data').then((resProfile:any) =>{
-      console.log('res avatar',resProfile);
+      // console.log('res avatar',resProfile);
       if(resProfile.success){
-         console.log('upload success !!')
+        //  console.log('upload success !!')
          setProfileData({...resProfile.user,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  resProfile.user.avatar})
          dispatch(setProfleAvatar(resProfile.user.avatar));
          dispatch(updateLocalStorage({...resProfile}));
@@ -66,7 +66,7 @@ const Profile= () => {
           setOpenSnackbar(true);
       }
     }).catch((err:any)=>{
-       console.log('err',err);
+      //  console.log('err',err);
         setSnackbarMessage("upload avatar failed");
           setSnackbarSeverity("error");
           setOpenSnackbar(true);
@@ -77,7 +77,7 @@ const Profile= () => {
   const loadUser = async () => {
 
     await requestApi('users/profile','GET').then((res: any) => {
-      console.log('res user', res);
+      // console.log('res user', res);
       if (res.success) {
               setProfileData({...res.data,avatar:_ENV.NEXT_URL_RESOURCE+ '/avatars/'+  res.data.avatar})
               // setProfileData({...res.data,avatar:_ENV.NEXT_URL_LOCAL+ '/avatars/'+  res.data.avatar})
@@ -131,10 +131,7 @@ const Profile= () => {
 
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const handleOpenUpdateDialog = (video: any) => {
-      console.log('video user', video);
       setSelectedVideo(video);
-      console.log('sss',selectedVideo)
-      // console.log(selectedVideo);
       setName(video.name);
       setDescription(video.description);
       setThumbnailFile(null);
@@ -224,7 +221,7 @@ const Profile= () => {
   }
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-        console.log(event.target.files);
+        // console.log(event.target.files);
         const file = event.target.files[0];
         setThumbnailFile(file);
         setThumbnailPreview(URL.createObjectURL(file));
@@ -234,18 +231,15 @@ const Profile= () => {
   
     const handleUpdateVideo = (VideoId: string,thumbnail:File) => {
       const valid: boolean = validateUpdateInputs();
-      console.log(valid)
       
     
       if (valid && thumbnail) {
         
     
-        console.log('hehhh');
     
         const slug = slugify(name);
         const formData = new FormData();
         if (thumbnailFile) {
-          console.log('thumbnail',thumbnailFile);
           
           formData.append("thumbnail", thumbnailFile); 
         } else {
@@ -258,7 +252,6 @@ const Profile= () => {
         formData.append("slug", slug);
         // formData.append("url", videoFile);
         
-        console.log('form data',formData);
        
         // requestApi(`categories/${categoryId}`, "PUT", CategoryData_update)
     
@@ -287,8 +280,8 @@ const Profile= () => {
             setOpenSnackbar(true);
           });
       }else{
-        console.log('id',VideoId)
-        console.log('update error')
+        // console.log('id',VideoId)
+        // console.log('update error')
       }
     };
 
@@ -341,7 +334,7 @@ const Profile= () => {
   
       await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
          if(res.success){
-          console.log("history save successfully");
+          // console.log("history save successfully");
          }else{
           console.error("Failed  save history");
          }
@@ -351,9 +344,11 @@ const Profile= () => {
    
   };
 
+    if (loading) {
+    return <div>Loading...</div>;
+  }
 
   const renderPage = () => {
-    if (!loading) {
       return (
         <React.Fragment>
 
@@ -558,7 +553,7 @@ const Profile= () => {
           </React.Fragment>
       );
     }
-  };
+  
 
   return renderPage();
 

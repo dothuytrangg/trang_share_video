@@ -308,7 +308,6 @@ export class VideosService {
     const searchConditions = [
       { name: Like(`%${keyword}%`) },
       { description: Like(`%${keyword}%`) },
-      { url: Like(`%${keyword}%`) },
       { slug: Like(`%${keyword}%`) },
       
     ];

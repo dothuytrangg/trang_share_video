@@ -70,7 +70,7 @@ const ListAccount = () => {
 
   const loadUsers = async (pageSelected:number) => {
     await requestApi(`users?page=${pageSelected}&items_per_page=5&search`, "GET").then((res:any)=>{
-    console.log('res',res);
+    // console.log('res',res);
     if(res.success){
       setUsers(res.data);
       setLastPage(res.lastPage)
@@ -182,13 +182,12 @@ const handleCreateUser = (): void => {
 
     const userData = {full_name ,email,password}; 
 
-    console.log('userdata',userData);
+    // console.log('userdata',userData);
     requestApi("users", "POST", userData)
       .then((res: any) => {
-        console.log('res create',res);
+        // console.log('res create',res);
         if (res.success) {
           loadUsers(page)
-          console.log('create success')
           setOpenAddDialog(false)
           setSnackbarMessage(t("create_user_success"));
           setSnackbarSeverity("success");
@@ -223,7 +222,7 @@ const handleCreateUser = (): void => {
 
 const [selectedUser, setSelectedUser] = useState<any>(null);
 const handleOpenUpdateDialog = (user:any) => {
-  console.log('user',user);
+  // console.log('user',user);
   setSelectedUser(user);
   setName(user.full_name);
   // setPassword(user.password)
@@ -241,7 +240,7 @@ const handleUpdateUser = (userId: string) => {
       .then((res: any) => {
         if (res.success) {
            loadUsers(page);
-           console.log('res update',res)
+          //  console.log('res update',res)
            dispatch(updateLocalStorage());
        
           setOpenUpdateDialog(false);
@@ -307,7 +306,7 @@ const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
 
 const handleOpenDeleteDialog = (user: any) => {
-  console.log("user selected:", user); // Log để kiểm tra giá trị
+
   setSelectedUser(user);
   setOpenDeleteDialog(true);
 };
@@ -526,7 +525,6 @@ const handleOpenDeleteDialog = (user: any) => {
                   <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
                   <Button
                     onClick={() => {
-                      console.log("Selected user ID:", selectedUser?.id); // Log để kiểm tra
                       if (selectedUser?.id) {
                         handleDeleteUser(selectedUser.id);
                       }

@@ -165,17 +165,17 @@ const ListCategory = () => {
       const slug = slugify(name);
       const CategoryData = { name, description, slug }; // Login data to be sent to the API
 
-      console.log(CategoryData);
+      // console.log(CategoryData);
       requestApi("categories", "POST", CategoryData)
         .then((res: any) => {
-          console.log('res create', res);
+          // console.log('res create', res);
           if (res.success) {
             setErrorCreate("");
             // dispatch(loginSuccess({ ...res }));
             // dispatch(updateLocalStorage());
             // router.replace(`/${locale}/admin/category`)
             loadCategories(page);
-            console.log('create success')
+            // console.log('create success')
             setOpenAddDialog(false)
             setSnackbarMessage(t("create_category_success"));
             setSnackbarSeverity("success");
@@ -200,7 +200,7 @@ const ListCategory = () => {
           }
         })
         .catch((err: any) => {
-          console.log('loi ha',err);
+          // console.log('loi ha',err);
           console.error("Create category failed:", err.response?.data || err.message);
           setSnackbarMessage(t("create_category_occerred"));
           setSnackbarSeverity("error");
@@ -212,7 +212,7 @@ const ListCategory = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const handleOpenUpdateDialog = (category: any) => {
-    console.log('categoy', category);
+    // console.log('categoy', category);
     setSelectedCategory(category);
     setName(category.name); // Set giá trị hiện tại của category name
     setDescription(category.description); // Set giá trị hiện tại của description
@@ -230,7 +230,7 @@ const ListCategory = () => {
         .then((res: any) => {
           if (res.success) {
             loadCategories(page)
-            console.log('res update', res)
+            // console.log('res update', res)
             dispatch(updateLocalStorage());
             setOpenUpdateDialog(false);
             setSnackbarMessage(t("update_caterogy_success"));
@@ -258,7 +258,7 @@ const ListCategory = () => {
 
 
   const handleOpenDeleteDialog = (category: any) => {
-    console.log("Category selected:", category); // Log để kiểm tra giá trị
+    // console.log("Category selected:", category); 
     setSelectedCategory(category);
     setOpenDeleteDialog(true);
   };
@@ -269,7 +269,7 @@ const ListCategory = () => {
 
         if (res.success) {
           loadCategories(page)
-          console.log("Category deleted:", res);
+          // console.log("Category deleted:", res);
           setSnackbarMessage(t("delete_category_success"));
           setSnackbarSeverity("success");
           setOpenSnackbar(true);
@@ -508,7 +508,6 @@ const ListCategory = () => {
                     <Button onClick={() => setOpenDeleteDialog(false)}>{t("btnCancel")}</Button>
                     <Button
                       onClick={() => {
-                        console.log("Selected Category ID:", selectedCategory?.id); // Log để kiểm tra
                         if (selectedCategory?.id) {
                           handleDeleteCategory(selectedCategory.id);
                         }
