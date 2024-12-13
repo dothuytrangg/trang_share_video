@@ -134,7 +134,7 @@ const validateInputs = () => {
   }
   return isValid;
 };
-
+let flag = true
 const updateValidateInputs = () => {
   const full_name = document.getElementById("full_name") as HTMLInputElement;
   const password = document.getElementById("password") as HTMLInputElement;
@@ -157,18 +157,18 @@ const updateValidateInputs = () => {
     setNameErrorMessage("");
   }
 
-  // if (!password.value) {
-  //   setPasswordError(true);
-  //   setPasswordErrorMessage(t('password_not_empty'));
-  //   isValid = false;
-  // } else if (password.value.length < 6) {
-  //   setPasswordError(true);
-  //   setPasswordErrorMessage(t('password_least_6'));
-  //   isValid = false;
-  // } else {
-  //   setPasswordError(false);
-  //   setPasswordErrorMessage('');
-  // }
+  if (!password.value) {
+    setPasswordError(true);
+    setPasswordErrorMessage(t('password_not_empty'));
+    isValid = false;
+  } else if (password.value.length < 6) {
+    setPasswordError(true);
+    setPasswordErrorMessage(t('password_least_6'));
+    isValid = false;
+  } else {
+    setPasswordError(false);
+    setPasswordErrorMessage('');
+  }
 
   return isValid;
 };
@@ -178,6 +178,7 @@ const handleCreateUser = (): void => {
   const valid: boolean = validateInputs();
 
   if (valid) {
+   
 
 
     const userData = {full_name ,email,password}; 
