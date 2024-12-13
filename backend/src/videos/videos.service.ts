@@ -17,6 +17,7 @@ export class VideosService {
                 @InjectRepository(VideoDetail) private videoDetailRepository: Repository<VideoDetail>,
                 @InjectRepository(Category) private categoryRepository: Repository<Category>
                 
+                
               )
     {}
 
@@ -141,6 +142,7 @@ export class VideosService {
       thumbnail: string,
       video: string,
       categories: number[] , 
+      videoDuration:number
   ): Promise<any> {
       let response = common_response;
       try {
@@ -164,6 +166,8 @@ export class VideosService {
               user: user,
               thumbnail: thumbnail,
               url: video,
+              timeout: videoDuration,
+              status:user.role ===3 ? 'confirmed' : 'confirming'
           });
   
           if (!saveVideo) {
@@ -330,7 +334,15 @@ export class VideosService {
 
     return response;
   }
-    
 
+  async incrementViews(videoId: number,userId?:number): Promise<Video> {
+    const video = await this.videoRepository.findOne({ where: { id: videoId } });
+    if (!video) {
+      throw new Error('Video not found');
+    }
+    video.viewed += 1;
+    return this.videoRepository.save(video);
+  }
+  
       
 }

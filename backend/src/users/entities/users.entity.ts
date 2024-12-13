@@ -1,5 +1,6 @@
 
 
+import { History } from 'src/histories/entities/histories.entity';
 import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
 import { LikePlaylist } from 'src/playlist-like/entities/likeplaylist.entity';
 import { Video } from 'src/videos/entities/videos.entity';
@@ -55,10 +56,7 @@ export class User {
   
   @OneToMany(() => Video, (video) => video.user)
     videos: Video[]
-
-  @OneToMany(() => LikePlaylist, (likePlaylist) => likePlaylist.video)
-  likePlaylists: LikePlaylist[];
-  
+    likePlaylists: any;
 
   
 }

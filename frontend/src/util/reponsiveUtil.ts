@@ -5,7 +5,7 @@ export const ReponsiveContainer = styled(Stack)(({ theme }) => ({
     height: '100%',
     padding: 4,
     [theme.breakpoints.down('sm')]: {
-        padding: 2, // Màn hình nhỏ hơn sm
+     
     },
     [theme.breakpoints.between('sm', 'md')]: {
         padding: 3, // Giữa sm và md

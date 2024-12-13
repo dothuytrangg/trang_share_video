@@ -188,12 +188,12 @@ export default function Sidebar() {
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("theme")} sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
-          <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          {/* <ListItemButton sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("playlist")} placement="right-start">
               <PlaylistPlay></PlaylistPlay>
             </Tooltip>
             <ListItemText className={open ? "mx-3" : ""} primary={t("playlist")} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
+          </ListItemButton> */}
 
           <ListItemButton onClick={handlePlayListHistory} sx={{ minHeight: 40, justifyContent: open ? "initial" : "center", px: 2.5 }}>
             <Tooltip title={t("playlist_history")} placement="right-start">

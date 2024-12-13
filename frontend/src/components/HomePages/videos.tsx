@@ -1,5 +1,6 @@
 'use client'
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -25,10 +26,19 @@ export default function Videos({ categoryId }: { categoryId: string }) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("HomePage");
+  const [hasReachedHalf, setHasReachedHalf] = useState(false);
+  const masterStore = useAppSelector((state: any) => state.master);
   var flag = false;
+
+  
+ 
   
   const handleOnClick = (videoId: string) => {
+    if(masterStore.is_login){
+      createHistory(videoId)
+    }
     router.push(`/${locale}/detail/${videoId}?categoryId=${categoryId}`);
+    
   };
 
   useEffect(() => {
@@ -56,46 +66,93 @@ export default function Videos({ categoryId }: { categoryId: string }) {
       }
     };
 
+    
+  const createHistory = async (videoId: string) => {
+  
+    await requestApi(`histories/${videoId}`, "POST").then((res:any)=>{
+       if(res.success){
+        console.log("history save successfully");
+       }else{
+        console.error("Failed  save history");
+       }
+    }).catch((err:any)=>{
+      console.error("Error history:", err);
+    })
+ 
+};
+
+    // Hàm chuyển đổi giây thành định dạng HH:mm:ss
+   const formatDuration = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <React.Fragment>
-      {videos.map((video: any) => (
+  {videos.map((video: any) => (
+    video.status === 'confirmed' && (
+      <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }}>
+        <Card sx={{ mx: 2, my: 1, width: 1 }}>
+          <CardMedia
+            sx={{ height: 170, position: 'relative' }} // Thêm position relative để định vị
+            image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
+            title={video.name}
+           >
+                       
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 10,
+                    right: 10,
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Nền mờ
+                    color: 'white',
+                    padding: '5px 10px',
+                    borderRadius: '5px',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                  }}
+                >
+                  {formatDuration(video.timeout)} 
+              </Box>
+          </CardMedia>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: 140 }}>
+            <div>
+              <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
+                {video.name.length > 50 ? (
+                  <Tooltip title={video.name}>
+                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">
+                      {`${video.name.substring(0, 50)}...`}
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">
+                    {video.name}
+                  </span>
+                )}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: '10px' }}>
+                {video.description.length > 70 ? (
+                  <Tooltip title={video.description}>
+                    <span>{`${video.description.substring(0, 70)}...`}</span>
+                  </Tooltip>
+                ) : (
+                  video.description
+                )}
+              </Typography>
+            </div>
+ 
+          </CardContent>
+        </Card>
+      </Grid>
+    )
+  ))}
+</React.Fragment>
 
-          video.status === 'confirmed' && (
-            <Grid key={video.id} item sm={2} lg={3} sx={{ width: 1 }} >
-            <Card sx={{ mx: 2, my: 1, width: 1 }} >
-              <CardMedia
-                sx={{ height: 140 }}
-                image={`${_ENV.NEXT_URL_RESOURCE}/videos/${video.thumbnail}`}
-                title={video.name}
-              />
-              <CardContent sx={{ height: 140 }}>
-                <Typography gutterBottom variant="h6" component="div" sx={{ height: 30, paddingBottom: 8 }}>
-                  {video.name.length > 50 ? (
-                    <Tooltip title={video.name}>
-                      <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{`${video.name.substring(0, 50)}...`}</span>
-                    </Tooltip>
-                  ) :
-                    <span onClick={() => handleOnClick(video.id)} className="cursor-pointer hover:text-blue-600">{video.name}</span>
-                  }
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {video.description.length > 100 ? (
-                    <Tooltip title={video.description}>
-                      <span>{`${video.description.substring(0, 100)}...`}</span>
-                    </Tooltip>
-                  ) : (
-                    video.description
-                  )}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          )
-      ))}
-    </React.Fragment>
   );
 }

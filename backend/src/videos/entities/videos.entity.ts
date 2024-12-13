@@ -1,6 +1,7 @@
 
 
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { History } from 'src/histories/entities/histories.entity';
 import { LikePlaylist } from 'src/playlist-like/entities/likeplaylist.entity';
 import { User } from 'src/users/entities/users.entity';
 import { VideoDetail } from 'src/video-details/entities/video-details.entity';
@@ -65,8 +66,6 @@ export class Video {
 
   @OneToMany(() =>VideoDetail, (videoDetail) => videoDetail.video)
   videoDetail: VideoDetail[]
-
-  @OneToMany(() => LikePlaylist, (likePlaylist) => likePlaylist.video)
-  likePlaylists: LikePlaylist[];
+    likePlaylists: any;
   
 }
