@@ -93,8 +93,8 @@
     "create_video_failed": "Video created failed",
     "create_video_occerred": "An error occurred while creating the video.",
     "update_video_success": "Video updated successfully!",
-    "update_video_failed": "Failed to update user",
-    "update_video_occerred": "An error occurred while update the user",
+    "update_video_failed": "Failed to update video",
+    "update_video_occerred": "An error occurred while update the video",
 
     "name_video_must_more_than_3_characters":"Name video must more than 3 characters",
     "name_video_must_least_than_70_characters":"Name video must least than 70 characters",

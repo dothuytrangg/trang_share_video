@@ -33,7 +33,7 @@ export class VideoDetailsService {
             throw new Error('Category not found');
         }
           let saveVideoDetail = await this.videoDetailRepository.save({video:video,category:category});
-          console.log('save',saveVideoDetail);
+          // console.log('save',saveVideoDetail);
           if (saveVideoDetail) {
           
             response.video = saveVideoDetail
@@ -84,7 +84,10 @@ export class VideoDetailsService {
 
              
       const [res, total] = await this.videoDetailRepository.findAndCount({
-        where:{category:{id}},
+        where: {
+          category: { id }, // Lọc theo danh mục
+          video: { status: 'confirmed' }, // Chỉ lấy video đã xác nhận
+        },
         order: {created_at:"DESC"},
         take:items_per_page,
         skip:skip,  
